@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+    <head>
+        <title>Generational income explorer</title>
+        <meta name = "description" content = "An interactive visualization exploring the income distributions of American generations. Track income percentiles and compare Boomers, Gen X, Millennials, and others.">
+        <meta name="viewport" content="width=device-width, initial-scale = 1.0,maximum-scale = 1.0,user-scalable=no"/>
+        <link href="../../styles/electric-scatter.css" rel="stylesheet">
+        <link href="styles/scrolling_style.css" rel="stylesheet">
+        <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
+        <link rel="manifest" href="../../site.webmanifest">
+        <link rel="mask-icon" href="../../safari-pinned-tab.svg" color="#5bbad5">
+        <meta name="msapplication-TileColor" content="#da532c">
+        <meta name="theme-color" content="#ffffff">
+
+        <meta name='twitter:card' content='summary_large_image'>
+        <meta name='twitter:site' content='@mdahardy'>
+        <meta name='twitter:title' content='Generational income explorer'>
+        <meta name='twitter:description' content="An interactive visualization exploring the income distributions of American generations.">
+        <meta name='twitter:image' content='https://www.electricscatter.com/assets/og_logo.png'>
+    
+        <meta property="og:title" content="Generational income explorer">
+        <meta name='twitter:description' content="An interactive visualization exploring the income distributions of American generations.">
+        <meta name='twitter:image' content='https://www.electricscatter.com/assets/og_logo.png'>
+        <meta property="og:url" content="https://www.electricscatter.com/income-distributions/generations">
+    </head>
+
+<body>
+    <noscript><div class="no-script-wrapper"><div>Javascript is required to use app.</div></div></noscript>
+    <div id = 'percent'></div>
+    <div id = 'vh'></div>
+    <div id = 'ie-issues'>Unfortunately this visualization does not work on Internet Explorer.<br><br>Please use another web browser such as Chrome, Safari, or Firefox.</div>
+    <div id='content'>
+        <div id = 'header-div'>
+            <div id='header-text'><a id = 'electric-scatter-link' href = '/'>electric scatter</a></div>
+        </div>
+        <div id = 'title-div' class='hidden'>
+            <div>Generational Income Explorer</div>
+        </div> 
+        <div id ='more-info-wrapper' class ='hidden'>
+            <div id = 'more-info-text'>
+                <a class = 'inner-link-text' id = 'density-info-text' href="https://www.acidgraph.com/projects/density-plots" target="_blank">Learn about density plots</a> 
+                <span class = 'changer'> &#9632; </span> 
+                <a class = 'inner-link-text' id = 'income-distribution-link' href="https://www.acidgraph.com/projects/income-distributions" target="_blank">Income explorer</a>
+                <span class = 'changer'>&#9632;</span>
+                <a class = 'inner-link-text' id = 'link-text' href="https://www.acidgraph.com/income-distributions/documentation" target="_blank">Documentation</a>
+            </div>
+        </div>     
+        <div id = 'background-rect' class = 'hidden'></div>
+        <div id = 'background-years'></div>
+        <div id = 'background-bottom'></div>
+        <div id = 'density-div'>
+            <div id='density-tooltip'></div>
+            <div id='legend'>
+                <div id ='legend-0-wrapper' class='inner-legend-wrapper'><div id='group-0-square' class = 'group-square'></div> <div id='group-0-legend-text'>All generations</div></div>
+                <div id ='legend-1-wrapper' class='inner-legend-wrapper'><div id='group-1-square' class = 'group-square'></div> <div id='group-1-legend-text'>Boomers</div></div>
+            </div>
+        </div>
+        <div id = 'density-enter'>
+            <div id = 'density-enter-inner' class = 'hidden'>
+                <div id = 'density-enter-text'>Move your mouse over the density plot to show income percentiles</div>
+                <div class = 'loader-square' id = 'density-loader'></div>
+            </div>
+        </div>
+        <div id = 'current-year-div' class = 'hidden'>Age</div>
+        <div id='toolbar' class = 'hidden'>
+            <div id = 'relative-toolbar'>
+            <div id = 'icon-placeholder'></div>
+            <div id='range-slider'>
+                <div id = 'left-filler-upper'></div>
+                <div id = 'scroll-label'>Speed</div>
+                <div id = 'range-wrapper'><input type="range" min="-60000" max="-4000" value="-32000" class="slider" id="myRange"></div>
+            </div>
+            <select id= "workers-selector">
+                <option id = 'selector-full_time' value ='full_time'>Worked full-time year-round</option>
+                <option id = 'selector-mine' value = 'mine'>In labor force at least 6 months</option>
+                <option id = 'selector-fred' value='fred'>Reported income (FRED method)</option>
+            </select>
+            <div id = 'label-wrapper'>
+                <div class='group-title'><div>Group 1</div></div>
+                <div class = 'group-title'>
+                    <div id ='group-1-info'>Group 2</div>
+                    <div id ='switch-div'>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div id = 'generation-dropdown-wrapper' class ='dropdown-wrapper'>
+                <select id= "group-0-generation" class = 'group-0-dropdown group-dropdown'>
+                    <option id="select-generation-0-all_generations" class = 'group-0 selector-0' value ='all_generations'>All generations</option>
+                    <option id="select-generation-0-greatest" class = 'group-0 selector-0' value = 'greatest'>Greatest</option>
+                    <option id="select-generation-0-silent" class = 'group-0 selector-0' value = 'silent'>Silent</option>
+                    <option id="select-generation-0-boomers" class = 'group-0 selector-0' value='boomers'>Boomers</option>
+                    <option id="select-generation-0-gen_x" class = 'group-0 selector-0' value='gen_x'>Gen X</option>
+                    <option id="select-generation-0-millennials" class = 'group-0 selector-0' value='millennials'>Millennials</option>
+                </select>
+                <select id= "group-1-generation" class = 'group-1-dropdown group-dropdown' disabled>
+                    <option id="select-generation-1-all_generations" class = 'group-1 selector-1' value ='all_generations'>All generations</option>
+                    <option id="select-generation-1-greatest" class = 'group-1 selector-1' value = 'greatest'>Greatest</option>
+                    <option id="select-generation-1-silent" class = 'group-1 selector-1' value = 'silent'>Silent</option>
+                    <option id="select-generation-1-boomers" class = 'group-1 selector-1' value='boomers'>Boomers</option>
+                    <option id="select-generation-1-gen_x" class = 'group-1 selector-1' value='gen_x'>Gen X</option>
+                    <option id="select-generation-1-millennials" class = 'group-1 selector-1' value='millennials'>Millennials</option>
+                </select>
+            </div>
+            <div id = 'radio-wrappers' class = 'demographic-flex-wrapper'>
+                <div id='generation-0-wrapper'>
+                        <div class = 'radio-selection group-0 selection-0'>
+                            <input type="radio" id="radio-generation-0-all_generations" name="generation0" value = "" class='input-button button-0' checked>
+                            <label class = 'label-class-0 generation' id = 'all_generations0' for="radio-generation-0-all_generations">All generations</label><br>
+                            <input type="radio" id="radio-generation-0-greatest" name="generation0" class='input-button button-0'  value = "">
+                            <label class = 'label-class-0 generation' id = 'greatest0' for="radio-generation-0-greatest">Greatest</label><br> 
+                            <input type="radio" id="radio-generation-0-silent" name="generation0" class='input-button button-0'  value = "">
+                            <label class = 'label-class-0 generation' id = 'silent0' for="radio-generation-0-silent">Silent</label><br>  
+                            <input type = "radio" id="radio-generation-0-boomers" name="generation0" class='input-button button-0' value = "">
+                            <label class = 'label-class-0 generation'  id = 'boomers0' for="radio-generation-0-boomers">Boomers</label><br>
+                            <input type = "radio" id="radio-generation-0-gen_x" name="generation0" class='input-button button-0' value = "">
+                            <label class = 'label-class-0 generation'  id = 'gen_x0' for="radio-generation-0-gen_x">Gen X</label><br>
+                            <input type = "radio" id="radio-generation-0-millennials" name="generation0" class='input-button button-0' value = "">
+                            <label class = 'label-class-0 generation'  id = 'millennials0' for="radio-generation-0-millennials">Millennials</label><br>
+                        </div>
+                </div>
+                <div id='generation-1-wrapper'>
+                    <div class = 'radio-selection group-1 selection-1'>
+                        <input type="radio" id="radio-generation-1-all_generations" name="generation1" value = "" class='input-button button-1' disabled>
+                        <label class = 'label-class-1 generation' id = 'all_generations1' for="radio-generation-1-all_generations">All generations</label><br>
+                        <input type="radio" id="radio-generation-1-greatest" name="generation1" class='input-button button-1'  value = "" disabled>
+                        <label class = 'label-class-1 generation' id = 'greatest0' for="radio-generation-1-greatest">Greatest</label><br>  
+                        <input type="radio" id="radio-generation-1-silent" name="generation1" class='input-button button-1'  value = "" disabled>
+                        <label class = 'label-class-1 generation' id = 'silent1' for="radio-generation-1-silent">Silent</label><br>  
+                        <input type = "radio" id="radio-generation-1-boomers" name="generation1" class='input-button button-1' value = "" checked disabled>
+                        <label class = 'label-class-1 generation'  id = 'boomers1' for="radio-generation-1-boomers">Boomers</label><br>
+                        <input type = "radio" id="radio-generation-1-gen_x" name="generation1" class='input-button button-1' value = "" disabled>
+                        <label class = 'label-class-1 generation'  id = 'gen_x1' for="radio-generation-1-gen_x">Gen X</label><br>
+                        <input type = "radio" id="radio-generation-1-millennials" name="generation1" class='input-button button-1' value = "" disabled>
+                        <label class = 'label-class-1 generation'  id = 'millennials1' for="radio-generation-1-millennials">Millennials</label><br>
+                    </div>
+                </div>
+            </div>
+            <div id='highlight-selection'>
+                <div id = 'highlight-text'>Highlight group</div>
+                <div id = 'highlight-radio'>
+                    <input type="radio" id="group0highlight" name="highlight-thing" value = "" class='highlight-button' disabled checked>
+                    <label class = 'highlight-label' id = 'grouplabel0' for="group0highlight">1</label><br>
+                    <input type="radio" id="group1highlight" name="highlight-thing" value = "" class='highlight-button' disabled>
+                    <label class = 'highlight-label' id = 'grouplabel1' for="group1highlight">2</label><br>
+                </div>
+            </div>            
+            <div id = 'copy-button-wrapper'>
+                <button id = 'copy-button'>
+                    <div id='copy-text'>Copy link to current graph</div>            
+                </button>
+            </div>
+        </div>
+        <div id = 'icon-wrapper' class = 'hidden'>
+            <div class = 'icon-div'>
+                <svg id = 'player-svg' width="100%" height="100%" viewBox="0 0 100 100">
+                    <g id ='pause-button' class = 'player-class'>
+                        <polygon points="38.5,8.9 38.5,91.1 14.4,91.1 14.4,8.9 14.7,8.9"/>
+                        <polygon points="85.3,8.9 85.3,91.1 61.2,91.1 61.2,8.9 61.6,8.9"/>
+                    </g>
+                    <g id='play-button' class = 'player-class'>
+                        <line class="st0" x1="36.9" y1="57.6" x2="20.2" y2="57.1"/>
+                        <polygon points="14.7,8.9 14.7,91.1 85.3,50.1 "/>
+                    </g>                
+                    </svg>
+            </div>
+            <div class = 'icon-div'>
+                <svg width="100%" height="100%" viewBox="0 0 100 100" id = 'restart-svg'>
+                    <path id="restart-icon" d="M76.2,27.8c-7.4-7.4-17.5-11.2-27.8-10.8V8.9L32.8,20l15.7,11.1V22c8.9-0.4,17.8,2.9,24.3,9.4
+                    c12.5,12.5,12.5,32.9,0,45.4s-32.9,12.5-45.4,0C16.9,66.4,15.1,50.5,22,38.3l-4.1-2.7c-8.1,14.2-6.2,32.6,5.9,44.7
+                    c14.4,14.4,38,14.4,52.4,0C90.6,65.8,90.6,42.3,76.2,27.8z"/>
+                </svg>
+            </div>
+            <div class = 'icon-div' id = 'fullscreen-wrapper'>
+                <svg id = 'screen-svg' width="100%" height="100%" viewBox="0 0 100 100">
+                    <g id="fullscreen" class="screen-class">
+                        <path d="M24.7,60.1H14.5v25.3h25.3V75.3H24.7V60.1L24.7,60.1z M14.5,39.9h10.1V24.7h15.2V14.5H14.5V39.9
+                            L14.5,39.9z M75.3,75.3H60.1v10.1h25.3V60.1H75.3V75.3L75.3,75.3z M60.1,14.5v10.1h15.2v15.2h10.1V14.5H60.1L60.1,14.5z"/>
+                    </g>
+                    <g id="minimize" class="screen-class">
+                        <path d="M9,73.4h17.6V91h11.7V61.7H9V73.4L9,73.4z M26.6,26.6H9v11.7h29.3V9H26.6V26.6L26.6,26.6z
+                            M61.7,91h11.7V73.4H91V61.7H61.7V91L61.7,91z M73.4,26.6V9H61.7v29.3H91V26.6H73.4L73.4,26.6z"/>
+                    </g>
+                </svg>
+            </div>
+            <div class = 'icon-div' id = 'group-selection-wrapper' class = 'disabled' >
+                <svg id = 'group-selection-svg' width="100%" height="100%" viewBox="0 0 100 100">
+                    <rect x="10" y="10" class="st0" width="79.9" height="79.9"/>
+                </svg>
+            </div>
+            <div class = 'icon-div' id = 'plus-wrapper'>
+                <svg width="100%" height="100%" viewBox="0 0 100 100" >
+                <g id="plus" class="screen-class">
+                    <polygon points="88.1,56.3 11.9,56.3 11.9,43.7 88.1,43.7 88.1,43.8 "/>
+                    <polygon points="56.3,11.9 56.3,88.1 43.7,88.1 43.7,11.9 43.9,11.9 "/>
+                </g>
+            </svg>
+            </div>
+        </div>
+        <div id='border-hider'></div>
+        </div> 
+        <div id ='loader-content'>
+            <div class = 'loader-square'></div>
+        </div> 
+    </div>
+</body>
+
+<script src="scripts/d3v5.js"></script>
+<script src="../../scripts/electric-scatter.js"></script>
+<script src="scripts/scrolling_script.js"></script>
+</html>

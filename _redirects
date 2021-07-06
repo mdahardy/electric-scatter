@@ -1,0 +1,27 @@
+/i/ id0=:id0 s=:s id1=:id1 p0=:p0 p1=:p1 https://www.electricscatter.com/projects/income-distributions?id0=:id0&s=:s&id1=:id1&p0=:p0&p1=:p1
+/i/ id0=:id0 id1=:id1 p0=:p0 p1=:p1 https://www.electricscatter.com/projects/income-distributions?id0=:id0&id1=:id1&p0=:p0&p1=:p1
+/i/ id0=:id0 s=:s id1=:id1 p1=:p1 https://www.electricscatter.com/projects/income-distributions?id0=:id0&s=:s&id1=:id1&p1=:p1
+/i/ id0=:id0 id1=:id1 p1=:p1 https://www.electricscatter.com/projects/income-distributions?id0=:id0&id1=:id1&p1=:p1
+/i/ id0=:id0 s=:s id1=:id1 p0=:p0 https://www.electricscatter.com/projects/income-distributions?id0=:id0&s=:s&id1=:id1&p0=:p0
+/i/ id0=:id0 id1=:id1 p0=:p0 https://www.electricscatter.com/projects/income-distributions?id0=:id0&id1=:id1&p0=:p0
+/i/ id0=:id0 s=:s id1=:id1 https://www.electricscatter.com/projects/income-distributions?id0=:id0&s=:s&id1=:id1
+/i/ id0=:id0 id1=:id1 https://www.electricscatter.com/projects/income-distributions?id0=:id0&id1=:id1
+/i/ id0=:id0 s=:s p0=:p0 https://www.electricscatter.com/projects/income-distributions?id0=:id0&s=:s&p0=:p0
+/i/ id0=:id0 p0=:p0 https://www.electricscatter.com/projects/income-distributions?id0=:id0&p0=:p0
+/i/ id0=:id0 s=:s https://www.electricscatter.com/projects/income-distributions?id0=:id0&s=:s
+/i/ id0=:id0 https://www.electricscatter.com/projects/income-distributions?id0=:id0
+/i/ https://www.electricscatter.com/projects/income-distributions
+
+/g/ id0=:id0 s=:s id1=:id1 p0=:p0 p1=:p1 https://www.electricscatter.com/projects/generation-distributions?id0=:id0&s=:s&id1=:id1&p0=:p0&p1=:p1
+/g/ id0=:id0 id1=:id1 p0=:p0 p1=:p1 https://www.electricscatter.com/projects/generation-distributions?id0=:id0&id1=:id1&p0=:p0&p1=:p1
+/g/ id0=:id0 s=:s id1=:id1 p1=:p1 https://www.electricscatter.com/projects/generation-distributions?id0=:id0&s=:s&id1=:id1&p1=:p1
+/g/ id0=:id0 id1=:id1 p1=:p1 https://www.electricscatter.com/projects/generation-distributions?id0=:id0&id1=:id1&p1=:p1
+/g/ id0=:id0 s=:s id1=:id1 p0=:p0 https://www.electricscatter.com/projects/generation-distributions?id0=:id0&s=:s&id1=:id1&p0=:p0
+/g/ id0=:id0 id1=:id1 p0=:p0 https://www.electricscatter.com/projects/generation-distributions?id0=:id0&id1=:id1&p0=:p0
+/g/ id0=:id0 s=:s id1=:id1 https://www.electricscatter.com/projects/generation-distributions?id0=:id0&s=:s&id1=:id1
+/g/ id0=:id0 id1=:id1 https://www.electricscatter.com/projects/generation-distributions?id0=:id0&id1=:id1
+/g/ id0=:id0 s=:s p0=:p0 https://www.electricscatter.com/projects/generation-distributions?id0=:id0&s=:s&p0=:p0
+/g/ id0=:id0 p0=:p0 https://www.electricscatter.com/projects/generation-distributions?id0=:id0&p0=:p0
+/g/ id0=:id0 s=:s https://www.electricscatter.com/projects/generation-distributions?id0=:id0&s=:s
+/g/ id0=:id0 https://www.electricscatter.com/projects/generation-distributions?id0=:id0
+/g/ https://www.electricscatter.com/projects/generation-distributions

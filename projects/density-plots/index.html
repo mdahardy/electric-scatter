@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>Density plots</title>
+    <meta name = "description" content = "A short interactive video on distributions and kernel density plots. Learn how to interpret density plots, why they're useful, and how to use them to in statistical analysis.">
+    <meta name="viewport" content="width=device-width, initial-scale = 1.0,maximum-scale = 1.0,user-scalable=no"/>
+    <link href="../../styles/electric-scatter.css" rel="stylesheet">
+    <link href="styles/densities.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
+    <link rel="manifest" href="../../site.webmanifest">
+    <link rel="mask-icon" href="../../safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <meta name='twitter:card' content='summary_large_image'>
+    <meta name='twitter:site' content='@mdahardy'>
+    <meta name='twitter:title' content='Electric scatter'>
+    <meta name='twitter:description' content='Interactive data visualizations for open-ended exploration.'>
+    <meta name='twitter:image' content='https://www.electricscatter.com/assets/og_logo.png'>
+
+    <meta property="og:title" content="Electric scatter">
+    <meta property="og:description" content="Interactive data visualizations for open-ended exploration.">
+    <meta name='twitter:image' content='https://www.electricscatter.com/assets/og_logo.png'>
+    <meta property="og:url" content="https://www.electricscatter.com">
+</head>
+
+<body>
+    <noscript>
+    <div class="no-script-wrapper"><div>Javascript is required to use app.</div></div>
+    </noscript>
+    <div id = 'percent'></div>
+    <div id = 'vh'></div>
+    <div id = 'ie-issues'>Unfortunately this visualization does not work on Internet Explorer.<br><br>Please use another web browser such as Chrome, Safari, or Firefox.</div>
+    <div id='content'>
+    <!-- define SVGs that are used multiple times -->
+    <div id = 'svg-defs'>
+        <svg>
+        <symbol viewBox="0 0 512 512" id="icon">
+        <path d="M407.448,360.474c-59.036-13.617-113.989-25.541-87.375-75.717
+            c81.01-152.729,21.473-234.406-64.072-234.406c-87.231,0-145.303,84.812-64.072,234.406c27.412,50.482-29.608,62.393-87.375,75.717
+            c-59.012,13.609-54.473,44.723-54.473,101.176h411.838C461.919,405.196,466.458,374.083,407.448,360.474z"></path>
+        </symbol>
+        </svg>
+        <svg>
+            <symbol id = 'desktop-graph-0' viewBox="0 50 371 305">
+            <polyline id = 'desktop-path-0' class="density-line density-line-0 density-line-desktop-0" points="16.9,13.6 20.2,18.2 23.6,25.3 27,34.2 30.4,44.6 33.8,56 37.1,67.9 40.5,80.2 43.9,92.6 47.2,105 
+                50.6,117.1 54,128.9 57.4,140.3 60.8,151.3 64.1,161.7 67.5,171.7 70.9,181.1 74.2,189.9 77.6,198.2 81,206 84.4,213.2 87.8,220 
+                91.1,226.3 94.5,232.1 97.9,237.5 101.2,242.5 104.6,247.1 108,251.4 111.4,255.3 114.8,258.9 118.1,262.1 121.5,265.2 124.9,267.9 
+                128.2,270.5 131.6,272.8 135,274.9 138.4,276.8 141.8,278.6 145.1,280.2 148.5,281.7 151.9,283 155.2,284.2 158.6,285.3 162,286.3 
+                165.4,287.2 168.8,288.1 172.1,288.8 175.5,289.5 178.9,290.1 182.2,290.7 185.6,291.2 189,291.6 192.4,292 195.8,292.4 
+                199.1,292.8 202.5,293.1 205.9,293.3 209.2,293.6 212.6,293.8 216,294 219.4,294.2 222.8,294.4 226.1,294.5 229.5,294.7 
+                232.9,294.8 236.2,294.9 239.6,295 243,295.1 246.4,295.2 249.8,295.2 253.1,295.3 256.5,295.4 259.9,295.4 263.2,295.5 
+                266.6,295.5 270,295.5 273.4,295.6 276.8,295.6 280.1,295.6 283.5,295.7 286.9,295.7 290.2,295.7 293.6,295.7 297,295.7 
+                300.4,295.8 303.8,295.8 307.1,295.8 310.5,295.8 313.9,295.8 317.2,295.8 320.6,295.8 324,295.8 327.4,295.8 330.8,295.8 
+                334.1,295.8 337.5,295.9 340.9,295.9 344.2,295.9 347.6,295.9 351,295.9 354.4,295.9 "/>
+            </symbol>
+        </svg>
+        <svg>
+            <symbol id = 'desktop-graph-1' viewBox="0 50 371 305">
+                <polyline id = 'desktop-path-1' class="density-line density-line-1 density-line-desktop-1" points="16.9,292.4 20.2,290.8 23.6,288.7 27,286.1 30.4,283 33.8,279.4 37.1,275.3 40.5,270.8 43.9,265.9 
+                47.2,260.5 50.6,254.9 54,249 57.4,242.9 60.8,236.7 64.1,230.4 67.5,224.2 70.9,218 74.2,211.9 77.6,206 81,200.3 84.4,194.9 
+                87.8,189.8 91.1,185.1 94.5,180.7 97.9,176.8 101.2,173.2 104.6,170.1 108,167.5 111.4,165.3 114.8,163.5 118.1,162.1 121.5,161.2 
+                124.9,160.7 128.2,160.6 131.6,160.9 135,161.5 138.4,162.5 141.8,163.8 145.1,165.4 148.5,167.2 151.9,169.3 155.2,171.6 
+                158.6,174.1 162,176.8 165.4,179.7 168.8,182.7 172.1,185.8 175.5,188.9 178.9,192.2 182.2,195.5 185.6,198.8 189,202.2 
+                192.4,205.6 195.8,208.9 199.1,212.3 202.5,215.6 205.9,218.9 209.2,222.1 212.6,225.3 216,228.4 219.4,231.5 222.8,234.5 
+                226.1,237.4 229.5,240.2 232.9,242.9 236.2,245.6 239.6,248.1 243,250.6 246.4,252.9 249.8,255.2 253.1,257.4 256.5,259.5 
+                259.9,261.5 263.2,263.5 266.6,265.3 270,267.1 273.4,268.8 276.8,270.4 280.1,271.9 283.5,273.3 286.9,274.7 290.2,276 
+                293.6,277.2 297,278.4 300.4,279.5 303.8,280.5 307.1,281.5 310.5,282.5 313.9,283.3 317.2,284.1 320.6,284.9 324,285.6 
+                327.4,286.3 330.8,287 334.1,287.6 337.5,288.1 340.9,288.7 344.2,289.2 347.6,289.6 351,290.1 354.4,290.5 "/>
+            </symbol>
+        </svg>
+        <svg>
+            <symbol id = 'desktop-graph-2' viewBox="0 50 371 305">
+                <polyline id = 'desktop-path-2' class="density-line density-line-2 density-line-desktop-2" points="16.9,295.9 20.2,295.9 23.6,295.9 27,295.9 30.4,295.9 33.8,295.9 37.1,295.9 40.5,295.9 43.9,295.9 
+                47.2,295.8 50.6,295.8 54,295.8 57.4,295.7 60.8,295.6 64.1,295.5 67.5,295.4 70.9,295.3 74.2,295.1 77.6,294.8 81,294.5 
+                84.4,294.2 87.8,293.8 91.1,293.3 94.5,292.7 97.9,292.1 101.2,291.3 104.6,290.5 108,289.5 111.4,288.5 114.8,287.3 118.1,286.1 
+                121.5,284.7 124.9,283.2 128.2,281.5 131.6,279.8 135,277.9 138.4,275.9 141.8,273.8 145.1,271.6 148.5,269.4 151.9,267 
+                155.2,264.5 158.6,261.9 162,259.3 165.4,256.6 168.8,253.9 172.1,251.2 175.5,248.4 178.9,245.6 182.2,242.8 185.6,240 189,237.2 
+                192.4,234.5 195.8,231.8 199.1,229.1 202.5,226.6 205.9,224.1 209.2,221.6 212.6,219.3 216,217.1 219.4,215 222.8,213 226.1,211.1 
+                229.5,209.4 232.9,207.8 236.2,206.3 239.6,204.9 243,203.8 246.4,202.7 249.8,201.8 253.1,201.1 256.5,200.4 259.9,200 
+                263.2,199.7 266.6,199.5 270,199.4 273.4,199.5 276.8,199.8 280.1,200.1 283.5,200.6 286.9,201.2 290.2,201.9 293.6,202.7 
+                297,203.7 300.4,204.7 303.8,205.8 307.1,207 310.5,208.3 313.9,209.7 317.2,211.1 320.6,212.6 324,214.1 327.4,215.7 330.8,217.4 
+                334.1,219 337.5,220.8 340.9,222.5 344.2,224.3 347.6,226.1 351,227.9 354.4,229.7 "/>
+            </symbol>
+        </svg>
+        <svg>
+            <symbol id = 'mobile-graph-0' viewBox="0 0 223 350">
+                <polyline id = 'mobile-path-0' class="density-line density-line-0 density-line-mobile-0"  points="9.4,3.4 11.4,8.9 13.5,17.4 15.5,28 17.6,40.4 19.7,54 21.7,68.2 23.7,82.8 25.8,97.6 27.8,112.4 
+                29.9,126.8 31.9,140.9 34,154.5 36.1,167.6 38.1,180 40.2,191.9 42.2,203.2 44.2,213.6 46.3,223.5 48.4,232.8 50.4,241.4 
+                52.5,249.5 54.5,257 56.6,264 58.6,270.4 60.6,276.4 62.7,281.8 64.8,287 66.8,291.6 68.9,295.9 70.9,299.7 73,303.4 75,306.7 
+                77.1,309.8 79.1,312.5 81.2,315 83.3,317.3 85.3,319.4 87.3,321.3 89.4,323.1 91.5,324.7 93.5,326.1 95.5,327.4 97.6,328.6 
+                99.7,329.7 101.7,330.7 103.7,331.6 105.8,332.4 107.9,333.1 109.9,333.8 111.9,334.4 114,334.9 116.1,335.4 118.1,335.9 
+                120.2,336.3 122.2,336.7 124.3,336.9 126.3,337.3 128.4,337.5 130.4,337.8 132.5,338 134.6,338.2 136.6,338.4 138.6,338.6 
+                140.7,338.7 142.7,338.8 144.8,339 146.8,339.1 148.9,339.2 151,339.2 153,339.3 155,339.4 157.1,339.4 159.1,339.6 161.2,339.6 
+                163.3,339.6 165.3,339.7 167.4,339.7 169.4,339.7 171.5,339.8 173.5,339.8 175.5,339.8 177.6,339.8 179.7,339.8 181.7,339.9 
+                183.8,339.9 185.8,339.9 187.9,339.9 189.9,339.9 192,339.9 194,339.9 196.1,339.9 198.2,339.9 200.2,339.9 202.2,339.9 204.3,340 
+                206.4,340 208.4,340 210.4,340 212.5,340 214.6,340 "/>
+        </svg>
+        <svg>
+            <symbol id = 'mobile-graph-1' viewBox="0 0 223 350">
+                <polyline id = 'mobile-path-1' class="density-line density-line-1 density-line-mobile-1"  points="9.4,330.3 11.4,327.5 13.5,323.7 15.5,319 17.6,313.5 19.7,307.1 21.7,299.7 23.7,291.7 25.8,282.9 
+                27.8,273.3 29.9,263.2 31.9,252.7 34,241.8 36.1,230.7 38.1,219.4 40.2,208.3 42.2,197.3 44.2,186.3 46.3,175.8 48.4,165.6 
+                50.4,155.9 52.5,146.8 54.5,138.4 56.6,130.5 58.6,123.6 60.6,117.1 62.7,111.6 64.8,106.9 66.8,103 68.9,99.8 70.9,97.3 73,95.7 
+                75,94.8 77.1,94.6 79.1,95.1 81.2,96.2 83.3,98 85.3,100.3 87.3,103.2 89.4,106.4 91.5,110.2 93.5,114.3 95.5,118.7 97.6,123.6 
+                99.7,128.8 101.7,134.1 103.7,139.7 105.8,145.2 107.9,151.1 109.9,157 111.9,162.9 114,169 116.1,175.1 118.1,181 120.2,187.1 
+                122.2,193 124.3,198.9 126.3,204.6 128.4,210.3 130.4,215.9 132.5,221.4 134.6,226.8 136.6,231.9 138.6,237 140.7,241.8 
+                142.7,246.6 144.8,251.1 146.8,255.6 148.9,259.7 151,263.8 153,267.7 155,271.5 157.1,275 159.1,278.6 161.2,281.8 163.3,285.1 
+                165.3,288.1 167.4,291 169.4,293.6 171.5,296.2 173.5,298.7 175.5,301 177.6,303.1 179.7,305.3 181.7,307.2 183.8,309 185.8,310.8 
+                187.9,312.6 189.9,314 192,315.5 194,316.9 196.1,318.2 198.2,319.4 200.2,320.7 202.2,321.7 204.3,322.6 206.4,323.7 208.4,324.6 
+                210.4,325.3 212.5,326.2 214.6,326.9 "/>
+            </symbol>
+        </svg>
+        <svg>
+            <symbol id = 'mobile-graph-2' viewBox="0 0 223 350">
+                <polyline id = 'mobile-path-2' class="density-line density-line-2 density-line-mobile-2" points="9.4,336.6 11.4,336.6 13.5,336.6 15.5,336.6 17.6,336.6 19.7,336.6 21.7,336.6 23.7,336.6 25.8,336.6 
+                27.8,336.4 29.9,336.4 31.9,336.4 34,336.2 36.1,336 38.1,335.9 40.2,335.7 42.2,335.5 44.2,335.1 46.3,334.6 48.4,334.1 
+                50.4,333.5 52.5,332.8 54.5,331.9 56.6,330.8 58.6,329.8 60.6,328.3 62.7,326.9 64.8,325.1 66.8,323.3 68.9,321.2 70.9,319 
+                73,316.5 75,313.9 77.1,310.8 79.1,307.8 81.2,304.4 83.3,300.8 85.3,297 87.3,293.1 89.4,289.2 91.5,284.9 93.5,280.4 95.5,275.8 
+                97.6,271.1 99.7,266.3 101.7,261.5 103.7,256.6 105.8,251.6 107.9,246.6 109.9,241.6 111.9,236.6 114,231.6 116.1,226.8 
+                118.1,221.9 120.2,217.1 122.2,212.6 124.3,208.2 126.3,203.7 128.4,199.6 130.4,195.6 132.5,191.9 134.6,188.3 136.6,184.9 
+                138.6,181.9 140.7,179 142.7,176.3 144.8,173.8 146.8,171.9 148.9,169.9 151,168.3 153,167 155,165.8 157.1,165.1 159.1,164.5 
+                161.2,164.2 163.3,164 165.3,164.2 167.4,164.7 169.4,165.2 171.5,166.1 173.5,167.2 175.5,168.5 177.6,169.9 179.7,171.7 
+                181.7,173.5 183.8,175.4 185.8,177.6 187.9,179.9 189.9,182.4 192,184.9 194,187.6 196.1,190.3 198.2,193.1 200.2,196.2 202.2,199 
+                204.3,202.3 206.4,205.3 208.4,208.5 210.4,211.7 212.5,215 214.6,218.2 "/>
+            </symbol>
+        </svg>
+    </div>
+        <div id = 'scroll-wrapper'></div>
+        <div id = 'es-background' class = 'header-not-hidden'>
+            <div id = 'link-wrapper'>
+                <div id='header-text'><a id = 'electric-scatter-link' href = '../..'>electric scatter</a></div>
+            </div>
+        </div>
+        <div class = 'wrapper initially-hidden'>
+            <div class = 'html-section-0 html-section'>
+                <div id = 'title-wrapper'>
+                    <div id = 'title-background'>
+                        <div class='desktop-svg background-svg'>
+                            <svg height=100% width=100% class = 'density-line density-line-0 density-line-desktop-0' >
+                                <use class = 'desktop-density-line-0' xlink:href="#desktop-graph-0"></use>
+                                <use class = 'desktop-density-line-1' xlink:href="#desktop-graph-1"></use>
+                                <use class = 'desktop-density-line-2' xlink:href="#desktop-graph-2"></use>
+                            </svg>
+                        </div>
+                        <div class='mobile-svg background-svg'>
+                            <svg height=100% width=100% class = 'density-line density-line-0 density-line-mobile-0' >
+                                <use class = 'mobile-density-line-0' xlink:href="#mobile-graph-0"></use>
+                                <use class = 'mobile-density-line-1' xlink:href="#mobile-graph-1"></use>
+                                <use class = 'mobile-density-line-2' xlink:href="#mobile-graph-2"></use>
+                            </svg>
+                        </div>
+                    </div>
+                    <div id ='title-wrapper'>
+                        <div id='main-title' class = 'inner-text'>A short introduction to density plots</div>
+                        <div id='sub-main-title' class = 'inner-text'>Press play to start video or scroll to start silently</div>
+                    </div>
+                </div>
+            </div>
+            <div class = 'html-section-1 html-section'>
+                <div id = 'sequoias-1-wrapper' class = 'image-wrapper'>
+                    <picture>
+                        <source srcset = 'images/mobile-images/sequoias-1.jpg' media = '(orientation: portrait)'>
+                        <source srcset = 'images/desktop-images/sequoias-1.jpg'>
+                        <img id = 'sequoias-1' class = 'intro-picture moving-picture' src="images/desktop-images/sequoias-1.jpg">
+                    </picture>
+                </div>
+                <div id = 'sd-1-wrapper' class = 'image-wrapper'>
+                    <picture>
+                        <source srcset = 'images/mobile-images/sd-1.jpg' media = '(orientation: portrait)'>
+                        <source srcset = 'images/desktop-images/sd-1.jpg'>
+                        <img id = 'sequoias-1' class = 'intro-picture moving-picture' src="images/desktop-images/sd-1.jpg">
+                    </picture>
+                </div>
+                <div id = 'millennials-1-wrapper' class = 'image-wrapper'>
+                    <picture>
+                        <source srcset = 'images/mobile-images/millennials-1.jpg' media = '(orientation: portrait)'>
+                        <source srcset = 'images/desktop-images/millennials-1.jpg'>
+                        <img id = 'millennials-1' class = 'intro-picture moving-picture' src="images/desktop-images/millennials-1.jpg">
+                    </picture>
+                </div>
+                <div id = 'sequoias-2-wrapper' class = 'image-wrapper'>
+                    <picture>
+                        <source srcset = 'images/mobile-images/sequoias-2.jpg' media = '(orientation: portrait)'>
+                        <source srcset = 'images/desktop-images/sequoias-2.jpg'>
+                        <img id = 'sequoias-2' class = 'intro-picture stationary-picture' src="images/desktop-images/sequoias-2.jpg">
+                    </picture>
+                </div>
+                <div id = 'sd-2-wrapper' class = 'image-wrapper'>
+                    <picture>
+                        <source srcset = 'images/mobile-images/sd-2.jpg' media = '(orientation: portrait)'>
+                        <source srcset = 'images/desktop-images/sd-2.jpg'>
+                        <img id = 'sd-2' class = 'intro-picture stationary-picture' src="images/desktop-images/sd-2.jpg">
+                    </picture>
+                </div>
+                <div id = 'millennials-2-wrapper' class = 'image-wrapper'>
+                    <picture>
+                        <source srcset = 'images/mobile-images/millennials-2.jpg' media = '(orientation: portrait)'>
+                        <source srcset = 'images/desktop-images/millennials-2.jpg'>
+                        <img id = 'millennials-2' class = 'intro-picture stationary-picture' src="images/desktop-images/millennials-2.jpg">
+                    </picture>
+                </div>
+                <div id = "numbers-wrapper" class="opacity-transition">
+                    8k $102k $0k $50k $136k $10k $21k $0k $63k $50k $51k $28k $39k $10k $100k $80k $14k $23k $74k $25k $0k $25k $10k $40k $0k $42k $60k $27k $39k $20k $6k $0k $11k $13k $62k $16k $10k $5k $53k $76k $5k $13k $0k $13k $40k $23k $28k $14k $12k $30k $130k $34k $25k $23k $35k $15k $62k $75k $12k $35k $0k $12k $35k $32k $0k $30k $43k $24k $0k $54k $40k $38k $0k $44k $0k $60k $40k $30k $18k $37k $24k $0k $10k $38k $22k $5k $9k $95k $230k $108k $0k $32k $12k $86k $0k $2k $10k $40k $132k $2k $40k $93k $57k $35k $28k $25k $40k $12k $15k $75k $20k $37k $18k $40k $6k $100k $35k $7k $38k $1k $31k $65k $50k $60k $12k $23k $2k $20k $21k $22k $13k $0k $5k $29k $65k $10k $45k $25k $13k $10k $46k $25k $0k $35k $58k $28k $99k $0k $18k $50k $32k $32k $0k $27k $0k $12k $105k $15k $65k $45k $47k $0k $45k $28k $161k $36k $36k $30k $5k $25k $80k $20k $15k $0k $4k $0k $23k $33k $13k $27k $88k $38k $12k $24k $33k $13k $9k $98k $18k $0k $14k $3k $15k $16k $6k $20k $46k $5k $0k $24k $21k $9k $0k $46k $33k $19k $7k $18k $7k $60k $45k $4k $22k $0k $20k $30k $3k $6k $40k $59k $45k $100k $44k $1k $35k $25k $21k $33k $0k $14k $36k $0k $90k $15k $70k $92k $15k $1k $36k $6k $6k $35k $51k $0k $25k $0k $12k $6k $80k $54k $48k $0k $25k $41k $22k $23k $11k $38k $5k $23k $35k $12k $54k $102k $18k $5k $8k $0k $13k $32k $2k $25k $18k $27k $31k $80k $8k $17k $0k $22k $0k $45k $80k $30k $15k $32k $13k $33k $9k $31k $35k $28k $32k $8k $40k $80k $60k $30k $24k $28k $67k $35k $35k $26k $10k $18k $12k $38k $165k $23k $45k $44k $34k $24k $5k $63k $67k $0k $51k $405k $10k $25k $23k $24k $0k $2k $0k $50k $101k $0k $59k $12k $35k $43k $28k $65k $0k $52k $22k $47k $38k $19k $30k $0k $12k $0k $100k $30k $18k $18k $46k $10k $15k $16k $36k $23k $0k $10k $20k $3k $2k $0k $0k $67k $0k $42k $10k $8k $28k $0k $14k $18k $0k $12k $32k $42k $41k $21k $120k $20k $18k $28k $61k $25k $52k $6k $12k $10k $0k $14k $31k $2k $22k $45k $60k $11k $27k $65k $13k $40k $0k $14k $16k $33k $7k $7k $4k $32k $20k $0k $57k $0k $0k $70k $12k $0k $82k $25k $22k $16k $36k $65k $71k $46k $13k $44k $19k $21k $33k $20k $14k $8k $100k $25k $30k $0k $34k $0k $21k $62k $0k $10k $45k $80k $2k $75k $13k $0k $60k $30k $50k $3k $25k $79k $35k $15k $24k $10k $0k $0k $35k $14k $2k $30k $0k $56k $9k $37k $20k $31k $7k $36k $0k $150k $25k $15k $20k $13k $21k $17k $0k $16k $42k $38k $0k $22k $20k $15k $0k $11k $33k $23k $9k $20k $0k $60k $34k $8k $0k $74k $16k $0k $9k $100k $0k $12k $45k $0k $0k $34k $22k $10k $36k $0k $9k $18k $1k $8k $20k $13k $30k $0k $18k $47k $14k $13k $30k $20k $70k $53k $8k $8k $31k $30k $1k $42k $0k $0k $21k $30k $52k $18k $33k $44k $0k $22k $0k $33k $10k $268k $2k $0k $28k $20k $42k $62k $14k $60k $25k $18k $92k $108k $51k $41k $0k $12k $30k $45k $2k $21k $0k $35k $0k $1k $40k $0k $75k $24k $2k $12k $50k $29k $1k $27k $0k $16k $0k $30k $1k $20k $0k $19k $127k $65k $42k $23k $50k $8k $31k $35k $66k $0k $22k $70k $45k $19k $14k $130k $20k $45k $87k $8k $36k $30k $49k $47k $25k $0k $30k $25k $26k $37k $8k $0k $27k $72k $35k $16k $0k $21k $13k $74k $0k $16k $40k $63k $23k $19k $6k $38k $2k $16k $0k $90k $5k $0k $14k $0k $45k $14k $31k $0k $14k $17k $81k $204k $5k $35k $14k $18k $137k $39k $3k $52k $13k $2k $40k $37k $5k $24k $1k $4k $40k $30k $10k $35k $15k $106k $7k $45k $20k $20k $0k $15k $26k $0k $65k $3k $16k $25k $40k $40k $9k $12k $40k $30k $38k $0k $28k $17k $28k $47k $94k $0k $0k $14k $0k $15k $0k $25k $47k $0k $40k $5k $36k $49k $35k $43k $14k $32k $30k $0k $0k $0k $5k $50k $16k $18k $50k $20k $1k $1k $0k $9k $40k $71k $19k $15k $15k $70k $0k $1k $6k $8k $52k $21k $17k $11k $12k $25k $42k $8k $24k $36k $65k $0k $35k $20k $6k $0k $30k $65k $51k $12k $75k $38k $7k $22k $34k $9k $17k $1,000k $21k $32k $4k $72k $36k $106k $2k $2k $1k $50k $19k $38k $0k $93k $18k $22k $9k $5k $52k $86k $13k $71k $0k $75k $0k $32k $25k $16k $0k $48k $16k $18k $85k $0k $0k $0k $50k $30k $15k $40k $44k $52k $28k $0k $74k $49k $8k $38k $20k $17k $8k $42k $52k $18k $25k $80k $1k $32k $11k $15k $17k $23k $37k $0k $17k $0k $50k $14k $0k $15k $2k $11k $43k $0k $53k $12k $16k $10k $41k $33k $45k $24k $30k $20k $10k $22k $30k $21k $43k $35k $12k $65k $15k $21k $27k $25k $20k $30k $20k $4k $42k $2k $1k $63k $32k $0k $0k $26k $57k $0k $18k $10k $0k $50k $9k $0k $0k $40k $4k $60k $52k $6k $14k $0k $0k $51k $0k $52k $8k $67k $44k $11k $11k $48k $24k $0k $6k $121k $20k $35k $2k $33k $0k $20k $56k $15k $80k $17k $2k $126k $15k $55k $0k $0k $0k $87k $14k $40k $30k $12k $57k $25k $0k $7k $0k $12k $16k $14k $30k $42k $0k $22k $0k $20k $60k $7k $3k $16k $9k $100k $0k $0k $7k $15k $32k $7k $53k $0k $34k $89k $10k $10k $40k $13k $0k $15k $10k $25k $73k $62k $0k $10k $26k $44k $26k $30k $42k $120k $0k $14k $42k $110k $85k $5k $15k $0k $111k $6k $32k $10k $1k $2k $24k $15k $30k $56k $0k
+                </div>
+                <div id = "distributions-text" class="opacity-transition">
+                    <div class='inner-distributions-text'><i>Distributions</i></div>
+                </div>
+            </div>
+            <div class = 'html-section-2 html-section'>
+                <div class="question-wrapper opacity-transition">
+                    Who made more at age 25, millenials or baby boomers?
+                </div>
+            </div>
+            <div class = 'html-section-3 html-section'>
+                <div id = 'pew-link' class = 'large-image-wrapper'>
+                    <a class = 'link-wrapper' href="https://www.pewresearch.org/fact-tank/2018/12/11/young-adult-households-are-earning-more-than-most-older-americans-did-at-the-same-age/" target="_blank">
+                        <div class = 'headline-wrapper'>
+                            <picture>
+                                <source srcset = 'images/mobile-images/pew-mobile.png' media = 'screen and (orientation:portrait)'>
+                                <source srcset = 'images/desktop-images/pew-desktop.png'>
+                                <img class = 'headline-picture' src="images/desktop-images/pew-desktop.png">
+                            </picture>
+                            <div class = 'link-icon-wrapper'>
+                                <svg viewBox="-3 -3 24 24" width="100%" height="100%" preserveAspectRatio="xMinYMin"><path class = 'link-stroke' d='M3.19 9.345a.97.97 0 0 1 1.37 0 .966.966 0 0 1 0 1.367l-2.055 2.052a1.932 1.932 0 0 0 0 2.735 1.94 1.94 0 0 0 2.74 0l4.794-4.787a.966.966 0 0 0 0-1.367.966.966 0 0 1 0-1.368.97.97 0 0 1 1.37 0 2.898 2.898 0 0 1 0 4.103l-4.795 4.787a3.879 3.879 0 0 1-5.48 0 3.864 3.864 0 0 1 0-5.47L3.19 9.344zm11.62-.69a.97.97 0 0 1-1.37 0 .966.966 0 0 1 0-1.367l2.055-2.052a1.932 1.932 0 0 0 0-2.735 1.94 1.94 0 0 0-2.74 0L7.962 7.288a.966.966 0 0 0 0 1.367.966.966 0 0 1 0 1.368.97.97 0 0 1-1.37 0 2.898 2.898 0 0 1 0-4.103l4.795-4.787a3.879 3.879 0 0 1 5.48 0 3.864 3.864 0 0 1 0 5.47L14.81 8.656z'/></svg>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div id = 'vox-link' class = 'large-image-wrapper'>
+                    <a class = 'link-wrapper' href="https://www.vox.com/2014/12/4/7329207/millennials-incomes-falling" target="_blank">
+                        <div class = 'headline-wrapper'>
+                            <picture>
+                                <source srcset = 'images/mobile-images/vox-mobile.png' media = '(orientation:portrait)'>
+                                <source srcset = 'images/desktop-images/vox-desktop.png'>
+                                <img class = 'headline-picture' src="images/desktop-images/vox-desktop.png">
+                            </picture>
+                            <div class = 'link-icon-wrapper'>
+                                <svg viewBox="-3 -3 24 24" width="100%" height="100%" preserveAspectRatio="xMinYMin"><path class = 'link-stroke' d='M3.19 9.345a.97.97 0 0 1 1.37 0 .966.966 0 0 1 0 1.367l-2.055 2.052a1.932 1.932 0 0 0 0 2.735 1.94 1.94 0 0 0 2.74 0l4.794-4.787a.966.966 0 0 0 0-1.367.966.966 0 0 1 0-1.368.97.97 0 0 1 1.37 0 2.898 2.898 0 0 1 0 4.103l-4.795 4.787a3.879 3.879 0 0 1-5.48 0 3.864 3.864 0 0 1 0-5.47L3.19 9.344zm11.62-.69a.97.97 0 0 1-1.37 0 .966.966 0 0 1 0-1.367l2.055-2.052a1.932 1.932 0 0 0 0-2.735 1.94 1.94 0 0 0-2.74 0L7.962 7.288a.966.966 0 0 0 0 1.367.966.966 0 0 1 0 1.368.97.97 0 0 1-1.37 0 2.898 2.898 0 0 1 0-4.103l4.795-4.787a3.879 3.879 0 0 1 5.48 0 3.864 3.864 0 0 1 0 5.47L14.81 8.656z'/></svg>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div id = 'gq-link' class = 'large-image-wrapper'>
+                    <a class = 'link-wrapper' href="https://www.gq.com/story/ok-boomer-broke-millennials" target="_blank">
+                        <div class = 'headline-wrapper'>
+                            <picture>
+                                <source srcset = 'images/mobile-images/gq-mobile.png' media = '(orientation:portrait)'>
+                                <source srcset = 'images/desktop-images/gq-desktop.png'>
+                                <img class = 'headline-picture' src="images/desktop-images/gq-desktop.png">
+                            </picture>
+                            <div class = 'link-icon-wrapper'>
+                                <svg viewBox="-3 -3 24 24" width="100%" height="100%" preserveAspectRatio="xMinYMin"><path class = 'link-stroke' d='M3.19 9.345a.97.97 0 0 1 1.37 0 .966.966 0 0 1 0 1.367l-2.055 2.052a1.932 1.932 0 0 0 0 2.735 1.94 1.94 0 0 0 2.74 0l4.794-4.787a.966.966 0 0 0 0-1.367.966.966 0 0 1 0-1.368.97.97 0 0 1 1.37 0 2.898 2.898 0 0 1 0 4.103l-4.795 4.787a3.879 3.879 0 0 1-5.48 0 3.864 3.864 0 0 1 0-5.47L3.19 9.344zm11.62-.69a.97.97 0 0 1-1.37 0 .966.966 0 0 1 0-1.367l2.055-2.052a1.932 1.932 0 0 0 0-2.735 1.94 1.94 0 0 0-2.74 0L7.962 7.288a.966.966 0 0 0 0 1.367.966.966 0 0 1 0 1.368.97.97 0 0 1-1.37 0 2.898 2.898 0 0 1 0-4.103l4.795-4.787a3.879 3.879 0 0 1 5.48 0 3.864 3.864 0 0 1 0 5.47L14.81 8.656z'/></svg>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class = 'html-section-4 html-section-5 html-section-8 html-section'>
+                <div class="question-wrapper opacity-transition">
+                    <i>Initial approach: Compare summary statistics</i>
+                </div>
+                <div class="icon-div-wrapper">
+                    <div id = 'boomers-wrapper' class = 'users-wrapper'>
+                        <div class = 'title-div'>
+                            25 year-old boomers
+                        </div>
+                        <div id = 'real-phantom-wrapper-0' class = 'phantom-wrapper'>
+                            <div class="inner-user-div">
+                                <div class = 'inner-div boomer-2-div opacity-transition'>
+                                    <div class = 'inner-text-div original-text-div'>$40k</div>
+                                    <div id = 'toggleable-0-0' class = 'inner-text-div mean-example-div opacity-transition boomer-example-income two-lowest toggleable'><span class = 'two-lowest-original'>$50k</span><span class="two-lowest-updated">$0k</span></div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon boomer-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                                <div class = 'inner-div boomer-2-div opacity-transition'>
+                                    <div class = 'inner-text-div original-text-div'>$42k</div>
+                                    <div  id = 'toggleable-0-1' class = 'inner-text-div mean-example-div opacity-transition boomer-example-income two-lowest toggleable'><span class = 'two-lowest-original'>$50k</span><span class="two-lowest-updated">$0k</span></div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon boomer-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div> 
+                                <div class = 'inner-div boomer-2-div not-two-lowest-boomers third-boomer opacity-transition'>
+                                    <div class = 'inner-text-div original-text-div'>$10k</div>
+                                    <div id = 'toggleable-0-2' class = 'inner-text-div mean-example-div opacity-transition boomer-example-income three-highest-boomers toggleable'>$50k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon boomer-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div> 
+                                <div class = 'inner-div boomer-2-div not-two-lowest-boomers opacity-transition'>
+                                    <div class = 'inner-text-div original-text-div'>$13k</div>
+                                    <div id = 'toggleable-0-3' class = 'inner-text-div mean-example-div opacity-transition boomer-example-income three-highest-boomers toggleable'>$50k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon boomer-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                                <div class = 'inner-div boomer-2-div not-two-lowest-boomers opacity-transition'>
+                                    <div class = 'inner-text-div original-text-div'>$27k</div>
+                                    <div id = 'toggleable-0-4' class = 'inner-text-div mean-example-div opacity-transition boomer-example-income three-highest-boomers toggleable'>$50k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon boomer-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                            </div>
+                            <div id = 'phantom-user-div-0' class="phantom-div inner-user-div">
+                                <div class = 'inner-div opacity-transition'>
+                                    <div class = 'inner-text-div'>$40k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon boomer-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                                <div class = 'inner-div opacity-transition'>
+                                    <div class = 'inner-text-div'>$42k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon boomer-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div> 
+                                <div class = 'inner-div opacity-transition'>
+                                    <div class = 'inner-text-div'>$10k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon boomer-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div> 
+                                <div class = 'inner-div opacity-transition'>
+                                    <div class = 'inner-text-div'>$13k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon boomer-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                                <div class = 'inner-div opacity-transition'>
+                                    <div class = 'inner-text-div'>$27k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon boomer-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="millennials-wrapper" class = 'users-wrapper'>
+                        <div class = 'title-div'>
+                            25 year-old millennials
+                        </div>
+                        <div id = 'real-phantom-wrapper-1' class = 'phantom-wrapper'>
+                            <div class="inner-user-div">
+                                <div class = 'inner-div millennial-1-div  not-two-lowest-boomers opacity-transition'>
+                                    <div class = 'inner-text-div original-text-div'>$80k</div>
+                                    <div class = 'inner-text-div mean-example-div opacity-transition millennial-1'>$50k</div>
+                                    <div id = 'toggleable-1-0' class = 'inner-text-div mean-example-div-2 millennial-1-final toggleable'>$100k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon millennial-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                                <div class = 'inner-div millennial-2-div  not-two-lowest-boomers opacity-transition'>
+                                    <div class = 'inner-text-div original-text-div'>$13k</div>
+                                    <div class = 'inner-text-div mean-example-div opacity-transition millennial-group-2'>$50k</div>
+                                    <div id = 'toggleable-1-1' class = 'inner-text-div mean-example-div-2 toggleable'>$40k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon millennial-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div> 
+                                <div class = 'inner-div millennial-2-div  not-two-lowest-boomers opacity-transition'>
+                                    <div class = 'inner-text-div original-text-div'>$32k</div>
+                                    <div class = 'inner-text-div mean-example-div opacity-transition millennial-group-2'>$50k</div>
+                                    <div id = 'toggleable-1-2' class = 'inner-text-div mean-example-div-2 toggleable'>$40k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon millennial-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div> 
+                                <div class = 'inner-div millennial-2-div  not-two-lowest-boomers opacity-transition'>
+                                    <div class = 'inner-text-div original-text-div'>$16k</div>
+                                    <div class = 'inner-text-div mean-example-div opacity-transition millennial-group-2'>$50k</div>
+                                    <div id = 'toggleable-1-3' class = 'inner-text-div mean-example-div-2 toggleable'>$40k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon millennial-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                                <div class = 'inner-div millennial-2-div  not-two-lowest-boomers opacity-transition'>
+                                    <div class = 'inner-text-div original-text-div'>$0k</div>
+                                    <div class = 'inner-text-div mean-example-div opacity-transition millennial-group-2'>$50k</div>
+                                    <div id = 'toggleable-1-4' class = 'inner-text-div mean-example-div-2 toggleable'>$40k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon millennial-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                            </div>
+                            <div id = 'phantom-user-div-1' class="inner-user-div phantom-div">
+                                <div class = 'inner-div opacity-transition'>
+                                    <div class = 'inner-text-div'>$80k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon millennial-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                                <div class = 'inner-div opacity-transition'>
+                                    <div class = 'inner-text-div'>$13k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon millennial-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div> 
+                                <div class = 'inner-div opacity-transition'>
+                                    <div class = 'inner-text-div'>$32k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon millennial-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div> 
+                                <div class = 'inner-div opacity-transition'>
+                                    <div class = 'inner-text-div'>$16k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon millennial-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                                <div class = 'inner-div opacity-transition'>
+                                    <div class = 'inner-text-div'>$0k</div>
+                                    <div class = 'inner-inner-div'><svg class = 'earner-icon millennial-icon'><use xlink:href="#icon"></use></svg></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="bottom-info" class='info-text'>
+                        <div id = 'mean-text'>
+                            <span id = 'updating-median-0' class = 'median-example'>Median: $50k</span>
+                            <span class = 'bottom-mean-text mean-example-1 boomer-text'>Mean: $26.4k</span>
+                            <span id = 'updating-mean-0' class = 'bottom-mean-text boomer-text mean-example-2 mean-example-3 boomer-mean-50k opacity-transition'>Mean: $50k</span>
+                            <span class = 'vs-padding'></span>
+                            <span id = 'less-than-comparitor' class = 'comparitor comparitor-1 opacity-transition'>&#60;</span>
+                            <span id = 'greater-than-comparitor' class = 'comparitor comparitor1'>&#62;</span>
+                            <span id = 'equals-comparitor' class = 'comparitor comparitor0 opacity-transition'>=</span>
+                            <span class = 'vs-padding'></span>
+                            <span class = 'bottom-mean-text mean-example-1 millennial-text'>Mean: $28.2k</span>
+                            <span class = 'bottom-mean-text millennial-text mean-example-2 millennial-mean-50k opacity-transition'>Mean: $50k</span>
+                            <span id = 'updating-mean-1' class = 'bottom-mean-text millennial-text mean-example-3 millennial-mean-52k opacity-transition'>Mean: $52k</span>
+                            <span id = 'original-millennial-median' class = 'median-example'>Median: $50k</span>
+                            <span id = 'updating-median-1'>Median: $40k</span>
+                        </span>
+                        </div>
+                    </div>
+                </div>
+                <div id = 'mean-equation-wrapper' class='opacity-transition'>
+                    mean(x) = <sup>&sum;x</sup>&frasl;<sub>n</sub>
+                </div>         
+            </div>
+            <div class = 'html-section-6 html-section'>
+                <div class="dollar-container low-earner-dollars no-selection">
+                    <div class="dollars low-dollars">
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                    </div>
+                </div>
+                <div class="dollar-container high-earner-dollars">
+                    <div class="dollars high-dollars">
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                        <span>$</span>
+                    </div>
+                </div>
+                <div class="earners-wrapper lower-earners-wrapper opacity-transition">
+                    <div class = 'inner-lower-earners-wrapper'>
+                        <div class="detailed-earned low-earner chef">
+                            <svg width="100%" height="100%" viewBox="0 0 480 480">
+                                <path class="earner-fill" d="M143,155.71c1.12-16.16-4.8-69.36,14.5-105.49s145.92-36.81,165.62.46,14.91,87.87,16.33,105c1,0,1.92.08,2.83.18A20,20,0,0,1,359.42,170c2.08,6.69,1.46,14-.21,20.74A61.47,61.47,0,0,1,348.62,213c-.49.64-1,1.28-1.52,1.9,4,10,10.89,20.58,22.37,31.72l-3,8a130.77,130.77,0,0,1-29.37-7.42c.64,11.45,3.73,22.26,11.33,34l-4.94,6.93a134.25,134.25,0,0,1-37.06-23.21c-8.57,10.79-19.08,20.06-31.48,26.06-28.13,13.62-61,7.56-83.82-12.49a106,106,0,0,1-13.71-14.63,134.07,134.07,0,0,1-38.24,24.27l-4.94-6.93c7.4-12.39,11.26-23.37,12.92-33.24a129.61,129.61,0,0,1-27.29,6.65l-3-8c11-10.65,17.7-20.82,21.81-30.4a57.66,57.66,0,0,1-9.51-14.89,55.17,55.17,0,0,1-5.18-21c-.32-12.46,5.78-23.33,18.92-24.56Zm116.93-21.88c-24.67,26.06-45.47,37.41-81.59,42-.68,5.25-3.39,8.57-9.86,9.23-5.18.52-7.31-2.62-9.4-5.69-1.92-2.84-3.69-4.54-7.4-4.07-6,.75-4.83,8.12-4,12.29,1.7,8.29,8.22,22.42,17.69,23.85,5,.76,9,1.71,10.9,7a109.69,109.69,0,0,0,14.53,28.32c7.05,9.65,16.47,18.42,27.52,23.65a56.41,56.41,0,0,0,56.56-5.05,80.52,80.52,0,0,0,18.85-18.6,109.69,109.69,0,0,0,14.53-28.32c2.46-6.95,7.16-5.23,13-7.54,8.93-3.56,15.18-17.06,16.11-26.45.37-3.73.56-8.49-4.46-9.12-3.71-.47-5.47,1.23-7.39,4.06-2.09,3.08-4.22,6.22-9.4,5.7-8.13-.83-10.14-5.51-10-12.76.09-11.59.26-23.13.62-34.71-15.84-1.91-31.36-3.16-46.78-3.76Zm-81-75.6a105.19,105.19,0,0,0-8.45,54.71c50.84-8.48,88.94-8.61,139.78-.06a105.72,105.72,0,0,0-8.5-54.47C270.6,43.2,200.13,46.13,178.86,58.23ZM353.21,353.66c13.8,11.65,25.15,20.88,32.57,37.94C389.53,400.22,402.61,436,390,436H353.21V353.66Zm-225.16,0c-13.8,11.65-25.15,20.88-32.57,37.94C91.73,400.22,78.65,436,91.27,436h36.78V353.66ZM85.73,457.08c-36.23,0-18.29-44.72-13.4-63C86.94,339.54,130.6,320.65,171.77,291c15.1,16.51,40.56,27.36,69.43,27.36s54.4-10.88,69.49-27.44c41.19,29.68,86.46,48.18,99.55,103.17,4.37,18.39,17.89,63-17.58,63Z"/>
+                            </svg>
+                        </div>
+                        <div class="detailed-earned low-earner nurse">
+                            <svg width="100%" height="100%" viewBox="0 0 480 480">
+                                <path class="earner-fill" d="M144.9,160.83l-.3-15.05c-.65-32.79,3.49-59.6,17.54-78.29,22.37-29.71,65-52.67,104.07-21.73,62.79-2.33,68,66.53,67,100l-.44,14.92c8.8.16,16.44,5.05,19.14,13.72,2,6.4,1.4,13.43-.2,19.83a58.62,58.62,0,0,1-10.12,21.24c-5.38,7-12.33,12.32-20,13.51l-.31.05a149.11,149.11,0,0,1-8.52,18.69c-9.53,17.46-23.44,33.53-41.57,42.31-26.9,13-58.29,7.23-80.16-11.95-14.89-13.05-25.36-30.65-32.29-49.05a25.66,25.66,0,0,1-9-3.21c-8.21-4.75-14.09-13-17.94-21.51a52.54,52.54,0,0,1-5-20.1c-.14-5.49.9-11.22,4.13-15.76a19,19,0,0,1,14-7.64ZM244,233.43a22.14,22.14,0,0,1-4-3,22.41,22.41,0,0,1-4,3c-13.59,7.84-21.69-2.25-38.45,7.42a21.87,21.87,0,0,1,9.87-25.67c13.63-7.87,51.59-7.87,65.22,0a21.86,21.86,0,0,1,9.87,25.67c-16.76-9.67-24.86.42-38.44-7.42ZM261.2,113.17c-20.51,28.35-47.72,37.3-82.5,42.57.14,6.95.12,13.91.18,20.86.05,3.53-.33,6.29-1.74,8.36s-3.89,3.44-7.87,3.84c-5,.51-7-2.5-9-5.44-1.84-2.71-3.53-4.34-7.08-3.89-5.75.72-4.62,7.76-3.79,11.76a39.81,39.81,0,0,0,5.14,12.71c2.57,4.17,6.56,9.31,11.78,10.1,4.83.73,8.65,1.63,10.43,6.66a104.66,104.66,0,0,0,13.89,27.09c6.75,9.23,15.75,17.61,26.32,22.62a55.42,55.42,0,0,0,8.73,3.26,53.48,53.48,0,0,0,45.36-8.1,77,77,0,0,0,18-17.78A104.66,104.66,0,0,0,303,220.7c2.36-6.64,6.86-5,12.41-7.21,5.81-2.31,9.69-8.64,12.14-13.93a35.61,35.61,0,0,0,3.27-11.36c.35-3.57.54-8.13-4.26-8.73-3.55-.45-5.24,1.18-7.08,3.89-2,2.94-4,5.95-9,5.44-7.78-.79-9.7-5.26-9.61-12.2.08-10.33,0-20.68.51-31,.3-6.29.32-10.47-3.33-15.37a25.35,25.35,0,0,0-3.53-3.84c-8.63-7.75-21.16-11.42-33.33-13.22Zm36.18,278.64h54.09a2.06,2.06,0,0,1,2,2.06v15.06a2.05,2.05,0,0,1-2,2.05H297.38a2.06,2.06,0,0,1-2.06-2.05V393.87a2.07,2.07,0,0,1,2.06-2.06ZM240,344l57.95-55c36.8,38.29,98.36,42.05,113.83,99.81C416.45,406.19,433.61,449,399,449H81c-34.65,0-17.49-42.77-12.82-60.22,15.47-57.76,77-61.52,113.83-99.81L240,344Z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class = 'inner-lower-earners-wrapper'>
+                        <div class="detailed-earned low-earner businesswoman">
+                            <svg width="100%" height="100%" viewBox="0 0 480 480">
+                                <path class="earner-fill" d="M197.9,292.4a87.15,87.15,0,0,1-9.76-7.25c-16,12.2-50,32.1-67.79,38.68C120,248.13,122.63,169.65,143.84,94c25.06-89.43,173.31-90.31,195,0,18.39,76.64,20.45,155.06,19.09,229.88-17.68-6.56-50.37-26.43-66.29-38.57A86.88,86.88,0,0,1,282,292.4c-26.21,16.74-57.87,16.74-84.09,0Zm92.94,10.86c41.64,30.42,112.48,40.88,125.72,97.18,4.42,18.78,6.34,53-29.5,53h-133l19.76-80c-20.5,9.47-46.68,9.39-67.23.1l19.46,79.91H92.35c-36.6,0-33.19-34.37-28.26-53,14.8-55.91,84.09-66.76,125.73-97.18l9,37.34c24,25.35,59.73,24.6,83.1-.94l8.9-36.4Zm-31.33-178c21.09,12.65,60.9,19.19,44.12,94.2-3.63,16.2-13.77,31.29-25.91,42.62-22.26,20.79-53.29,20.79-75.55,0-12.14-11.33-20.89-26.8-25.9-42.62-19.44-61.34,27-65.27,83.24-94.2Z"/>
+                            </svg>
+                        </div>
+                        <div class="detailed-earned low-earner construction-worker">
+                            <svg width="100%" height="100%" viewBox="0 0 480 480">
+                                <path class="earner-fill" d="M202.17,310.41c-15.26-9.63-26.82-24.66-34.9-40.54a282,282,0,0,1-14.54-35h-5.28c-7.4,0-12.35-6.14-13.46-13.46l-5.61-36.87h-2.6c-20,0-20-30.37,0-30.37h3C129.24,89.51,150.9,52,205.14,41.7a20.15,20.15,0,0,1,19.72-16.26h30.29a20.14,20.14,0,0,1,19.74,16.43c53.7,10.54,75.41,48,76.35,112.31h3c20,0,20,30.37,0,30.37h-.52l-5.61,36.87c-1.12,7.32-6.06,13.46-13.47,13.46h-6.76a283.23,283.23,0,0,1-14.52,35c-8.08,15.88-19.64,30.91-34.9,40.54-23.77,15-52.5,15-76.27,0Zm2.6-224.55c0,11.56,19,11.56,19,0V53.71a10,10,0,0,1,10-10H246.2a10,10,0,0,1,10,10V85.86c0,11.56,19.05,11.56,19.05,0V65.64c36.54,10.6,50.21,40.46,51.94,89.59H152.78c1.43-49.41,15-79.33,52-89.77v20.4Zm110.59,98.69H165.19c.89,28.9,18.94,78.45,40.85,98.69,20.19,18.65,48.34,18.65,68.53,0,21.93-20.26,39.89-69.77,40.79-98.69Zm-38,209.37h70.72v23.2H277.4v-23.2Zm26.33-81.61c37.77,27.28,102.37,33.34,114.38,83.84,4,16.85,8.25,58.41-24.26,58.41H85.71c-33.19,0-27.6-41.69-23.13-58.41C76,346,139.19,339.59,177,312.31c25.92,36.71,102.55,36.8,126.77,0Z"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="earners-wrapper monopoly-man-wrapper opacity-transition">
+                    <div class="detailed-earned high-earner">
+                        <svg width='100%' height='100%' viewBox="0 0 360 360"><path d="M118.7,108.84c-3.39-10.14-2.32-18.06,3.37-25.11,1.56-1.93.14-3.41-.63-5A55.82,55.82,0,0,0,110,62.16c-4.3-4.09-4.3-8.43-1.83-13.31,7.75-15.34,36.13-36.88,62.93-32.76,3.66.56,5.73,2.27,7,5.81,3.77,10.47,9.54,19.79,16.46,28.52,3.72,4.7,7,4.85,11,.86.72-.71,1.56-1.31,2.3-2,2.1-2,4.28-6,7.32-2.88,2.78,2.89-1.39,5.2-2.89,7.61-1.7,2.72-6.82,3.1-6.25,6.7.41,2.63,3.58,4.77,5.39,7.23a53.49,53.49,0,0,1,10.76,28.88c.11,1.71-1,4.23,1,5,2.27.86,3.38-1.61,4.65-3.13.83-1,.63-3.33,2.56-2.86,2.1.5,1.45,2.7,1.48,4.19.22,9.13-3.44,16.51-11.41,20.88-4.72,2.58-6.81,7-9.64,10.81-2.19,3,1.47,3,3.07,3.5,15.44,4.5,33.27-4.72,40-20.62.77-1.81.82-3.85,3.22-4.81,2.87-1.16,2.75-3.59,1.79-6.2-2.06-5.62-2.31-11.25,1-16.5,2-3.15-.63-4.51-2.13-6.15-9.53-10.41-20.53-19.29-30.68-29.08-3.39-3.27-6.71-6.61-9.06-10.73a21.47,21.47,0,0,1,2.95-25.58c6-6.46,13.93-8.17,21.73-4.54a16,16,0,0,1,4.5,3.08c3.09,3.1,6.3,6.45,2.69,11.1-3.49,4.49-7.15,2.23-10.75-.1-3-1.95-6.42-2.58-8.92.34-3,3.5-2,7.47.9,10.56,7.51,8.07,15.23,16,22.91,23.86,2.42,2.5,4.94,4.88,7.44,7.3,5,4.78,8.94,9.66,17.86,8.1,7.92-1.39,13.49,5.19,17.67,12.15,3.1,5.14,6.39,9.68,3.55,16.15-.85,1.93,1.78,3.45,3.2,4.85q21.33,21.13,42.71,42.23a21.61,21.61,0,0,1,3.92,4.65c1.35,2.45.63,4.76-1.7,6.42-2.53,1.81-4.51.75-6.49-1.13q-17.11-16.25-34.3-32.41c-3.86-3.64-7.68-7.33-11.66-10.84-1.38-1.21-2.52-4.09-4.86-2.5-2.65,1.79-6.68,5-5.75,7.21,2,4.63-1,6-3.25,7.89s-2.89,3.35.19,4.87,2.35,3.33.57,5.35c-15,17-32.8,29.43-55.16,34.46-3.93.88-6.26,2.68-7.41,6.27-2.35,7.34,1.11,18.65,7.11,23.51,5,4.06,9.56,3.82,16.22-.73,1.35-.92,2.67-3.57,4.48-1.51,1.41,1.61-.52,3.42-1.56,4.84-5.05,6.91-12.09,11-20.14,13.19-5,1.35-5.72,3.42-3.2,7.75A79.38,79.38,0,0,1,229.34,240c5.6,14.9,1.38,28.55-11.59,37.63-15.14,10.59-29.82,21.61-39,38.24-1.42,2.56-3,3.11-5.25.87-.84-.84-2.2-2.16-2.94-1.94-7.85,2.28-6.54-3.92-6.92-7.75-.65-6.69-.58-13.46-.87-20.19-.09-1.94.61-4.49-2.09-5.13-2.15-.51-4.69-.71-6.32,1.26-3.37,4.07-6.93,8.11-5.08,14.17,1,3.23-.12,6.48-.46,9.72-1,9.63-1.52,19.25,3.88,28a21,21,0,0,0,13.43,9.94c1.45.33,3.91,0,3.6,2.28s-2.54,3.32-4.74,2.74c-7-1.84-13.59-4.39-17-11.66-4.41-9.29-4-19.08-3.35-28.9.36-5.62,1.61-10.93-1.56-16.6-2.86-5.09,6.21-16.3,12.33-15.71,4.71.45,8.81,1,11.16-4.43.68-1.57,2.94-2,4.67-2.67,4.82-1.92,9.75-3.86,9.06-10.59a2.6,2.6,0,0,1,.63-1.68c1.44-1.8,4.33-2.65,3.52-5.87-1-3.9-3.19-7-5.75-10-.76-.88-1.6-2.19-3-1.41s-.71,2.08-.25,3.2c2.3,5.58.59,10.53-2.87,14.86-5.57,7-15.39,5.2-18.89-3.29,2.27-.9,3.32,1.08,4.6,2.12,2.6,2.11,5.22,2.47,7.73.24s5.22-5,4.4-8.25c-.73-2.91-4.59-1.58-7.06-2.15-1.71-.4-3.72.41-5.07-1.19a1.34,1.34,0,0,1,1.19-1.83c12.63-1.74,14-12.59,17.52-21.66,3.95-10.16,4.38-20.39-.47-30.35-3.41-7-8.26-7.53-13.33-1.66a32.37,32.37,0,0,0-7.81,18.93c-.46,5.68,0,11.44-.28,17.15-.1,1.78,2.56,7.33-3.82,3.66-2.05-1.18-2.64,2-2.87,3.59a44.2,44.2,0,0,0,.53,15.84c.48,2.15,1.43,4.28-.07,8l-19.13-30c-2.23,3.88-.15,5.63,1,7.47,2.87,4.46,5.85,8.85,8.79,13.26,2,3,1,5-2,6.31a15.56,15.56,0,0,1-13.61-.11c-11.16-5.33-16.88-14.76-18.3-26.52-.62-5.19-2.76-6.48-7.23-7.68-21.07-5.67-34.88-26.76-30.75-46.42,2.55.43,2.23,2.82,2.48,4.29,3.33,20,28.37,21.41,39.38,11.14,12.85-12,13.73-30.76,2-43.79-10.26-11.43-23.83-16.84-38-21.32-3-1-6.52-.32-7.86-5.69-.58-2.34-8.42-4.36-13.65-4.27a102.22,102.22,0,0,0-32.37,6.2c-8.75,3.08-13.08-.75-11.95-10.11a17.63,17.63,0,0,1,8.48-13.41,96.41,96.41,0,0,1,32.46-14c3.58-.78,5.88-2.3,7.17-5.67a12.94,12.94,0,0,1,5.19-6.65c2.32-1.44,4.85-2.57,7.49-1.09s1,4,.87,6.11C68.41,86.09,75,92,85.85,93.11c7.73.79,14.09,5.15,20.75,8.59C110.19,103.55,113.57,105.79,118.7,108.84ZM226,106.4c-3.89.6-7.75,1.83-11.49.43-5.69-2.14-11.31-3.56-17.2-.75a2.38,2.38,0,0,1-3.26-.72c-.87-1.38.13-2.29,1.08-3.08,1.69-1.42,1.85-3,.81-4.88-.7-1.28-2.67-2.88-.5-4.12,1.85-1.06,4,.39,4.59,2,2.18,6.22,8.09,5.2,12.55,7,3.71,1.46,4.63-.31,4.61-3.76A48,48,0,0,0,209.47,73c-1.61-2.59-3.57-5.07-7.3-4.64-1.31.15-2.55-.12-1.89-2,2-5.62-1.89-4.18-4.4-3.39-5.33,1.66-10.8,2.15-16.28,2.75C168.42,67,157.26,68.35,147,73.3c-9.85,4.73-19.35,10-23.62,21-2.43,6.25-.6,11,4.75,13.3-2.88-16.07,14.1-34,34.71-35.48l-6.94,4c-6.53,3.85-13.2,7.61-17.24,14.33-2.74,4.57-5.49,9.51,1.55,13.17-7.08,4.81-7.76,7-3.86,11.64a8.62,8.62,0,0,0,9.35,3c1.92-.51,3.23-.67,4.47,1.59,5.69,10.37,15.33,15.63,26.18,18.65,11.77,3.28,25.15-1.59,31.73-10.81.67-.94,2-1.78,1.39-3.12s-2.17-1.14-3.3-1a28.27,28.27,0,0,0-12.88,4.77c-9.76,6.53-23.35,5.29-31.46-3.11-2.89-3-5.6-6.36-5.08-11.28,11.3,6.1,11.33,6.13,21.19-3.67a22.25,22.25,0,0,1,8.88-5.24c1.35-.45,3-.82,3.44,1.21.31,1.57-1.06,1.94-2.29,2.26a14.3,14.3,0,0,0-8.12,5.16c-3.56,4.78-7.31,9.14-14.44,9.24,8,7.52,19.32,7.5,27.66-.12,4-3.62,7.15-5.11,12.77-3.45C215.05,122,223.61,116.11,226,106.4ZM159.3,136.09a19.8,19.8,0,0,0,1.84,11.06c3.89,8.72,8.71,17.15,8.74,27.13a3.36,3.36,0,0,0,1.52,3.18c7.17,3.78,9.74,10.61,11.95,17.73.4,1.27,1.41,3.49,2.79,1.7,4.11-5.31,5.32-.84,7.28,1.73.94,1.24,1.56,3.22,3.55,2.88s2.57-2.45,3.28-4.1.23-3.53-.39-5.33a48.47,48.47,0,0,1,.61-33.55,30.35,30.35,0,0,0,2-13.82c-.4-3.86-1.59-5.49-5.84-3.56-5.69,2.58-11.84,2.94-18,2.06C171.87,142.25,165.77,139.49,159.3,136.09ZM56.86,97.38c-1.65-.66-2.24-.72-2.32-1a22.1,22.1,0,0,1-1.37-4.63c-.33-2.71-1.77-3.43-4.22-3A85.7,85.7,0,0,0,16,103.05c-4,2.86-5.62,7.84-3.67,12,2.24,4.77,6.73,1.18,9.7,0a80.7,80.7,0,0,1,34.75-5.68c7.56.49,14.65-9.32,12.36-16.63-1.28-4.08-3.9-7.64-4.28-12.07-.14-1.6.87-4.3-1.54-4.6s-3.25,2.14-3.94,4.07C57.47,85.5,56,90.94,56.86,97.38Zm100.8-76.23a59.89,59.89,0,0,0-23.44,9.77c-2.37,1.58-.43,3.19.73,4.51a76,76,0,0,1,9.88,13.12c1.32,2.38,3,3.24,5.48,1.8,5.3-3.15,11.16-4.88,17-6.66,2.64-.81,3.2-1.9,1.91-4.36-2.64-5-5.77-9.81-7.35-15.37A3.62,3.62,0,0,0,157.66,21.15Zm35,36.3c-10.38,0-11.6.56-14.27-5.44-3.51-7.85-8.42-5.3-13.68-4a38.81,38.81,0,0,0-5.17,1.84A64.34,64.34,0,0,0,126.73,77.9c2.46-.64,4.7-1.9,5.62-4.08,2.61-6.25,8.32-9.33,13-13.46,2.41-2.12,4.87-2.64,6,1.14,1.07,3.49,3.17,3.49,6.12,2.82,9.33-2.13,18.73-3.92,28.36-4.19A9.52,9.52,0,0,0,192.66,57.45Zm26.53-29.86c-.12,8.51,2.84,13.3,7.07,17.38Q244.08,62.16,262,79.22a11.67,11.67,0,0,0,.89.84c1.12.87,2.33,2.14,3.65.57,1-1.24-.15-2.24-1-3.1-1.69-1.78-3.48-3.45-5.12-5.26-10.81-11.9-23.93-21.58-33.53-34.63-4.2-5.73-4.3-11.29-.68-15.09,4.42-4.65,9.61-5,15.92-1.11,1.43.88,3,3.2,4.64,1.09,1.54-1.93.1-3.91-1.64-5.19-4.56-3.35-9.19-5.92-15.19-3C223.31,17.54,219.5,22.49,219.19,27.59Zm68.72,83.56c7.3-2.46,13-11.63,10.1-16.19a64.65,64.65,0,0,0-12.76-15.09,3.07,3.07,0,0,0-2.71-1,1.57,1.57,0,0,0-1.19,2.31c1.8,5.06-1.56,8.47-3.91,12.21-1.61,2.56-4,4.76-4.05,8.08,0,1.4-.39,3.11,1.17,3.82,1.87.85,2.35-1.07,3.07-2.15,1.55-2.32,2.86-4.85,6.26-5.65.87,4.33-3.69,7.35-2.43,11.65,4.89-1.13,5.6-6.53,9.46-8.5C293.75,105.34,287.5,107.23,287.91,111.15Zm-13-32.29c-1.77,4.66-4.38,7.9-9.46,8.45-1.55.17-2.4,2.08-3,3.62-3.58,8.59,8.82,27.65,18.15,27.88,1.28,0,2.57-.26,3.11-1.51.78-1.79-.53-2.4-1.91-3.12-5.76-3.05-13-4.91-11.45-14a2.61,2.61,0,0,0-1.23-2c-6.41-3.59-2.15-4.09,1.36-5.32C276.85,90.63,278.48,85.74,274.93,78.86Zm24,31.56-1.38,1.43q23.74,22.64,47.5,45.26l1.12-1.16Zm-36.4,1.22c-2.16,1.3-2.54,2.35-1.72,3.53a52.12,52.12,0,0,0,13.6,13.7c1.63,1.09,3.26.37,4.12-1.21,1-1.88-.9-2.42-2-3.1-4.81-3-9.52-6.16-13-10.78A11.72,11.72,0,0,1,262.53,111.64ZM80.14,99.21c-.08-1.49-.5-2.4-1.58-2.75A2.26,2.26,0,0,0,76,97.58q-4.41,6.17-8.76,12.38c-.58.83-1.18,1.76-.15,2.67.83.74,2.09,1.05,2.79.37C74.11,108.9,76.85,103.68,80.14,99.21ZM125.21,72.3c.16-5.08-7.4-17.41-10.74-19a1.61,1.61,0,0,0-2.15.25,1.93,1.93,0,0,0-.06,2.73C116.37,61.4,120.5,66.48,125.21,72.3Zm45.17,3.75c1.24-.32,2.54-.3,2.37-2-.16-1.48-1.56-1.72-2.73-1.94-4.57-.87-7.94,3.54-7.15,10.31C166.32,77.22,166.3,77.13,170.38,76.05ZM145.13,91.2c-2.08-.1-5.07,1-4.37,3.65.39,1.46-.81,4.82,2.33,4.78a6.32,6.32,0,0,0,5.54-3.51C146.38,95.12,147.93,91.33,145.13,91.2Zm25.62.82a3.19,3.19,0,0,0,3.48,3.39,3,3,0,0,0,3.21-3c.17-2.15-1.07-3.34-3.16-3.8C172.32,88.9,170.78,89.89,170.75,92Zm36.18-12.55c-2-.27-3.1,1-3.3,2.81a3,3,0,0,0,2.85,3.38c1.92.28,2.93-1.07,3.42-3A3.21,3.21,0,0,0,206.93,79.47ZM173.49,158.1c6.46-3.68,12.65-7.49,19.66-1.07,1.7,1.56,3.59,1,4.35-1.24,1.2-3.46,2.13-7,3.15-10.53.24-.85,0-1.79-.81-2a2.48,2.48,0,0,0-2.12.56,10.31,10.31,0,0,0-1.88,3.74c-1,4.79-3.35,5-6.81,2.22-2.63-2.1-5.39-2.54-8.44-.64-3.65,2.29-8,5.68-7-3a2.11,2.11,0,0,0-2.11-2.48c-1.7,0-1.62,1.49-1.76,2.67-.38,3-.74,6.07-1.11,9.1C168.5,160.06,169.13,160.59,173.49,158.1ZM32.59,100.22c1.21-.57,3.09-1.08,2.07-2.94-.73-1.34-2.23-.54-3.26,0C26.73,99.68,22,102,18.84,106.62,23.42,104.5,28,102.39,32.59,100.22ZM33.92,107c.94-.33,2-.94,1.65-2.17-.5-1.67-1.85-1.24-3-.83-4.56,1.59-9.13,3.16-12.28,7.62C24.83,110.12,29.39,108.61,33.92,107Z"/></svg>
+                    </div>
+                </div>
+                <div class="median-text info-text opacity-transition">
+                    Median &asymp; 50th percentile
+                </div>
+            </div>
+            <div class = 'html-section-7 html-section'>
+                <div class="icon-div-wrapper">
+                    <div class = 'inner-div non-median opacity-transition'>
+                        <div class = 'inner-text-div median-example-text'>$10k</div>
+                        <div class = 'inner-inner-div median-icon'><svg class = 'earner-icon'><use xlink:href="#icon"></use></svg></div>
+                    </div>
+                    <div class = 'inner-div non-median opacity-transition'>
+                        <div class = 'inner-text-div median-example-text'>$20k</div>
+                        <div class = 'inner-inner-div median-icon'><svg class = 'earner-icon'><use xlink:href="#icon"></use></svg></div>
+                    </div>
+                    <div class = 'inner-div opacity-transition'>
+                        <div class = 'inner-text-div median-example-text'>$40k</div>
+                        <div class = 'inner-inner-div median-icon'><svg class = 'earner-icon'><use xlink:href="#icon"></use></svg></div>
+                    </div>
+                    <div class = 'inner-div non-median opacity-transition'>
+                        <div class = 'inner-text-div median-example-text'>$80k</div>
+                        <div class = 'inner-inner-div median-icon'><svg class = 'earner-icon'><use xlink:href="#icon"></use></svg></div>
+                    </div>
+                    <div class = 'inner-div non-median opacity-transition'>
+                        <div class = 'inner-text-div median-example-text'>$100k</div>
+                        <div class = 'inner-inner-div median-icon'><svg class = 'earner-icon'><use xlink:href="#icon"></use></svg></div>
+                    </div>
+                    <div class = 'half-text'>
+                        <span class="median-inner half-less-text inner-half-text opacity-transition">Half the data</span>
+                        <span class = 'median-inner median-arrows half-arrow-left opacity-transition'>
+                        <span class="median-inner half-median-text inner-half-text opacity-transition">Median</span>
+                        <span class = 'median-inner median-arrows half-arrow-right opacity-transition'>
+                        <span class="median-inner half-more-text inner-half-text opacity-transition">Half the data</span>
+                    </div>  
+                </div>
+            </div>    
+            <div class = 'html-section-9 html-section'>
+                <!-- <div id ='trimmed-mean' class = 'alternative-summary-stats'>Trimmed mean</div>
+                <div id="trimean" class = 'alternative-summary-stats'>Trimean</div>
+                <div id="weighted-mean" class = 'alternative-summary-stats'>Weighted mean</div>
+                <div id="mode" class = 'alternative-summary-stats'>Mode</div>
+                <div id="geometric-mean" class = 'alternative-summary-stats'>Geometric mean</div> -->
+                <div id = 'summary-stats-wrapper' class='opacity-transition'>
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Trimean" target='_blank'>Trimean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Winsorized_mean" target='_blank'>Winsorized mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Geometric_median" target='_blank'>Geometric median</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Interquartile_mean" target='_blank'>Interquartile mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Mid-range" target='_blank'>Midrange</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Truncated_mean" target='_blank'>Truncated mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Weighted_arithmetic_mean" target='_blank'>Weighted arithmetic mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Mode_(statistics)" target='_blank'>Mode</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Geometric_mean" target='_blank'>Geometric mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Centerpoint_(geometry)" target='_blank'>Tukey median</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Midhinge" target='_blank'>Midhinge</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Harmonic_mean" target='_blank'>Harmonic mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Root_mean_square" target='_blank'>Root mean square</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Simplicial_depth" target='_blank'>Simplicial depth</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Winsorized_mean" target='_blank'>Winsorized mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Trimean" target='_blank'>Trimean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Geometric_median" target='_blank'>Geometric median</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Interquartile_mean" target='_blank'>Interquartile mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Mid-range" target='_blank'>Midrange</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Truncated_mean" target='_blank'>Truncated mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Weighted_arithmetic_mean" target='_blank'>Weighted arithmetic mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Mode_(statistics)" target='_blank'>Mode</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Geometric_mean" target='_blank'>Geometric mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Centerpoint_(geometry)" target='_blank'>Tukey median</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Midhinge" target='_blank'>Midhinge</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Harmonic_mean" target='_blank'>Harmonic mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Root_mean_square" target='_blank'>Root mean square</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Simplicial_depth" target='_blank'>Simplicial depth</a>,
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Trimean" target='_blank'>Trimean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Winsorized_mean" target='_blank'>Winsorized mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Geometric_median" target='_blank'>Geometric median</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Interquartile_mean" target='_blank'>Interquartile mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Mid-range" target='_blank'>Midrange</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Truncated_mean" target='_blank'>Truncated mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Weighted_arithmetic_mean" target='_blank'>Weighted arithmetic mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Mode_(statistics)" target='_blank'>Mode</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Geometric_mean" target='_blank'>Geometric mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Centerpoint_(geometry)" target='_blank'>Tukey median</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Midhinge" target='_blank'>Midhinge</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Harmonic_mean" target='_blank'>Harmonic mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Root_mean_square" target='_blank'>Root mean square</a>,
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Trimean" target='_blank'>Trimean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Winsorized_mean" target='_blank'>Winsorized mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Geometric_median" target='_blank'>Geometric median</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Interquartile_mean" target='_blank'>Interquartile mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Mid-range" target='_blank'>Midrange</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Truncated_mean" target='_blank'>Truncated mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Weighted_arithmetic_mean" target='_blank'>Weighted arithmetic mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Mode_(statistics)" target='_blank'>Mode</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Geometric_mean" target='_blank'>Geometric mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Centerpoint_(geometry)" target='_blank'>Tukey median</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Midhinge" target='_blank'>Midhinge</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Harmonic_mean" target='_blank'>Harmonic mean</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Root_mean_square" target='_blank'>Root mean square</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Simplicial_depth" target='_blank'>Simplicial depth</a>, 
+                    <a class = 'summary-link' href="https://en.wikipedia.org/wiki/Winsorized_mean" target='_blank'>Winsorized mean</a>,  
+                    </div>
+            </div>
+            <div class = 'html-section-10 html-section'>
+                <div class = 'visualization-wrapper'>
+                    <div class='desktop-svg background-svg'>
+                        <svg height=100% width=100% class = 'density-line density-line-0 density-line-desktop-0' >
+                            <use class = 'graph graph-0' xlink:href="#desktop-graph-0"></use>
+                            <use class = 'graph graph-1' xlink:href="#desktop-graph-1"></use>
+                            <use class = 'graph graph-2' xlink:href="#desktop-graph-2"></use>
+                        </svg>
+                    </div>
+                    <div class='mobile-svg background-svg'>
+                        <svg height=100% width=100% class = 'density-line density-line-0 density-line-mobile-0'>
+                            <use class = 'graph graph-0' xlink:href="#mobile-graph-0"></use>
+                            <use class = 'graph graph-1' xlink:href="#mobile-graph-1"></use>
+                            <use class = 'graph graph-2' xlink:href="#mobile-graph-2"></use>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            <div class = 'html-section-11 html-section'>
+                <div class="data-logo-wrapper">
+                    <a id = 'ipums-logo' class = 'data-link opacity-transition' href="https://cps.ipums.org/cps/" target="_blank">
+                        <picture>
+                            <source srcset = 'images/mobile-images/ipums_logo.png' media = '(orientation:landscape) and (max-height:370px), (orientation:portrait) and (max-width:350px)'>
+                            <source srcset = 'images/desktop-images/ipums_logo.png'>
+                            <img class = 'logo-image' src="images/desktop_images/ipums_logo.png">
+                        </picture>
+                    </a>
+                    <a id = 'census-logo' class = 'data-link opacity-transition' href="https://www.census.gov/programs-surveys/cps.html" target="_blank">
+                        <picture>
+                            <source srcset = 'images/mobile-images/census_logo.png' media = '(orientation:landscape) and (max-height:370px), (orientation:portrait) and (max-width:350px)'>
+                            <source srcset = 'images/desktop-images/census_logo.png'>
+                            <img class = 'logo-image' src="images/desktop_images/census_logo.png">
+                        </picture>
+                    </a>
+                </div>
+                <div class = 'large-image-wrapper-11'>
+                    <a class = 'link-wrapper-11' href="https://www.pewresearch.org/fact-tank/2019/01/17/where-millennials-end-and-generation-z-begins/" target="_blank">
+                        <div class = 'headline-wrapper-11'>
+                            <picture>
+                                <source srcset = 'images/mobile-images/pew-definitions.png' media = '(max-width:810px), (max-height:500px)'>
+                                <source srcset = 'images/desktop-images/pew-definitions.png'>
+                                <img class = 'headline-picture-11' src="images/desktop-images/pew-definitions.png">
+                            </picture>
+                        </div>
+                        <div class = 'link-icon-wrapper'>
+                            <svg viewBox="-3 -3 24 24" width="100%" height="100%" preserveAspectRatio="xMinYMin"><path class = 'link-stroke' d='M3.19 9.345a.97.97 0 0 1 1.37 0 .966.966 0 0 1 0 1.367l-2.055 2.052a1.932 1.932 0 0 0 0 2.735 1.94 1.94 0 0 0 2.74 0l4.794-4.787a.966.966 0 0 0 0-1.367.966.966 0 0 1 0-1.368.97.97 0 0 1 1.37 0 2.898 2.898 0 0 1 0 4.103l-4.795 4.787a3.879 3.879 0 0 1-5.48 0 3.864 3.864 0 0 1 0-5.47L3.19 9.344zm11.62-.69a.97.97 0 0 1-1.37 0 .966.966 0 0 1 0-1.367l2.055-2.052a1.932 1.932 0 0 0 0-2.735 1.94 1.94 0 0 0-2.74 0L7.962 7.288a.966.966 0 0 0 0 1.367.966.966 0 0 1 0 1.368.97.97 0 0 1-1.37 0 2.898 2.898 0 0 1 0-4.103l4.795-4.787a3.879 3.879 0 0 1 5.48 0 3.864 3.864 0 0 1 0 5.47L14.81 8.656z'/></svg>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class = 'html-section-12 html-section-13 html-section-14 html-section-15 html-section-16 html-section-17 html-section-18 html-section-19 html-section-20 html-section-21 html-section-22 html-section-23 html-section'>
+                    <div id = 'plot-wrapper' class='opacity-transition'>
+                        <div id='legend'>
+                            <div id ='boomer-legend-wrapper' class='legend-wrapper'><div id='boomer-square' class = 'group-square'></div> <div class = 'legend-text' id='boomer-legend-text'>Boomers &nbsp;</div></div>
+                            <div id ='millennial-legend-wrapper' class='legend-wrapper'><div id='millennial-square' class = 'group-square'></div> <div class = 'legend-text' id='millennial-legend-text'>Millennials</div></div>
+                        </div>
+                        <div id = 'triangle-area-text' class = 'opacity-transition'>Area <span id = 'area-focus'>= 0.0000135 &#215; 50,000 &#215; 0.5</span> &#8776; 0.34</div>
+                    </div>
+                    <div id = "histogram-tooltip" class = 'plot-tooltip'></div>
+                    <div id = "density-tooltip" class='plot-tooltip'>
+                        <div id = 'density-tooltip-top'>Percentiles</div>
+                        <div id = 'density-tooltip-boomers'></div>
+                        <div id = 'density-tooltip-millennials'></div>
+                    </div>
+            </div>
+            <div class = 'html-section-24 html-section-25 html-section'>
+                <div id = 'smartphone-landscape-wrapper' class='final-content-wrapper'>
+                    <a class = 'link-div video-div opacity-transition' href='income-distributions/explorer'  target = '_blank' id = 'link-div-0'>
+                        <div class = 'content-wrapper'>
+                            <div class = 'final-image-wrapper media-content'>
+                                <div id = 'incomes-img' class = 'image-div'>
+                                    <img class = 'inner-final-image' src="../../assets/project_images/incomes.png" >
+                                </div>
+                            </div>
+                            <div class = 'video-wrapper media-content'>
+                                <video class = 'project-video' id = 'video-0' loop muted playsinline>
+                                    <source data-src='../../assets/project_videos/incomes.mp4'>
+                                </video>
+                            </div>
+                            <div class = 'project-title'>Income distributions by demographics and year</div>
+                        </div>
+                    </a>
+                    <a class = 'link-div video-div opacity-transition' href='income-distributions/generations' target = '_blank' id = 'link-div-1'>
+                        <div class = 'content-wrapper'>
+                            <div class = 'final-image-wrapper media-content'>
+                                <div id = 'generations-img' class = 'image-div'>
+                                    <img class = 'inner-final-image' src="../../assets/project_images/generations.png" >
+                                </div>
+                            </div>
+                            <div class = 'video-wrapper media-content'>
+                                <video class = 'project-video' id = 'video-1' loop muted playsinline>
+                                    <source data-src='../../assets/project_videos/generations.mp4'>
+                                </video>
+                            </div>
+                            <div class = 'project-title'>Income distributions by generation and age</div>
+                        </div>
+                    </a>
+                </div>
+                <div id = 'email-info-wrapper' class = 'opacity-transition final-content-wrapper'>
+                    <div id = 'email-signup'>
+                        <form name="netlify-email-form-density-video" method="POST" netlify>
+                            <input type="email" name="email" class='email-form' placeholder = "Your email" required/><button type = 'submit' id = 'submit-button'>Sign up</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id = 'loader-content'>
+            <div class="loader-square"></div>
+        </div>
+
+
+        <div id = 'captions-wrapper'>
+            <!-- Single images for introduction
+            Then group of images for distributions
+            Overlay incomes on millennial plot
+            Drop down incomes to bottom and fade out image when introducing the term distributions -->
+
+            <div id = 'captions-0' class = 'captions-text no-captions-text'></div>
+            <div id = 'captions-1' class = 'captions-text'>Are giant sequoias taller than redwoods?</div>
+            <div id = 'captions-2' class = 'captions-text'>Are homes in San Diego more expensive than homes in Boston?</div>
+            <div id = 'captions-3' class = 'captions-text'>And do millennials earn less than baby boomers?</div>
+            <div id = 'captions-4' class = 'captions-text'>While these are simple questions, they can be hard to answer.</div>
+            <div id = 'captions-5' class = 'captions-text'>That's because there isn't one giant sequoia height,</div>
+            <div id = 'captions-6' class = 'captions-text'>one San Diego home price,</div>
+            <div id = 'captions-7' class = 'captions-text'>or one income earned by all millennials.</div>
+            <div id = 'captions-8' class = 'captions-text'>Rather, these questions are about spreads of many different values.</div>
+            <div id = 'captions-9' class = 'captions-text'>Statisticians call these spreads distributions,</div>
+            <div id = 'captions-10' class = 'captions-text'>and so while we can't talk about the income of all millennials,</div>
+            <div id = 'captions-11' class = 'captions-text'>we can talk about the <i>distribution</i> of millennials' incomes.</div>
+            <div id = 'captions-12' class = 'captions-text'>Recognizing that these questions are about distributions</div>
+            <div id = 'captions-13' class = 'captions-text'>makes it clear why answering them can be tough&mdash;</div>
+            <div id = 'captions-14' class = 'captions-text'>how do you compare groups of different values?</div>
+
+            <div id = 'captions-15' class = 'captions-text'>As an example, let's answer part of one of these questions:</div>
+            <div id = 'captions-16' class = 'captions-text'>Who earned more at age 25,</div>
+            <div id = 'captions-17' class = 'captions-text'>American millennials or American baby boomers?</div>
+            
+            <div id="captions-18" class="captions-text">Comparing millennials' finances with earlier generations</div>
+            <div id="captions-19" class="captions-text">is a popular topic in the media,</div>
+            <div id="captions-20" class="captions-text">although different stories don't always reach the same conclusion.</div>
+            <div id="captions-21" class="captions-text">In this video, we'll see how density plots can help us</div>
+            <div id="captions-22" class="captions-text">better understand this comparison, and make sense of these discrepancies.</div>
+            
+            <div id = 'captions-23' class = 'captions-text'>One way to compare these groups is by finding a number&mdash; </div>
+            <div id = 'captions-24' class = 'captions-text'>that is, a <i>statistic</i>&mdash;</div>
+            <div id = 'captions-25' class = 'captions-text'>that summarizes both groups' incomes.</div>
+            <div id = 'captions-26' class = 'captions-text'>For example, we could compare the average, or <i>mean</i> incomes</div>
+            <div id = 'captions-27' class = 'captions-text'>of 25-year-old millennials and boomers,</div>
+            <div id = 'captions-28' class = 'captions-text'>and say the group with the higher income earns more.</div>
+            <div id = 'captions-29' class = 'captions-text'>However, reducing a distribution to a single number</div>
+            <div id = 'captions-30' class = 'captions-text'>always comes at the cost of lost information.</div>
+            <div id = 'captions-31' class = 'captions-text'>We'll get a simple answer,</div>
+            <div id = 'captions-32' class = 'captions-text'>but this answer may hide a more complicated reality.</div>
+
+            <div id = 'captions-33' class = 'captions-text'>To get a better idea of how summary statistics can be misleading,</div>
+            <div id = 'captions-34' class = 'captions-text'>let's take a deeper look at averages.</div>
+            <div id = 'captions-35' class = 'captions-text'>While averages are widely used and often useful,</div>
+            <div id = 'captions-36' class = 'captions-text'>they are highly influenced by extreme values.</div>
+            <div id = 'captions-37' class = 'captions-text'>For example, imagine that the millennial and boomer groups</div>
+            <div id = 'captions-38' class = 'captions-text'>we are comparing both have only these five members.</div>
+            <div id = 'captions-39' class = 'captions-text'>We'll also start by assuming that all incomes are identical,</div>
+            <div id = 'captions-40' class = 'captions-text'>with everyone in both groups earning $50,000.</div>
+            <div id = 'captions-41' class = 'captions-text'>In this case, of course,</div>
+            <div id = 'captions-42' class = 'captions-text'>the mean income of both groups will be equal.</div>
+            <div id = 'captions-43' class = 'captions-text'>Now, let's double the income of the highest-earning millennial,</div>
+            <div id = 'captions-44' class = 'captions-text'>and cut the incomes of the other four by 20% to $40,000.</div>
+            <div id = 'captions-45' class = 'captions-text'>This change would actually <i>increase</i> the </div>
+            <div id = 'captions-46' class = 'captions-text'>mean millennial income by 4% to $52,000.</div>
+            <div id = 'captions-47' class = 'captions-text'>Because the boomers' incomes didn't change,</div>
+            <div id = 'captions-48' class = 'captions-text'>using means would lead us to conclude that these millennials</div>
+            <div id = 'captions-49' class = 'captions-text'>earned more than the baby boomers.</div>
+            <div id = 'captions-50' class = 'captions-text'>But this seems misleading&mdash;</div>
+            <div id = 'captions-51' class = 'captions-text'>four of the five millennials had their incomes <i>reduced</i></div>
+            <div id = 'captions-52' class = 'captions-text'>and now earn less than the boomers.</div>
+            <div id = 'captions-53' class = 'captions-text'>Instead, the increased income of the highest-earning millennial</div>
+            <div id = 'captions-54' class = 'captions-text'>is masking their broader decline.</div>
+            <div id = 'captions-55' class = 'captions-text'>You can get a better feel for the relationship</div>
+            <div id = 'captions-56' class = 'captions-text'>between a distribution and its average</div>
+            <div id = 'captions-57' class = 'captions-text'>by dragging these income values up and down to change the data.</div>
+
+
+            <div id = 'captions-58' class = 'captions-text'>The effect of extreme values on means is especially pronounced</div>
+            <div id = 'captions-59' class = 'captions-text'>when working with incomes&mdash;</div>
+            <div id = 'captions-60' class = 'captions-text'>while most people's incomes are relatively modest,</div>
+            <div id = 'captions-61' class = 'captions-text'>top earners can earn orders of magnitude more.</div>
+            <div id = 'captions-62' class = 'captions-text'>When working with these kinds of asymmetric distributions,</div>
+            <div id = 'captions-63' class = 'captions-text'>researchers often use <i>medians</i> to summarize data</div>
+            <div id = 'captions-64' class = 'captions-text'>and make comparisons.</div>
+            <div id = 'captions-65' class = 'captions-text'>As we'll see, unlike the mean,</div>
+            <div id = 'captions-66' class = 'captions-text'>the median is often unaffected by extreme values.</div>
+
+            <div id = 'captions-67' class = 'captions-text'>Let's look at how changing the income of our five millennials</div>
+            <div id = 'captions-68' class = 'captions-text'>affects their median income.</div>
+            <div id = 'captions-69' class = 'captions-text'>The median income is the point that divides the data</div>
+            <div id = 'captions-70' class = 'captions-text'>into two equal subgroups.</div>
+            <div id = 'captions-71' class = 'captions-text'>This means that about half the workers</div>
+            <div id = 'captions-72' class = 'captions-text'>will make more than the median, and half will make less.</div>
+            <div id = 'captions-73' class = 'captions-text'>When there are 5 workers in a group,</div>
+            <div id = 'captions-74' class = 'captions-text'>the median income will equal the income</div>
+            <div id = 'captions-75' class = 'captions-text'>of the third highest-earner.</div>
+
+            <div id = 'captions-76' class = 'captions-text'>Making the same changes we did earlier&mdash;</div>
+            <div id = 'captions-77' class = 'captions-text'>doubling the income of one millennial</div>
+            <div id = 'captions-78' class = 'captions-text'>and cutting the incomes of the other four by 20%&mdash;</div>
+            <div id = 'captions-79' class = 'captions-text'>reduces the median millennial income to $40,000.</div>
+            <div id = 'captions-80' class = 'captions-text'>Unlike the mean, the median isn't highly influenced</div>
+            <div id = 'captions-81' class = 'captions-text'>by the millennial earning $100,000.</div>
+            <div id = 'captions-82' class = 'captions-text'>This is because medians are <i>robust</i>,</div>
+            <div id = 'captions-83' class = 'captions-text'>or insensitive to extreme values.</div>
+            <div id = 'captions-84' class = 'captions-text'>While this insensitivity is often useful,</div>
+            <div id = 'captions-85' class = 'captions-text'>it can also be problematic and obscure important information.</div>
+            <div id = 'captions-86' class = 'captions-text'>For example, imagine that we set the incomes</div>
+            <div id = 'captions-87' class = 'captions-text'>of two baby boomers to zero.</div>
+            <div id = 'captions-88' class = 'captions-text'>Because the income of the</div>
+            <div id = 'captions-89' class = 'captions-text'>third highest-earning boomer hasn't changed,</div>
+            <div id = 'captions-90' class = 'captions-text'>this won't change their median income.</div>
+            <div id = 'captions-91' class = 'captions-text'>Just like the mean, using the median can lead us to</div>
+            <div id = 'captions-92' class = 'captions-text'>overlook important features of the distribution.</div>
+            <div id = 'captions-93' class = 'captions-text'>Extreme values are important,</div>
+            <div id = 'captions-94' class = 'captions-text'>even if we don't want them to dominate our analysis.</div>
+
+            <div id = 'captions-95' class = 'captions-text'>While the mean and median are the most</div>
+            <div id = 'captions-96' class = 'captions-text'>widely used summary statistics,</div>
+            <div id = 'captions-97' class = 'captions-text'>there are countless others we could investigate.</div>
+            <div id = 'captions-98' class = 'captions-text'>While some do a better job summarizing a distribution than others,</div>
+            <div id = 'captions-99' class = 'captions-text'>they are all, by definition, simplifications.</div>
+            <div id = 'captions-100' class = 'captions-text'>Reducing a distribution to a single number</div>
+            <div id = 'captions-101' class = 'captions-text'><i>always</i> gives an incomplete picture.</div>
+        
+            <div id = 'captions-102' class = 'captions-text'>An alternative approach to using summary statistics</div>
+            <div id = 'captions-103' class = 'captions-text'>is to analyze and compare distributions visually.</div>
+            <div id = 'captions-104' class = 'captions-text'>Done correctly, visualizations can accurately</div>
+            <div id = 'captions-105' class = 'captions-text'>summarize a distribution with minimal information loss.</div>
+
+            <div id = 'captions-106' class = 'captions-text'>Let's see if this approach can help us answer</div>
+            <div id = 'captions-107' class = 'captions-text'>our question about millennials' and boomers' incomes</div>
+            <div id = 'captions-108' class = 'captions-text'>using real data from the IPUMS CPS database.</div>
+            <div id = 'captions-109' class = 'captions-text'>The CPS, or Current Population Survey,</div>
+            <div id = 'captions-110' class = 'captions-text'>is an annual survey conducted by the US Census Bureau</div>
+            <div id = 'captions-111' class = 'captions-text'>that can be used to estimate the true income distributions of both groups.</div>
+            <div id = 'captions-112' class = 'captions-text'>We'll use these estimated quantities as our data for visualization.</div>
+
+            <div id = 'captions-113' class = 'captions-text'>Following the Pew Research Center, </div>
+            <div id = 'captions-114' class = 'captions-text'>we'll define baby boomers as those born in 1946 through 1964,</div>
+            <div id = 'captions-115' class = 'captions-text'>and millennials as those born in 1981 through 1996.</div>
+            <div id = 'captions-116' class = 'captions-text'>We'll also only look at the incomes of those</div>
+            <div id = 'captions-117' class = 'captions-text'>who worked full-time, year-round, at age 25,</div>
+            <div id = 'captions-118' class = 'captions-text'>and we'll adjust incomes for inflation</div>
+            <div id = 'captions-119' class = 'captions-text'>so that they're denominated in 2019 dollars.</div>
+
+            <div id = 'captions-120' class = 'captions-text'>Let's start by plotting the incomes of 25 year-old baby boomers.</div>
+            <div id = 'captions-121' class = 'captions-text'>To do so, we'll make a series of bins $10,000 wide,</div>
+            <div id = 'captions-122' class = 'captions-text'>and assign each boomer to a bin based on their annual income.</div>
+            <div id = 'captions-123' class = 'captions-text'>We can then plot these bins as bars, with the height of each bar</div>
+            <div id = 'captions-124' class = 'captions-text'>determined by the number of baby boomers in the bin.</div>
+        
+            <div id = 'captions-125' class = 'captions-text'>These plots are called <i>histograms</i>.</div>
+            <div id = 'captions-126' class = 'captions-text'>Because they're easily understandable and simple to make,</div>
+            <div id = 'captions-127' class = 'captions-text'>they're probably the most popular way to visualize a distribution.</div>
+            <div id = 'captions-128' class = 'captions-text'>Looking at the histogram, we see that</div>
+            <div id = 'captions-129' class = 'captions-text'>most 25 year-old baby boomers earned between $20,000 and $70,000.</div>
+            <div id = 'captions-130' class = 'captions-text'>The bin with the most workers&mdash;</div>
+            <div id = 'captions-131' class = 'captions-text'>that is, the highest histogram bar&mdash;</div>
+            <div id = 'captions-132' class = 'captions-text'>is the $20,000-$30,000 bin, with about 7.6 million baby boomers.</div>
+
+            <div id = 'captions-133' class = 'captions-text'>Let's add the millennial incomes to the same figure as a</div>
+            <div id = 'captions-134' class = 'captions-text'>blue, slightly transparent, histogram.</div>
+            <div id = 'captions-135' class = 'captions-text'>We can see that the shapes of the</div>
+            <div id = 'captions-136' class = 'captions-text'>boomer and millennial income distributions are pretty similar.</div>
+            <div id = 'captions-137' class = 'captions-text'>However, it's hard to compare the distributions directly</div>
+            <div id = 'captions-138' class = 'captions-text'>because differences between the histograms</div>
+            <div id = 'captions-139' class = 'captions-text'>may reflect different numbers of workers&mdash;</div>
+            <div id = 'captions-140' class = 'captions-text'>is the $40,000-$50,000 bin higher for baby boomers than millennials</div>
+            <div id = 'captions-141' class = 'captions-text'>because a higher proportion of boomers</div>
+            <div id = 'captions-142' class = 'captions-text'>made between $40,000 and $50,000,</div>
+            <div id = 'captions-143' class = 'captions-text'>or because there were simply more baby boomers?</div>
+
+            <div id = 'captions-144' class = 'captions-text'>To address this, we can <i>normalize</i> the histogram</div>
+            <div id = 'captions-145' class = 'captions-text'>by dividing the bin heights by the number of people in that group.</div>
+            <div id = 'captions-146' class = 'captions-text'>Normalizing the histogram means that the total area of all the bins</div>
+            <div id = 'captions-147' class = 'captions-text'>for both the boomer and millennial plots will equal 1,</div>
+            <div id = 'captions-148' class = 'captions-text'>and the height of the bin will equal</div>
+            <div id = 'captions-149' class = 'captions-text'>the <i>proportion</i> of people in that bin.</div>
+            <div id = 'captions-150' class = 'captions-text'>When we do this for both groups,</div>
+            <div id = 'captions-151' class = 'captions-text'>we see that the $40,000 - $50,000 bar is higher for boomers,</div>
+            <div id = 'captions-152' class = 'captions-text'>and so a higher proportion of 25 year-old baby boomers</div>
+            <div id = 'captions-153' class = 'captions-text'>made between $40,000 and $50,000.</div>
+
+            <div id = 'captions-154' class = 'captions-text'>We are getting closer to answering our question</div>
+            <div id = 'captions-155' class = 'captions-text'>about millennial and boomer incomes.</div>
+            <div id = 'captions-156' class = 'captions-text'>However, the shape of a histogram is</div>
+            <div id = 'captions-157' class = 'captions-text'>clearly influenced by which bins we choose&mdash;</div>
+            <div id = 'captions-158' class = 'captions-text'>choosing bins $10,000 wide was rather arbitrary.</div>
+            <div id = 'captions-159' class = 'captions-text'>In general, histograms with more narrow bins</div>
+            <div id = 'captions-160' class = 'captions-text'>can more accurately represent the distribution.</div>
+            <div id = 'captions-161' class = 'captions-text'>However, narrow bins can also make histograms hard to interpret,</div>
+            <div id = 'captions-162' class = 'captions-text'>as many of the bins will have few, if any, observations.</div>
+            <div id = 'captions-163' class = 'captions-text'>These issues often lead data scientists</div>
+            <div id = 'captions-164' class = 'captions-text'>to visualize distributions using <i>density</i> plots.</div>
+
+            <div id = 'captions-165' class = 'captions-text'>You can think of a density plot as a smoothed curve</div>
+            <div id = 'captions-166' class = 'captions-text'>that approximates a normalized histogram with infinitely small bins.</div>
+
+            <div id = 'captions-167' class = 'captions-text'>While smoothing our histogram can give a better picture of the data,</div>
+            <div id = 'captions-168' class = 'captions-text'>interpreting density plots can be counterintuitive.</div>
+            <div id = 'captions-169' class = 'captions-text'>Instead of capturing the proportion of workers that made a certain amount,</div>
+            <div id = 'captions-170' class = 'captions-text'>the height of the density plot at a certain point</div>
+            <div id = 'captions-171' class = 'captions-text'>is determined by the proportion of workers</div>
+            <div id = 'captions-172' class = 'captions-text'>making incomes <i>near</i> that amount.</div>
+            
+            <div id = 'captions-173' class = 'captions-text'>To understand what's going on, note that similar to a normalized histogram,</div>
+            <div id = 'captions-174' class = 'captions-text'>the area under the density curve must equal 1.</div>
+            <div id = 'captions-175' class = 'captions-text'>Similarly, the area under the curve between two points</div>
+            <div id = 'captions-176' class = 'captions-text'>will match the proportion of data between those points.</div>
+
+            <div id = 'captions-177' class = 'captions-text'>For example, imagine that we want to find the proportion of</div>
+            <div id = 'captions-178' class = 'captions-text'>25 year-old millennials earning between $50,000 and $100,000.</div>
+            <div id = 'captions-179' class = 'captions-text'>We can estimate this proportion by getting the</div>
+            <div id = 'captions-180' class = 'captions-text'>area of the millennial density curve between $50,000 and $100,000.</div>
+            <div id = 'captions-181' class = 'captions-text'>We can approximate this area with a triangle that has an area of about 0.34.</div>
+            <div id = 'captions-182' class = 'captions-text'>This means that roughly 34% of 25 year-old millennial workers</div>
+            <div id = 'captions-183' class = 'captions-text'>made between $50,000 and $100,000.</div>
+
+            <div id = 'captions-184' class = 'captions-text'>Because the area under a single point is zero, according to the density plot,</div>
+            <div id = 'captions-185' class = 'captions-text'>the proportion of workers making any specific income is zero.</div>
+            <div id = 'captions-186' class = 'captions-text'>This means that while the height of a density plot isn't easily interpretable,</div>
+            <div id = 'captions-187' class = 'captions-text'>it can be used for comparisons.</div>
+            <div id = 'captions-188' class = 'captions-text'>Because the millennial curve is higher at $30,000 than $20,000,</div>
+            <div id = 'captions-189' class = 'captions-text'>a higher proportion of 25 year-old millennials made about $30,000.</div>
+            <div id = 'captions-190' class = 'captions-text'>Similarly, because the baby boomer curve</div>
+            <div id = 'captions-191' class = 'captions-text'>is higher than the millennial curve at $60,000,</div>
+            <div id = 'captions-192' class = 'captions-text'>a higher proportion of 25 year-old boomers made about $60,000.</div>
+
+            <div id = 'captions-193' class = 'captions-text'>So, who made more:</div>
+            <div id = 'captions-194' class = 'captions-text'>25 year-old baby boomers or 25 year-old millennials?</div>
+            <div id = 'captions-195' class = 'captions-text'>Looking at the density plots of both groups' incomes,</div>
+            <div id = 'captions-196' class = 'captions-text'>we see that there isn't a simple answer.</div>
+            <div id = 'captions-197' class = 'captions-text'>While baby boomers' incomes are highly clustered</div>
+            <div id = 'captions-198' class = 'captions-text'>between $20,000 and $80,000, millennials' incomes are more spread out&mdash;</div>
+            <div id = 'captions-199' class = 'captions-text'>compared to baby boomers, there are more millennials with low incomes,</div>
+            <div id = 'captions-200' class = 'captions-text'>but also more millennials with high incomes.</div>
+            <div id = 'captions-201' class = 'captions-text'>While these sorts of nuanced findings are the norm</div>
+            <div id = 'captions-202' class = 'captions-text'>when working with complex, real-world data,</div>
+            <div id = 'captions-203' class = 'captions-text'>they can be hard to reach by only using summary statistics.</div>
+            <div id = 'captions-204' class = 'captions-text'>Comparing distributions visually, by contrast, illuminates these subtleties,</div>
+            <div id = 'captions-205' class = 'captions-text'>and can make our analysis better reflect the true complexity of the data.</div>
+
+            <div id = 'captions-206' class = 'captions-text'>If you'd like to learn more, I've built two web apps that allow you</div>
+            <div id = 'captions-207' class = 'captions-text'>to compare Americans' income distributions using density plots.</div>
+            <div id = 'captions-208' class = 'captions-text'>In the first, income distributions are organized by generation and age,</div>
+            <div id = 'captions-209' class = 'captions-text'>and in the second, by demographics and year.</div>
+            <div id = 'captions-210' class = 'captions-text'>And lastly, you can sign up here</div>
+            <div id = 'captions-211' class = 'captions-text'>to be notified when I release new projects at electric scatter.</div>
+            <div id = 'captions-212' class = 'captions-text no-captions-text'></div>
+
+
+        </div>
+
+
+        </div>
+        <div id="bottom-wrapper" class = 'initially-hidden'>
+            <div id = 'icon-wrapper' class = 'not-shown'>
+                <div class = 'icon-div svg-div' id = 'player-wrapper'>
+                    <svg class = 'controls-svg'  viewBox="0 0 100 100">
+                        <g id ='pause-button'>
+                            <polygon points="38.5,8.9 38.5,91.1 14.4,91.1 14.4,8.9 14.7,8.9"/>
+                            <polygon points="85.3,8.9 85.3,91.1 61.2,91.1 61.2,8.9 61.6,8.9"/>
+                        </g>
+                        <g id='play-button'>
+                            <line x1="36.9" y1="57.6" x2="20.2" y2="57.1"/>
+                            <polygon points="14.7,8.9 14.7,91.1 85.3,50.1 "/>
+                        </g> 
+                    </svg>
+                </div>
+                <div class = 'icon-div svg-div' id = 'player-sound'>
+                    <svg class = 'controls-svg'  viewBox="0 0 24 24">
+                        <rect x="2.5" y="8.1" width="3.5" height="7.9"/>
+                        <rect x="4.8" y="8.1" width="2.5" height="7.9"/>
+                        <polyline points="6,8.1 13.1,2.7 13.1,21.3 6,15.9 "/>
+                        <g id = 'volume-off'>
+                            <rect x="14.4" y="11" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -3.021 16.7246)" width="8.6" height="2"/>
+                            <rect x="17.7" y="7.7" transform="matrix(0.7071 -0.7071 0.7071 0.7071 -3.0081 16.7194)" width="2" height="8.6"/>
+                        </g>
+                        <g id="volume-on">
+                            <path class="st0" d="M15.7,5v2.3c2.6,0,4.7,2.1,4.7,4.7c0,2.6-2.1,4.7-4.7,4.7V19c3.8,0,7-3.1,7-7C22.7,8.1,19.5,5,15.7,5z"/>
+                            <path class="st0" d="M15.7,9.6c1.4,0,2.4,1.1,2.4,2.4s-1.1,2.4-2.4,2.4"/>
+                            <path class="st0" d="M18.7,1.4"/>
+                        </g>
+                    </svg>
+                </div>
+                <div class = 'icon-div div-text no-selection' id = 'player-speed'>
+                    <div id = 'playback-speed' class = 'controller-text'>1x</div>
+                </div>
+                <div class = 'icon-div div-text no-selection' id = 'closed-caption'>
+                    <div class = 'controller-text'><span id = 'cc-text' class='strikethrough'>CC</span></div>
+                </div>
+                <div class = 'icon-div svg-div' id = 'player-fullscreen'>
+                    <svg class = 'controls-svg'  viewBox="0 0 100 100">
+                        <g id ='fullscreen'>
+                            <g id="Core" transform="translate(-215.000000, -257.000000)">
+                                <g id="fullscreen" transform="translate(215.000000, 257.000000)">
+                                    <path d="M24.7,60.1H14.5v25.3h25.3V75.3H24.7V60.1L24.7,60.1z M14.5,39.9h10.1V24.7h15.2V14.5H14.5V39.9
+                                        L14.5,39.9z M75.3,75.3H60.1v10.1h25.3V60.1H75.3V75.3L75.3,75.3z M60.1,14.5v10.1h15.2v15.2h10.1V14.5H60.1L60.1,14.5z"/>
+                                </g>
+                            </g>
+                        </g>
+                        <g id='minimize'>
+                            <g id="Core" transform="translate(-257.000000, -257.000000)">
+                                <g id="fullscreen-exit" transform="translate(257.000000, 257.000000)">
+                                    <path d="M9,73.4h17.6V91h11.7V61.7H9V73.4L9,73.4z M26.6,26.6H9v11.7h29.3V9H26.6V26.6L26.6,26.6z
+                                         M61.7,91h11.7V73.4H91V61.7H61.7V91L61.7,91z M73.4,26.6V9H61.7v29.3H91V26.6H73.4L73.4,26.6z"/>
+                                </g>
+                            </g>
+                        </g> 
+                    </svg>
+                </div>
+                <a id = 'github-link-wrapper' href='https://github.com/mdahardy/electric-scatter/tree/main/projects/density-plots' target = "_blank">
+                    <div class = 'icon-div svg-div'>
+                            <svg class = 'controls-svg'  viewBox="0 0 100 100">
+                                <path d="M50,8.9C26.7,8.9,7.9,27.8,7.9,51c0,18.6,12.1,34.4,28.8,40c2.1,0.4,2.9-0.9,2.9-2c0-1,0-3.7-0.1-7.2
+                                c-11.7,2.5-14.2-5.6-14.2-5.6c-1.9-4.9-4.7-6.2-4.7-6.2c-3.8-2.6,0.3-2.6,0.3-2.6c4.2,0.3,6.5,4.3,6.5,4.3c3.8,6.4,9.9,4.6,12.3,3.5
+                                c0.4-2.7,1.5-4.6,2.7-5.6C33,68.6,23.1,65,23.1,48.8c0-4.6,1.6-8.4,4.3-11.3c-0.4-1.1-1.9-5.4,0.4-11.2c0,0,3.5-1.1,11.6,4.3
+                                c3.4-0.9,7-1.4,10.5-1.4c3.6,0,7.2,0.5,10.5,1.4c8-5.5,11.6-4.3,11.6-4.3c2.3,5.8,0.9,10.1,0.4,11.2c2.7,2.9,4.3,6.7,4.3,11.3
+                                c0,16.2-9.9,19.8-19.2,20.8c1.5,1.3,2.9,3.9,2.9,7.8c0,5.6-0.1,10.2-0.1,11.6c0,1.1,0.8,2.4,2.9,2c16.7-5.6,28.8-21.4,28.8-40
+                                C92.1,27.8,73.3,8.9,50,8.9z"/>
+                        </svg>
+                    </div>
+                </a>
+            </div>
+            <div id = 'add-wrapper' class = 'not-shown'>
+                <label class="add-label no-select">
+                    <div id = 'initial-background'>
+                        <div id = 'countdown' class = 'not-selected'></div>
+                        <span id = 'addition-text'>Add 2:50 about summary stats</span>
+                    </div>
+                    <div id = 'inner-add-text'>
+                        <input id = 'toggle-time' type="checkbox">
+                        <span id="checkmark"></span>
+                        <div id = 'check-wrapper' class = 'adding-time'><span class = 'time'>2:50</span> <span class = 'check-mark'>&#x2713;</span></div>
+                        <div id ='cross-wrapper' class = 'adding-time'><span class = 'time'>2:50</span> <span class = 'cross-mark'>&#x2718;</span></div>
+                    </div>
+                  </label>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="scripts/d3v6.js"></script>
+<script src="../../scripts/electric-scatter.js"></script>
+<script src="scripts/densities.js"></script>
+</html>

@@ -1,0 +1,364 @@
+body {
+    font-family:"Roboto";
+    overflow-x:hidden;
+    background: linear-gradient(rgba(255,255,255,0),rgba(255,255,255,0.7)) fixed,linear-gradient(124deg, #e8a11d,  #e02a19,#d20de4,  #2e20ee, #129daf, #1da53f) fixed;
+    background-size: 400% 100%;
+    -webkit-animation: rainbow 80s linear infinite;
+    -z-animation: rainbow 80s linear infinite;
+    -o-animation: rainbow 80s linear infinite;
+    animation: rainbow 80s linear infinite;      
+}
+
+#header-div{
+    background:none;
+}
+
+.email-info-wrapper{
+    box-sizing:border-box;
+    width:100%;
+    margin:0px auto;
+    padding-bottom:20px;
+    padding-top:20px;
+    background:none;
+    color:white;
+}
+
+
+.email-form {
+    padding:10px;
+    width:300px;
+    border-radius: 0;
+    border:2px solid #ffffff;
+    border-right:1px solid #ffffff;
+    font-size:20px;
+    background:#ffffff;
+    margin:0;
+}
+
+.email-form:focus{
+    outline:none;
+}
+
+#submit-button {
+    font-weight:800;
+    border-radius:0px;
+    color:white;
+    padding:10px 35px 10px 35px;
+    cursor:pointer;
+    box-sizing:border-box;
+    font-size:20px;
+    background:none;
+    color:white;
+    border:2px solid white;
+    margin-left:0;
+    border-left:1px solid white;
+}
+
+#submit-button:hover {
+    background:rgba(255,255,255,0.15)
+}
+
+.email-paragraph {
+    margin-top:0;
+    margin-bottom:10px;
+    font-size:20px;
+}
+
+#email-signup{
+    text-align:center;
+    padding-left:40px;
+    padding-right:40px;
+    line-height:1.4;
+}
+
+.projects-info-wrapper{
+    color:#ffffff;
+    font-weight:1000;
+    font-size:30px;
+    margin-left:auto;
+    margin-right:auto;
+    width:calc(100% - 220px);
+    text-align:left;
+    margin-top: 15px;
+    margin-bottom:15px;
+}
+
+.link-div {
+    text-decoration:none;
+    color:#000000;
+    display:block;
+    width:calc(100% - 220px);
+    height:125px;
+    margin:0 auto;
+    margin-bottom:10px;
+    background:#f0f0f0;
+}
+
+.link-div:hover {
+    background-color:rgb(221, 221, 221);
+}
+
+.project-video {
+    width:100%;
+    height:100%;
+}
+
+.media-content{
+    width:250px;
+    height:125px;
+    background-color:rgb(221, 221, 221);
+}
+
+.project-title{
+    font-size:25px;
+    margin-left:25px;
+    line-height:1.4;
+}
+
+.content-wrapper {
+    height:100%;
+    display:flex;
+    align-items:center;
+}
+
+#about-link {
+    height:67.5px;
+    font-size:25px;
+    text-decoration:none;
+    color:#000000;
+    display:block;
+    width:calc(100% - 220px);
+    margin-left:auto;
+    margin-right:auto;
+    margin-top:45px;
+    margin-bottom:45px;
+    background:#f0f0f0;
+}
+
+#about-link:hover{
+    background:rgb(221, 221, 221);}
+
+#about-div{
+    width:100%;
+    height:100%;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.image-wrapper{
+    display:none;
+}
+
+@media (min-width:1500px){
+    .link-div {
+        width:calc(100% - 270px);
+        height:175px;
+        max-width:1400px;
+    }
+    
+    #about-link{
+        width:calc(100% - 270px);
+        height:87.5px;
+        max-width:1400px;
+    }
+
+    .projects-info-wrapper{
+        width:calc(100% - 270px);
+        max-width:1400px;
+        font-size:32px;
+    }
+
+    .media-content{
+        width:350px;
+        height:175px;
+    }
+
+    .project-title, #about-link {
+        font-size:27px;
+    }
+    
+    #submit-button, .email-form, .email-paragraph {
+        font-size:22px;
+    }
+    
+
+}
+
+@media (max-width:1050px){
+
+    .projects-info-wrapper{
+        font-size:27px;
+    }
+
+    .project-title{
+        font-size:21px;
+        margin-left:20px;
+    }
+
+    #about-link {
+        font-size:21px;
+    }
+}
+
+@media (max-width:960px){
+
+    .project-title{
+        margin-left:15px;
+        font-size:20px;
+    }
+
+    .projects-info-wrapper{
+        width:calc(100% - 90px);
+    }
+
+    .link-div, #about-link {
+        width:calc(100% - 90px);
+    }
+    #about-link {
+        font-size:20px;
+    }
+
+}
+
+@media (max-width:810px){
+
+    .email-paragraph {
+        padding-left:15px;
+        padding-right:15px;
+    }
+
+    #email-signup{
+        margin-left:auto;
+        margin-right:auto;
+        padding-left:0px;
+        padding-right:0px;
+        width:92vw;
+    }
+
+    .projects-info-wrapper{
+        text-align:center;
+        width:100%;
+    }
+
+    .link-div {
+        width:92vw;
+        height:calc(92vw / 2 + 100px);
+        margin-bottom: 4vw;
+        margin-left:auto;
+        margin-right:auto;
+    }
+
+    .media-content {
+        width:100%;
+        height:46vw;
+    }
+
+    .project-title{
+        margin-left:0px;
+        text-align:center;
+        padding-left:15px;
+        padding-right:15px;
+    }
+
+    .content-wrapper {
+       justify-content:center;
+       align-items:initial;
+       flex-wrap:wrap;
+    }
+
+    #about-link {
+        margin-top:8vw;
+        height:100px;
+        width:92vw;
+        margin-bottom: 4vw;
+    }
+}
+
+@media (max-width:564px){
+    
+    .email-form {
+        width:calc(100% + 4px);
+        width:100%;
+        box-sizing:border-box;
+        border:none;
+        margin-bottom:0;
+    }
+
+    #submit-button {
+        box-sizing:border-box;
+        width:100%;
+        border-top:none;
+        border-left:2px solid #ffffff;
+        margin-left:0px;
+        margin-top:0px;
+    }
+
+    #email-signup{
+        padding-left:0;
+        padding-right:0;
+        margin-left:auto;
+        margin-right:auto;
+    }
+}
+
+@media (max-width:400px){
+    #email-signup{
+        width:94vw;
+    }
+
+    .link-div {
+        width:94vw;
+        height:calc(94vw / 2 + 100px);
+        margin-bottom: 3vw;
+    }
+
+    .media-content {
+        width:100%;
+        height:47vw;
+    }
+
+    #about-link {
+        margin-top:6vw;
+        width:94vw;
+        margin-bottom: 3vw;
+    }
+
+}
+
+@media (any-pointer:coarse){
+
+    .link-div:hover {
+        background-color:#f0f0f0;
+    }
+
+    .video-wrapper {
+        display:none;
+    }
+
+    .image-wrapper {
+        background-color:rgb(221, 221, 221);
+        display:block;
+    }
+
+    .image-div {
+        width:100%;
+        height:100%;
+    }
+
+    #drum-beats-img {
+        background: url(../assets/project_images/drum_beats.jpg);
+        background-size:contain;
+    }
+
+    #incomes-img {
+        background: url(../assets/project_images/incomes.jpg);
+        background-size:contain;
+
+    }
+
+    #generations-img {
+        background: url(../assets/project_images/generations.jpg);
+        background-size:contain;
+    }
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+ 
+<head>
+    <title>Electric scatter</title>
+    <meta name = "description" content = "Interactive data visualizations for open-ended analysis.">
+    <meta name="viewport" content="width=device-width, initial-scale = 1.0,maximum-scale = 1.0,user-scalable=no"/>
+    <link href="styles/electric-scatter.css" rel="stylesheet">
+    <link href="styles/index_css.css" rel="stylesheet">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <meta name='twitter:card' content='summary_large_image'>
+    <meta name='twitter:site' content='@mdahardy'>
+    <meta name='twitter:title' content='Electric scatter'>
+    <meta name='twitter:description' content='Interactive data visualizations for open-ended exploration.'>
+    <meta name='twitter:image' content='https://www.electricscatter.com/assets/og_logo.png'>
+
+    <meta property="og:title" content="Electric scatter">
+    <meta property="og:description" content="Interactive data visualizations for open-ended exploration.">
+    <meta name='twitter:image' content='https://www.electricscatter.com/assets/og_logo.png'>
+    <meta property="og:url" content="https://www.electricscatter.com">
+
+
+</head>
+
+<body>
+    <div id = 'header-div'>
+        <div id='header-text'><a id = 'electric-scatter-link' href = '/'>electric scatter</a></div>
+    </div>
+    <div id = 'info-div' class = 'email-info-wrapper'>
+        <div id = 'email-signup'>
+            <p class='email-paragraph'>Be notified when I release new projects (a few times a year).</p>
+            <form name="netlify-email-form" method="POST" class ='email-signup-form' netlify>
+                <input type="email" name="email" class='email-form' placeholder = "Your email" required/><button type = 'submit' id = 'submit-button'>Sign up</button>
+            </form>
+        </div>
+    </div>
+    <div class = 'projects-info-wrapper'>Projects</div>
+    <a class = 'link-div video-div' href='projects/income-distributions' id = 'link-div-2'>
+        <div class = 'content-wrapper'>
+            <div class = 'image-wrapper media-content'>
+                <div id = 'incomes-img' class = 'image-div'></div>
+            </div>
+            <div class = 'video-wrapper media-content'>
+                <video class = 'project-video' id = 'video-2' loop muted playsinline>
+                    <source data-src='assets/project_videos/incomes.mp4'>
+                </video>
+            </div>
+            <div class = 'project-title'>Income distributions by demographics and year</div>
+        </div>
+    </a>
+    <a class = 'link-div video-div' href='projects/generation-distributions' id = 'link-div-1'>
+        <div class = 'content-wrapper'>
+            <div class = 'image-wrapper media-content'>
+                <div id = 'generations-img' class = 'image-div'></div>
+            </div>
+            <div class = 'video-wrapper media-content'>
+                <video class = 'project-video' id = 'video-1' loop muted playsinline>
+                    <source data-src='assets/project_videos/generations.mp4'>
+                </video>
+            </div>
+            <div class = 'project-title'>Income distributions by generation and age</div>
+        </div>
+    </a>
+    <a class = 'link-div video-div' href='projects/density-plots' id = 'link-div-0'>
+        <div class = 'content-wrapper'>
+            <div class = 'image-wrapper media-content'>
+                <div id = 'densities-img' class = 'image-div'></div>
+            </div>
+            <div class = 'video-wrapper media-content'>
+                <video class = 'project-video' id = 'video-0' loop muted playsinline>
+                    <source data-src='assets/project_videos/densities.mp4'>
+                </video>
+            </div>
+            <div class = 'project-title'>Learn about kernel density plots</div>
+        </div>
+    </a>
+    <a id = 'about-link' href='about/'>
+        <div id = 'about-div'>
+            <div>About</div>
+        </div>
+    </a>
+</body>
+<script>
+    if (!(window.matchMedia("(any-pointer:coarse)").matches)){
+        document.querySelectorAll('.project-video source').forEach(source_i => {source_i.setAttribute('src', source_i.getAttribute('data-src'))});
+        document.querySelectorAll('.project-video').forEach(vid => {vid.load()});
+        document.querySelectorAll(".video-div").forEach(function(div_wrapper){
+            const curr_video_div = document.getElementById(`video-${div_wrapper.id.slice(-1)}`);
+            div_wrapper.addEventListener('mouseover',()=>{curr_video_div.play()});
+            div_wrapper.addEventListener('mouseleave',()=>{
+                curr_video_div.currentTime = 0;
+                curr_video_div.pause();
+            });
+        });
+    };
+</script>
+
+</html>
