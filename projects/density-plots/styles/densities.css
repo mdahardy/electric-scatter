@@ -11,6 +11,7 @@
   -o-transition: 0.18s;
   transition: 0.18s;
   pointer-events:none;
+  text-align:center;
   background: linear-gradient(rgba(255,255,255,0),rgba(255,255,255,0.7)) fixed,linear-gradient(124deg, #e8a11d,  #e02a19,#d20de4,  #2e20ee, #129daf, #1da53f) fixed;
   background-size: 400% 100%;
   -webkit-animation: rainbow 80s linear infinite;
@@ -22,20 +23,6 @@
   color:white;
   font-size: 30px;
   letter-spacing: 1px;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none; 
-  user-select: none;
-}
-
-#link-wrapper{
-  height:45px;
-  width:100%;
-  display:flex;
-  justify-content: center;
-  align-items:center;
 }
 
 #electric-scatter-link{

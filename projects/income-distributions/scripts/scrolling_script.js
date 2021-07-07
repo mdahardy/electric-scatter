@@ -76,6 +76,11 @@ function copyToClipboard(string) {
   
       textarea.setSelectionRange(0, textarea.value.length);
       result = document.execCommand('copy');
+      document.getElementById('copy-text').innerHTML ='Link copied';
+      copy_timeout = setTimeout(function(){
+          document.getElementById('copy-text').innerHTML = 'Copy link to current graph';
+          copy_timeout = undefined;
+      },1000);
     } catch (err) {
       result = null;
     } finally {
@@ -88,7 +93,8 @@ function copyToClipboard(string) {
         // One button for OK, or click anywhere not on div, close
         // Also, for these browsers, make it say "Get copy link"
         // Test with xcode to increase speed
-      result = prompt('Highlight and copy', string); // eslint-disable-line no-alert
+        d3.select("#copy-button").style('transform','none');
+        result = prompt('Highlight and copy', string); // eslint-disable-line no-alert
     }
   }
 
@@ -97,11 +103,6 @@ function generateStateLink(){
         clearTimeout(copy_timeout)
         copy_timeout = undefined;
     }
-    document.getElementById('copy-text').innerHTML ='Link copied';
-    copy_timeout = setTimeout(function(){
-        document.getElementById('copy-text').innerHTML = 'Copy link to current graph';
-        copy_timeout = undefined;
-    },1000)
      const id0 =  getKeyByValue(workers_id_dict, animations_selections[0]['work_type']) + getGroupString(0);
      const s = Math.round(1000 * content_obj.scrollTop / scroll_limit);
      let p0 = '';

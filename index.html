@@ -6,7 +6,7 @@
     <meta name = "description" content = "Interactive data visualizations for open-ended analysis.">
     <meta name="viewport" content="width=device-width, initial-scale = 1.0,maximum-scale = 1.0,user-scalable=no"/>
     <link href="styles/electric-scatter.css" rel="stylesheet">
-    <link href="styles/index_css.css" rel="stylesheet">
+    <link href="styles/index.css" rel="stylesheet">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -18,11 +18,11 @@
     <meta name='twitter:card' content='summary_large_image'>
     <meta name='twitter:site' content='@mdahardy'>
     <meta name='twitter:title' content='Electric scatter'>
-    <meta name='twitter:description' content='Interactive data visualizations for open-ended exploration.'>
+    <meta name='twitter:description' content='Interactive data visualizations for open-ended analysis.'>
     <meta name='twitter:image' content='https://www.electricscatter.com/assets/og_logo.png'>
 
     <meta property="og:title" content="Electric scatter">
-    <meta property="og:description" content="Interactive data visualizations for open-ended exploration.">
+    <meta property="og:description" content="Interactive data visualizations for open-ended analysis.">
     <meta name='twitter:image' content='https://www.electricscatter.com/assets/og_logo.png'>
     <meta property="og:url" content="https://www.electricscatter.com">
 
@@ -87,19 +87,5 @@
         </div>
     </a>
 </body>
-<script>
-    if (!(window.matchMedia("(any-pointer:coarse)").matches)){
-        document.querySelectorAll('.project-video source').forEach(source_i => {source_i.setAttribute('src', source_i.getAttribute('data-src'))});
-        document.querySelectorAll('.project-video').forEach(vid => {vid.load()});
-        document.querySelectorAll(".video-div").forEach(function(div_wrapper){
-            const curr_video_div = document.getElementById(`video-${div_wrapper.id.slice(-1)}`);
-            div_wrapper.addEventListener('mouseover',()=>{curr_video_div.play()});
-            div_wrapper.addEventListener('mouseleave',()=>{
-                curr_video_div.currentTime = 0;
-                curr_video_div.pause();
-            });
-        });
-    };
-</script>
-
+<script src = 'scripts/index.js'> </script>
 </html>
