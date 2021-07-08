@@ -1,10 +1,6 @@
 function updateGroupOnSetup(input_str,group_index){
-    animations_selections[group_index]['generation'] = generations_id_dict[input_str[0]];
+    animations_selections[group_index] = generations_id_dict[input_str[0]];
     animations_filenames[group_index] =  makeNewAccessingString(group_index);
-    document.querySelectorAll(`.button-${group_index}`).forEach(btn => {btn.checked=false});
-    document.querySelectorAll(`.selector-${group_index}`).forEach(btn => {btn.selected=false});
-    document.getElementById(`select-generation-${group_index}-${animations_selections[group_index]['generation']}`).selected = true;
-    document.getElementById(`radio-generation-${group_index}-${animations_selections[group_index]['generation']}`).checked = true;
 }
 
 function setHeight(is_resizing = false,toolbar_changing=false){
@@ -38,7 +34,7 @@ function setHeight(is_resizing = false,toolbar_changing=false){
 
 
 function getGroupString(input_index){
-    return  getKeyByValue(generations_id_dict, animations_selections[input_index]['generation']);
+    return  getKeyByValue(generations_id_dict, animations_selections[input_index]);
 }
 
 function indexToTwoDigits(input_index){
@@ -92,17 +88,29 @@ function generateStateLink(){
         clearTimeout(copy_timeout)
         copy_timeout = undefined;
     }
-     const id0 =  getKeyByValue(workers_id_dict, animations_selections[0]['work_type']) + getGroupString(0);
-     const s = Math.round(1000 * content_obj.scrollTop / scroll_limit);
-     let p0 = '';
-     for (clicked_ind0 of animations_dict[0].clicked_indices) p0 += indexToTwoDigits(clicked_ind0);
-     let saving_str = `?id0=${id0}` + ((s==0) ? '' : `&s=${s}`) + ((p0=='') ? '' : `&p0=${p0}`)
-     if (animations_dict[1]){
-        let p1 = '';
-        for (clicked_ind1 of animations_dict[1].clicked_indices) p1 += indexToTwoDigits(clicked_ind1);
-        saving_str += `&id1=${ getGroupString(1)}`  + ((p1=='') ? '' : `&p1=${p1}`);
-     }
+    const saving_str = generateSavingStr();
     copyToClipboard(`https://electricscatter.com/g${saving_str}`);
+}
+
+function generateSavingStr(){
+    const id0 =  getKeyByValue(workers_id_dict, work_type) + getGroupString(0);
+    const s = Math.round(1000 * content_obj.scrollTop / scroll_limit);
+    let p0 = '';
+    for (clicked_ind0 of animations_dict[0].clicked_indices) p0 += indexToTwoDigits(clicked_ind0);
+    let saving_str = `?id0=${id0}` + ((s==0) ? '' : `&s=${s}`) + ((p0=='') ? '' : `&p0=${p0}`)
+    if (animations_dict[1]){
+       let p1 = '';
+       for (clicked_ind1 of animations_dict[1].clicked_indices) p1 += indexToTwoDigits(clicked_ind1);
+       saving_str += `&id1=${ getGroupString(1)}`  + ((p1=='') ? '' : `&p1=${p1}`);
+    }
+    return (saving_str);
+}
+
+function storeSavingStr(){
+    const saving_string = generateSavingStr();
+    sessionStorage.setItem("generations_saving_str",saving_string);
+    sessionStorage.setItem("generations_scroll_speed",document.getElementById("myRange").value);
+    sessionStorage.setItem('generations_highlight_selection',current_selection);
 }
 
 function getKeyByValue(object, value) {
@@ -801,10 +809,57 @@ function addClickedPercentiles(percentile_vec,input_ind){
     }
 }
 
-async function initialSetup(fname0,fname1=undefined,scroll_amount=undefined,percentile_vec0=[],percentile_vec1=[],remove_density_enter=false){
+function initialStyling(){
+    for (let group_index of [0,1]){
+        document.querySelectorAll(`.button-${group_index}`).forEach(btn => {btn.checked=false});
+        document.querySelectorAll(`.selector-${group_index}`).forEach(btn => {btn.selected=false});
+        document.getElementById(`select-generation-${group_index}-${animations_selections[group_index]}`).selected = true;
+        document.getElementById(`radio-generation-${group_index}-${animations_selections[group_index]}`).checked = true;
+    }
+}
+
+function setInitialScrollSpeed(){
+    const scroll_speed = +sessionStorage.getItem('generations_scroll_speed');
+    if (scroll_speed!=0){
+        document.getElementById('myRange').value = scroll_speed;
+        updateScrollSpeed(scroll_speed*-1);
+        return;
+    }
+    document.getElementById('myRange').value = -32000;
+}
+
+
+function setHighlightSelector(selection_index){
+    document.getElementById(`group${selection_index}highlight`).checked=true; 
+    document.getElementById(`group${Math.abs(1-selection_index)}highlight`).checked=false; 
+}
+
+function setInitialState(){
+    if (animations_dict[1]){
+        addDistribution(false);
+        const current_selection = +sessionStorage.getItem('generations_highlight_selection');
+        setHighlightSelector(current_selection);
+        if (current_selection===1){
+            toggleDistributionSelection();
+        } else{
+            if (show_group_icon) showGroupIcon('crimson',0.8);
+        }
+    } else{
+        removeDistribution();
+    }
+    document.querySelector('input[type="checkbox"]').checked=animations_dict[1]!=undefined;
+    document.querySelectorAll('.highlight-button').forEach(e=>e.disabled=animations_dict[1]!=undefined);
+    initialStyling();
+    setInitialScrollSpeed();
+    document.getElementById('workers-selector').value = work_type;
+    d3.select('#switch-div').style('display','block');
+}
+
+async function initialSetup(fname0,fname1,scroll_amount,percentile_vec0,percentile_vec1,remove_density_enter){
     animations_dict[0] = new IncomeAnimation(0,await d3.json(fname0));
     if (fname1) animations_dict[1] = new IncomeAnimation(1,await d3.json(fname1)); 
     setHeight();
+    if (is_small && stop_toolbar_animation) toggleToolbar(0);
     [min_age,max_age,age_vec] = (fname1===undefined) ? getAgeBounding(animations_dict[0].data_obj.available_ages) : getAgeBounding(animations_dict[0].data_obj.available_ages,animations_dict[1].data_obj.available_ages);
     getNumAges();
     cutHeights();
@@ -833,12 +888,13 @@ async function initialSetup(fname0,fname1=undefined,scroll_amount=undefined,perc
     addClickedPercentiles(percentile_vec0,0)
     if (fname1)  addClickedPercentiles(percentile_vec1,1)
     d3.select(has_toolbar ? '#content' : window).on("scroll.scroller", globalInterpolate);
-    if (scroll_amount) content_obj.scrollTo(0,scroll_amount * scroll_limit)
+    content_obj.scrollTo(0,scroll_amount * scroll_limit)
     if (!has_mouse) d3.select('#density-enter-text').html('Tap and hold density plot to track income percentiles');
     d3.select('#loader-content').style('display','none');
     remove_density_enter ? removeDensityEnter() : d3.select('#legend').style('opacity','0.09');
+    setInitialState();
     d3.selectAll('.hidden').classed('hidden',false);
-    if (is_small) toggleToolbar(1000);
+    if (is_small && !stop_toolbar_animation) toggleToolbar(1000);
 }
 
 function makeHoverRect(){
@@ -990,8 +1046,8 @@ function updateScrollSpeed(new_num_milliseconds){
 }
 
 function makeUpperStrings(){
-    document.getElementById('group-0-legend-text').innerHTML = generations_scale(animations_selections[0]['generation'])
-    if (animations_dict[1]) document.getElementById('group-1-legend-text').innerHTML =  generations_scale(animations_selections[1]['generation'])
+    document.getElementById('group-0-legend-text').innerHTML = generations_scale(animations_selections[0])
+    if (animations_dict[1]) document.getElementById('group-1-legend-text').innerHTML =  generations_scale(animations_selections[1])
 }
 
 function addAxisText(){
@@ -1013,15 +1069,17 @@ function adjustYearsTooltips(){
 
 function toggleToolbar(transition_d=250){
     if (auto_scrolling) stopScrolling();
-    is_changing = true;
-    if (toggle_timeout){
-        toggle_timeout = undefined;
-        clearTimeout(toggle_timeout);
+    if (transition_d!==0){
+        is_changing = true;
+        if (toggle_timeout){
+            toggle_timeout = undefined;
+            clearTimeout(toggle_timeout);
+        }
+        toggle_timeout = setTimeout(function(){ 
+            is_changing = false;
+            toggle_timeout = undefined;
+        },transition_d+10);
     }
-    toggle_timeout = setTimeout(function(){ 
-        is_changing = false;
-        toggle_timeout = undefined;
-    },transition_d+10)
     if (is_expanded==false){
         is_expanded =true;
         toolbar_selector.transition().duration(transition_d).style('left','0px');
@@ -1037,14 +1095,12 @@ function toggleToolbar(transition_d=250){
     border_hider.transition().duration(transition_d).style('left','-3px');
 }
 
-
 function interruptToolbarToggle(){
     toolbar_selector.interrupt();
     plus_wrapper.interrupt();
     icon_wrapper.interrupt();
     border_hider.interrupt();
 }
-
 
 function setWindowEventListeners(){
     document.getElementById('copy-button').addEventListener('mousedown',function(e){
@@ -1105,6 +1161,10 @@ function setWindowEventListeners(){
         },100)
     };
 
+    window.addEventListener('pagehide', function(){
+        storeSavingStr();
+    });    
+
     window.onorientationchange = function(){
         if (!just_resized) resize();
     }
@@ -1144,9 +1204,8 @@ function setToolbarListeners(){
     document.getElementById('workers-selector').addEventListener('change',function(){
         auto_scrolling==true ? stopScrolling() : wrapper_with_adjusted_margins.selectAll("*").interrupt();
         const worker_group = this.value;
-        if (animations_selections[0]['work_type'] != worker_group){
-            animations_selections[0]['work_type'] = worker_group;
-            animations_selections[1]['work_type'] = worker_group;
+        if (work_type != worker_group){
+            work_type = worker_group;
             removeGroup(0);
             if (animations_dict[1]){
                 removeGroup(1);
@@ -1174,42 +1233,53 @@ function setToolbarListeners(){
     document.getElementById('plus-wrapper').addEventListener('click',function(){toggleToolbar()});
 }
 
-function checkBoxChanger(automatic=true){
+function addDistribution(automatic){
     const input_group_1 = document.querySelectorAll('.button-1');
+    auto_scrolling==true ? stopScrolling() : wrapper_with_adjusted_margins.selectAll("*").interrupt();
+    second_group_disabled = false;
+    d3.select('#legend').style('height','50px');
+    if (has_legend) d3.select('#legend-1-wrapper').style('display','flex');
+    input_group_1.forEach((btn) => {btn.disabled = false});
+    document.querySelectorAll('.group-1-dropdown').forEach(function(btn){btn.disabled=false});
+    if (automatic){
+        global_counter = global_counter+1;
+        simpleUpdate(animations_filenames[0],global_counter,makeNewAccessingString(1));
+        toggleDisable(true);
+        if (show_group_icon) showGroupIcon('dodgerblue',0.8);
+    }
+}
+
+function showGroupIcon(input_color,opacity){
+    icon_group_currently_shown = true;
+    d3.select('#group-selection-svg').style('opacity',opacity).style('fill',input_color);
+    d3.select('#group-selection-wrapper').style('display','block');
+}
+
+function removeDistribution(){
+    const input_group_1 = document.querySelectorAll('.button-1');
+    auto_scrolling==true ? stopScrolling() : wrapper_with_adjusted_margins.selectAll("*").interrupt();
+    second_group_disabled = true;
+    input_group_1.forEach((btn) => {btn.disabled = true});
+    document.querySelectorAll('.group-1-dropdown').forEach(function(btn){btn.disabled=true});
+    d3.select('#legend').style('height','28px');
+    if (has_legend) d3.select('#legend-1-wrapper').style('display','none');
+    toggleDisable(false);
+    removeGroup(1);
+    global_counter = global_counter+1;
+    simpleUpdate(animations_filenames[0],global_counter,undefined);
+    if (show_group_icon){
+        icon_group_currently_shown = false;
+        d3.select('#group-selection-wrapper').style('display','none');
+    }
+}
+
+function checkBoxChanger(automatic=true){
     const checkbox = document.querySelector('input[type="checkbox"]');
     if (checkbox.checked) {
-        auto_scrolling==true ? stopScrolling() : wrapper_with_adjusted_margins.selectAll("*").interrupt();
-        second_group_disabled = false;
-        d3.select('#legend').style('height','50px');
-        if (has_legend) d3.select('#legend-1-wrapper').style('display','flex');
-        input_group_1.forEach((btn) => {btn.disabled = false});
-        document.querySelectorAll('.group-1-dropdown').forEach(function(btn){btn.disabled=false});
-        if (automatic){
-            global_counter = global_counter+1;
-            simpleUpdate(animations_filenames[0],global_counter,makeNewAccessingString(1));
-            toggleDisable(true);
-        }
-        if (show_group_icon){
-            icon_group_currently_shown = true;
-            d3.select('#group-selection-svg').style('opacity','0.8').style('fill','dodgerblue');
-            d3.select('#group-selection-wrapper').style('display','block');
-        }
-    } else {
-            auto_scrolling==true ? stopScrolling() : wrapper_with_adjusted_margins.selectAll("*").interrupt();
-            second_group_disabled = true;
-            input_group_1.forEach((btn) => {btn.disabled = true});
-            document.querySelectorAll('.group-1-dropdown').forEach(function(btn){btn.disabled=true});
-            d3.select('#legend').style('height','28px');
-            if (has_legend) d3.select('#legend-1-wrapper').style('display','none');
-            toggleDisable(false);
-            removeGroup(1);
-            global_counter = global_counter+1;
-            simpleUpdate(animations_filenames[0],global_counter,undefined);
-            if (show_group_icon){
-                icon_group_currently_shown = false;
-                d3.select('#group-selection-wrapper').style('display','none');
-            }
-        }
+        addDistribution(automatic);
+        return;
+    }
+    removeDistribution();
 }
 
 function yearTextListener(btn){
@@ -1278,11 +1348,11 @@ function addRadioListener(btn,group_index){
         if (group_index==0 || second_group_disabled==false){
             const selection_type = this.className.substring(14);
             const selection_id = this.id.slice(0, -1);
-            if (animations_selections[group_index][selection_type] != selection_id){
+            if (animations_selections[group_index] != selection_id){
                 auto_scrolling==true ? stopScrolling() : wrapper_with_adjusted_margins.selectAll("*").interrupt();
-                document.getElementById(`select-${selection_type}-${group_index}-${animations_selections[group_index][selection_type]}`).selected = false;
+                document.getElementById(`select-${selection_type}-${group_index}-${animations_selections[group_index]}`).selected = false;
                 document.getElementById(`select-${selection_type}-${group_index}-${selection_id}`).selected = true;
-                animations_selections[group_index][selection_type] = selection_id;
+                animations_selections[group_index] = selection_id;
                 removeGroup(group_index);
                 global_counter = global_counter+1;
                 group_index==0 ? simpleUpdate(makeNewAccessingString(0),global_counter,animations_filenames[1]) : simpleUpdate(animations_filenames[0],global_counter,makeNewAccessingString(1));
@@ -1327,7 +1397,7 @@ function cancelYearToolTip(class_list_name){
 }
 
 function makeNewAccessingString(group_index){
-    return `./processed_data/${animations_selections[group_index]['work_type']}/${animations_selections[group_index]['generation']}/data.json`
+    return `./processed_data/${work_type}/${animations_selections[group_index]}/data.json`
 }
 
 
@@ -1338,11 +1408,11 @@ function demographicDropdowns(btn){
         if (select_index==0 || second_group_disabled==false){
             const demographic_group = this.value;
             const demographic_type = this_id.slice(8);
-            if (animations_selections[select_index][demographic_type] != demographic_group){
+            if (animations_selections[select_index] != demographic_group){
                 auto_scrolling==true ? stopScrolling() : wrapper_with_adjusted_margins.selectAll("*").interrupt();
-                document.getElementById(`radio-${demographic_type}-${select_index}-${animations_selections[select_index][demographic_type]}`).checked = false;
+                document.getElementById(`radio-${demographic_type}-${select_index}-${animations_selections[select_index]}`).checked = false;
                 document.getElementById(`radio-${demographic_type}-${select_index}-${demographic_group}`).checked = true;
-                animations_selections[select_index][demographic_type] = demographic_group;
+                animations_selections[select_index] = demographic_group;
                 removeGroup(select_index)
                 global_counter = global_counter+1;
                 select_index==0 ? simpleUpdate(makeNewAccessingString(0),global_counter,animations_filenames[1]) : simpleUpdate(animations_filenames[0],global_counter,makeNewAccessingString(1));
@@ -1400,7 +1470,8 @@ let years_line_height = 8; // the width of the svg on top of the density_svg for
 let scaled_global_max,min_age, max_age, num_ages, age_vec, copy_timeout,update_timeout,is_changing,toggle_timeout,resize_timeout,is_expanded, animation_timeout, years_distance, wheel_timeout, touchscreen_timeout,curveFunction,clipFunction,hover_rect,years_svg_wrapper,num_x_ticks,global_x_max,global_y_max,x_scale,y_scale,global_thresholds,scaled_global_thresholds,global_num_thresholds,global_age_num,global_age_floor, x_coordinate,scaled_bottom,scaled_top,years_svg,years_x_scale,years_y_scale,line_function;
 let animations_dict = [undefined,undefined]
 let second_group_disabled = true;
-let animations_selections = [{'work_type':'full_time','generation':'all_generations'}, {'work_type':'full_time','generation':'boomers'}]
+let work_type = 'full_time';
+let animations_selections = ['all_generations', 'boomers']
 let animations_filenames = ['./processed_data/full_time/all_generations/data.json',undefined];
 let shown_distributions = [true,false];
 let is_transitioning = false;
@@ -1413,6 +1484,7 @@ let icon_group_currently_shown = false;
 let has_toolbar = false;
 let content_obj = document.documentElement;
 let is_small = undefined;
+let stop_toolbar_animation = false;
 let has_legend = d3.select('#legend').style('display')=='flex';
 const fullscreen_index = getFullScreenIndices();
 const density_tooltip = d3.select('#density-tooltip');
@@ -1532,39 +1604,37 @@ if (isIE()){
     d3.select('#ie-issues').style('display','flex');
 }else{
     // example ?id0=2222?id1=123?s=500?p0=50?p1=50
-    const url = new URL(window.location.href);
-    if (url.searchParams.has('id0')){
-        const id0 = url.searchParams.get("id0");
-        animations_selections[0]['work_type'] = workers_id_dict[id0[0]];
-        animations_selections[1]['work_type'] = workers_id_dict[id0[0]];
-        if (animations_selections[0]['work_type'] != 'full_time'){
-            document.getElementById('selector-full_time').selected = false;
-            document.getElementById(`selector-${animations_selections[0]['work_type']}`).selected = true;
+    const real_url = new URL(window.location.href);
+    let search_params;
+    let percentile_vec0 = [];
+    let percentile_vec1 = [];
+    let scroll_amount = 0;
+    let remove_density_enter = false;
+    if (real_url.searchParams.has('id0')){
+        search_params = real_url.searchParams;
+    } else{
+        const dummy_url = new URL(`https://www.electricscatter.com/${sessionStorage.getItem('generations_saving_str')}`);
+        search_params = dummy_url.searchParams;
+    }
+    if (search_params.has('id0')){
+        stop_toolbar_animation = true;
+        remove_density_enter = true;
+        if (search_params.has('s')) scroll_amount =  (+search_params.get('s')/1000);
+        const id0 = search_params.get("id0");
+        work_type =  workers_id_dict[id0[0]];
+        if (search_params.has('p0')){
+            const p0 = search_params.get('p0');
+            if (p0.length % 2 === 0) for (let i=0;i<=p0.length-1;i=i+2) percentile_vec0.push(+p0.slice(i,i+2));
         }
-        let percentile_vec0 = [];
-        if (url.searchParams.has('p0')){
-            const p0 = url.searchParams.get('p0');
-            if (p0.length % 2 === 0) for (let i=0;i<=p0.length-1;i=i+2) percentile_vec0.push(+p0.slice(i,i+2))
-        }
-        const scroll_amount = (url.searchParams.has('s')) ? (+url.searchParams.get('s')/1000) : 0;
-        updateGroupOnSetup(id0.slice(1),0)
-        if (url.searchParams.has('id1')){
-            const id1 = url.searchParams.get("id1");
+        updateGroupOnSetup(id0.slice(1),0);
+        if (search_params.has('id1')){
+            const id1 = search_params.get("id1");
             updateGroupOnSetup(id1,1);
-            document.querySelector('input[type="checkbox"]').checked = true;
-            checkBoxChanger(false)
-            document.getElementById('group0highlight').disabled=false;
-            document.getElementById('group1highlight').disabled=false;
-            let percentile_vec1 = [];
-            if (url.searchParams.has('p1')){
-                const p1 = url.searchParams.get('p1');
+            if (search_params.has('p1')){
+                const p1 = search_params.get('p1');
                 if (p1.length % 2 === 0) for (let i=0;i<=p1.length-1;i=i+2) percentile_vec1.push(+p1.slice(i,i+2))
             }
-            initialSetup(animations_filenames[0],animations_filenames[1],scroll_amount,percentile_vec0,percentile_vec1,true);
-        } else{
-            initialSetup(animations_filenames[0],undefined,scroll_amount,percentile_vec0,[],true);
         }
-    } else{
-        initialSetup(animations_filenames[0])
     }
+    initialSetup(animations_filenames[0],animations_filenames[1],scroll_amount,percentile_vec0,percentile_vec1,remove_density_enter)
 }

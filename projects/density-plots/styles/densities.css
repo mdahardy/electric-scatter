@@ -1893,12 +1893,11 @@ to be seperate because it's toggleable */
 -- -- -- -- -- -- -- -- -- -- -- 
 -- -- -- -- -- -- -- -- -- -- */
 
-
 .data-logo-wrapper{
   position:absolute;
   top:calc(45px + 15vh);
   width:100vw;
-  height:22vh;
+  height:20vh;
   max-height:200px;
   display:flex;
   align-items:center;

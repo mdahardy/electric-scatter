@@ -586,6 +586,10 @@ TOOGLE SLIDER  */
     width: 0;
     height: 0;
   }
+
+  #switch-div{
+      display:none;
+  }
   
   .toggle-slider {
     position: absolute;
