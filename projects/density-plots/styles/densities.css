@@ -235,7 +235,6 @@ body {
   bottom:10px;
   white-space:nowrap;
   z-index:9999999999;
-
 }
 
 .add-label {
@@ -1961,6 +1960,26 @@ to be seperate because it's toggleable */
   fill:#000000;
 }
 
+.correction-text{
+  display:none;
+  position:fixed;
+  bottom:10px;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:40px;
+  font-size:16px;
+  opacity:0;
+  pointer-events:none;
+}
+
+#short-correction-text{
+  display:none;
+}
+
+.html-section-11-css .correction-text{
+  display:flex;
+}
 
 .css-section-11-1 #ipums-logo{
   opacity:1;
@@ -1973,6 +1992,11 @@ to be seperate because it's toggleable */
 }
 
 .css-section-11-2 #census-logo{
+  opacity:1;
+  pointer-events:initial;
+}
+
+.css-section-11-2 .correction-text{
   opacity:1;
   pointer-events:initial;
 }
@@ -2711,6 +2735,7 @@ left: 14px;
 /* Generic small screen sizing */
 /* This is also where the icon div in html section 4 goes to two rows */
 @media (max-width:834px){
+  
 
   #captions-wrapper{
     font-size:18px;
@@ -2799,6 +2824,12 @@ left: 14px;
 
   #icon-wrapper{
     bottom:80px;
+  }
+
+  .correction-text{
+    bottom:15px;
+    height:50px;
+    font-size:18px;
   }
 
   #add-wrapper{
@@ -3150,6 +3181,15 @@ left: 14px;
 /* Smartphones but not tablets */
 @media (orientation:portrait) and (max-width:500px){
 
+
+  #short-correction-text{
+    display:block;
+  }
+
+  #long-correction-text{
+    display:none;
+  }
+
   .large-image-wrapper-11, .large-image-wrapper{
     margin-top:calc(45px + 5vh);
   }
@@ -3175,7 +3215,6 @@ left: 14px;
     font-size:23px;
     margin-top:20px;
   }
-
 
   .earner-icon{
     width:45px;
@@ -3492,6 +3531,19 @@ left: 14px;
     font-size:16px;
     width:75ch;
     max-width:98%;
+  }
+
+  .correction-text{
+    width:50%;
+    right:0;
+  }
+
+  #short-correction-text{
+    display:block;
+  }
+
+  #long-correction-text{
+    display:none;
   }
 
   #bottom-wrapper{

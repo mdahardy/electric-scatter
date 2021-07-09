@@ -1,3 +1,403 @@
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- VARIABLE DECLARATIONS -- -
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+
+let scroll_duration = 32000;
+const has_mouse = !(matchMedia('(hover: none)').matches);
+let auto_scrolling = false;
+let bottom_svg_hover = false;
+let current_selection = 0;
+let years_line_height = 8; // the width of the svg on top of the density_svg for plotting the current year info
+let animations_timeout0,animations_timeout1,copy_timeout, is_changing,toggle_timeout,resize_timeout,is_expanded, animation_timeout, scroll_limit, years_distance, years_lower, wheel_timeout, touchscreen_timeout, num_ages,curveFunction,clipFunction,hover_rect,years_svg_wrapper,num_x_ticks,global_x_max,global_y_max,x_scale,y_scale,global_thresholds,scaled_global_thresholds,global_num_thresholds,global_scroll_num,global_scroll_floor, x_coordinate,scaled_bottom,scaled_top,years_svg,years_x_scale,years_y_scale,line_function;
+let animations_dict = [undefined,undefined]
+let second_group_disabled = true;
+let work_type = 'full_time';
+let animations_selections = [{'sex': 'all_sexes','age': 'all_ages','race':'all_races'}, {'sex': 'males', 'age': 'from_30_to_49', 'race':'all_races'}]
+let animations_filenames = ['./processed_data/full_time/all_sexes/all_ages/all_races/data.json',undefined];
+let shown_distributions = [true,false];
+let is_transitioning = false;
+let tooltips_margin = 5;
+let fullscreen = false;
+let has_entered_mouse = false;
+let is_hovering_years = false;
+let show_group_icon = false;
+let icon_group_currently_shown = false;
+let has_toolbar = false;
+let content_obj = document.documentElement;
+let is_small = undefined;
+let has_legend = d3.select('#legend').style('display')=='flex';
+let showing_loader = false;
+let stop_toolbar_animation = false;
+const fullscreen_index = getFullScreenIndices();
+const density_tooltip = d3.select('#density-tooltip');
+let just_resized = false;
+const document_body = d3.select('body');
+const toolbar_selector =   d3.select('#toolbar');
+const plus_wrapper =   d3.select('#plus-wrapper');
+const icon_wrapper = d3.select('#icon-wrapper');
+const border_hider = d3.select('#border-hider');
+let toggle_forward_back = false;
+let global_counter=0;
+const uncut_tholds = [ 0, 2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000, 32000, 34000, 36000, 38000, 40000, 42000, 44000, 46000, 48000, 50000, 52000, 54000, 56000, 58000, 60000, 62000, 64000, 66000, 68000, 70000, 72000, 74000, 76000, 78000, 80000, 82000, 84000, 86000, 88000, 90000, 92000, 94000, 96000, 98000, 100000, 102000, 104000, 106000, 108000, 110000, 112000, 114000, 116000, 118000, 120000, 122000, 124000, 126000, 128000, 130000, 132000, 134000, 136000, 138000, 140000, 142000, 144000, 146000, 148000, 150000, 152000, 154000, 156000, 158000, 160000, 162000, 164000, 166000, 168000, 170000, 172000, 174000, 176000, 178000, 180000, 182000, 184000, 186000, 188000, 190000, 192000, 194000, 196000, 198000, 200000, 202000, 204000, 206000, 208000, 210000, 212000, 214000, 216000, 218000, 220000, 222000, 224000, 226000, 228000, 230000, 232000, 234000, 236000, 238000, 240000, 242000, 244000, 246000, 248000, 250000, 252000, 254000, 256000, 258000, 260000, 262000, 264000, 266000, 268000, 270000, 272000, 274000, 276000, 278000, 280000, 282000, 284000, 286000, 288000, 290000, 292000, 294000, 296000, 298000, 300000, 302000, 304000, 306000, 308000, 310000, 312000, 314000, 316000, 318000, 320000, 322000, 324000, 326000, 328000, 330000, 332000, 334000, 336000, 338000, 340000, 342000, 344000, 346000, 348000, 350000, 352000, 354000, 356000, 358000, 360000, 362000, 364000, 366000, 368000, 370000, 372000, 374000, 376000, 378000, 380000, 382000, 384000, 386000, 388000, 390000, 392000, 394000, 396000, 398000, 400000, 402000, 404000, 406000, 408000, 410000, 412000, 414000, 416000, 418000, 420000, 422000, 424000, 426000, 428000, 430000, 432000, 434000, 436000, 438000, 440000, 442000, 444000, 446000, 448000, 450000, 452000, 454000, 456000, 458000, 460000, 462000, 464000, 466000, 468000, 470000, 472000, 474000, 476000, 478000, 480000, 482000, 484000, 486000, 488000, 490000, 492000, 494000, 496000, 498000, 500000, 502000, 504000, 506000, 508000, 510000, 512000, 514000, 516000, 518000, 520000, 522000, 524000, 526000, 528000, 530000, 532000, 534000, 536000, 538000, 540000, 542000, 544000, 546000, 548000, 550000, 552000, 554000, 556000, 558000, 560000, 562000, 564000, 566000, 568000, 570000, 572000, 574000, 576000, 578000, 580000, 582000, 584000, 586000, 588000, 590000, 592000, 594000, 596000, 598000, 600000, 602000, 604000];
+const race_scale = d3.scaleOrdinal().domain(['all_races', 'white_non_hispanic','black_non_hispanic','hispanic']).range(['All ','White ','Black ','Hisp. ']);
+const sex_scale = d3.scaleOrdinal().domain(['all_sexes', 'males','females']).range(['workers','men','women']);
+const age_scale = d3.scaleOrdinal().domain(['all_ages', 'under_30','from_30_to_49','over_50']).range(['',' 16-29 ',' 30-49 ',' 50+']);
+const ticks_scale = d3.scaleThreshold().domain([300,700,1350]).range([2,3,5,8]);
+
+const race_id_dict = {
+    '1': 'all_races',
+    "2": 'white_non_hispanic',
+    '3' : 'black_non_hispanic',
+    '4' : 'hispanic'}
+
+const sex_id_dict = {
+        '1': 'all_sexes',
+        "2": 'males',
+        '3' : 'females'}
+
+const age_id_dict = {
+    '1': 'all_ages',
+    "2": 'under_30',
+    '3' : 'from_30_to_49',
+    '4' : 'over_50'}
+
+const workers_id_dict = {     
+    '1': 'full_time',
+    "2": 'mine',
+    '3' : 'fred'}
+
+let [totalWidth,totalHeight] = getWidthAndHeight();
+let margins = getMargins();
+let [modifiedWidth,modifiedHeight] = widthAndHeightMinusMargins(margins,totalWidth,totalHeight);
+
+// SVG SELECTORS -- -- -- -- -- -- -- -- 
+const wrapper_wrapper = d3.select("#density-div")
+    .append("svg")
+    .attr("width",totalWidth)
+    .attr("height",totalHeight+years_line_height);
+
+const wrapper_svg = wrapper_wrapper
+    .append('g')
+    .attr('id','wrapper-svg')
+    .attr("width",totalWidth)
+    .attr("height",totalHeight)
+    .attr("transform","translate(0,"+years_line_height+")");
+
+wrapper_svg
+    .append("rect")
+    .attr('id','rect-svg')
+    .attr("width",totalWidth)
+    .attr("height",totalHeight-margins.top)
+    .attr('fill','white')
+    .attr("transform", `translate(0,${margins.top})`)
+
+wrapper_svg
+    .append("rect")
+    .attr('id','rect-svg2')
+    .attr("width",totalWidth-(margins.left))
+    .attr("height",totalHeight-margins.bottom)
+    .attr('fill','white')
+    .attr("transform","translate("+margins.left+",0)");
+
+wrapper_wrapper.append("defs")
+        .append("marker")
+        .attr("id","arrow")
+        .attr("viewBox","0 -5 10 10")
+        .attr("refX",5)
+        .attr("refY",0)
+        .attr("markerWidth",3)
+        .attr("markerHeight",4)
+        .attr("orient",'auto')
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5")
+        .attr("class","arrowHead")
+        .style('fill','#545454')
+
+const wrapper_with_adjusted_margins = wrapper_svg
+    .append("g")
+    .attr("transform","translate(" + margins.left + "," + margins.top + ")");
+
+const grid_svg = wrapper_with_adjusted_margins.append('g');
+const density_svg_dict = [ wrapper_with_adjusted_margins.append("g"),wrapper_with_adjusted_margins.append("g") ];
+const lines_svg_dict = [ wrapper_with_adjusted_margins.append("g"), wrapper_with_adjusted_margins.append("g") ];
+const density_outer_group = wrapper_with_adjusted_margins.append("g").attr('class','hidden');
+const hover_group = wrapper_with_adjusted_margins.append("g");
+const density_enter_g = wrapper_wrapper.append('g');
+const density_enter_rect = density_enter_g
+    .append("rect")
+    .attr("id",'density-enter-rect')
+    .attr('y',years_line_height)
+    .attr("width",totalWidth)
+    .attr('height',totalHeight);
+
+const curr_year_line = density_enter_g
+    .append("line")
+    .attr('y1',years_line_height)
+    .attr('y2',years_line_height)
+    .attr('x2',margins.left-4.5)
+    .attr('x1',totalWidth-margins.right)
+    .attr('class','current-year-line hidden');
+
+d3.select('#density-enter-inner')
+    .style("width",`${totalWidth-(margins.left + margins.right)}px`)
+    .style("height",`${totalHeight-margins.bottom}px`)
+    .style("transform",`translate(${margins.left}px,0)`);
+
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// DEFINE CLASS FOR EACH DISTRBITUION -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+
+class IncomeAnimation {
+    constructor(plotting_num,data){
+        this.plotting_num = plotting_num;
+        this.data_obj = data;
+        this.x_max = data['x_max'];
+        this.y_max = data['y_max'];
+        this.num_lines = data.incomes_dict.length;
+        this.curve = undefined;
+        this.clip_path = undefined;
+        this.drawing_dictionaries = undefined;
+        this.incomes_dictionaries = undefined;
+        this.interpolated_incomes = undefined;
+        this.hover_indices = [];
+        this.clicked_indices = [];
+        this.is_selected = current_selection==plotting_num;
+        this.hover_info = [-1,-1];
+        this.vertical_lines = undefined;
+        this.tooltip_percentile = undefined;
+        this.ready_to_draw=false;
+    }
+
+    readyAnimation(){
+        this.makeInterpolatingDictionaries();
+        this.initialPlotsAndLines();
+        this.ready_to_draw=true;
+    }
+
+    makeInterpolatingDictionaries(){
+        const drawing_dict = {};
+        const incomes_dict = {};
+        const num_minus_one = num_years-1;
+        for (let index_i=0;index_i<num_minus_one;index_i++){
+            drawing_dict[index_i] = d3.interpolateArray(this.data_obj['densities'][index_i].slice(0,global_num_thresholds).map(d=>y_scale(d)),this.data_obj['densities'][index_i+1].slice(0,global_num_thresholds).map(d=>y_scale(d)));
+            incomes_dict[index_i] = d3.interpolateArray(this.data_obj['incomes'][index_i],this.data_obj['incomes'][index_i+1]);
+        }
+        drawing_dict[num_minus_one] = d3.interpolateArray(this.data_obj['densities'][num_minus_one].slice(0,global_num_thresholds).map(d=>y_scale(d)),this.data_obj['densities'][num_minus_one].slice(0,global_num_thresholds).map(d=>y_scale(d)));
+        incomes_dict[num_minus_one] =  d3.interpolateArray(this.data_obj['incomes'][num_minus_one],this.data_obj['incomes'][num_minus_one]);
+        this.drawing_dictionaries = drawing_dict;
+        this.incomes_dictionaries = incomes_dict;
+    }
+
+    interpolate(){
+        const residual = global_scroll_num - global_scroll_floor;
+        return [this.drawing_dictionaries[global_scroll_floor](residual),this.incomes_dictionaries[global_scroll_floor](residual)];
+    }
+
+    initialPlotsAndLines(){
+        const [scaled_drawing_data,income_data] = this.interpolate();
+        this.interpolated_incomes = income_data;
+        const this_obj = this;
+
+        this.curve = density_svg_dict[this.plotting_num]
+            .append("path")
+            .attr("class", `curve-${this.plotting_num} highlight-class-${this.plotting_num} not-axes density-group-${this.plotting_num} hidden`)
+            .datum(scaled_drawing_data)
+            .attr("d", (d,i) => curveFunction(d,i));
+
+        this.clip_path = density_svg_dict[this.plotting_num].append('clipPath')
+            .attr('id',`clip-path-${this.plotting_num}`)
+            .attr('class',`not-axes density-group-${this.plotting_num}`)
+            .append("path")
+            .datum(scaled_drawing_data)
+            .attr("d", (d,i) => clipFunction(d,i));
+
+        this.vertical_lines = lines_svg_dict[this.plotting_num].selectAll(`.vertical-line-${this.plotting_num}`)
+            .data(this.interpolated_incomes)
+            .enter()
+            .append('line')
+            .attr('class',(d,i) => `hidden not-axes density-group-${this_obj.plotting_num} vertical-line vertical-line-${this_obj.plotting_num} vertical-line-${this_obj.plotting_num}-${i}` + (i==this.num_lines-1 ? ` average-line` : ''))
+            .attr('y1',scaled_bottom)
+            .attr('y2',scaled_top)
+            .attr('x1',d=>x_scale(d))
+            .attr('x2',d=>x_scale(d))
+            .each((d,i) => {if (this_obj.clicked_indices.includes(i)) this_obj.addClickedPercentile(i)});
+    }
+
+    redraw(){
+        if (this.ready_to_draw){
+            const [scaled_drawing_data,interpolated_incomes] = this.interpolate();
+            this.interpolated_incomes = interpolated_incomes;
+            this.curve.datum(scaled_drawing_data).attr("d", (d,i) => curveFunction(d,i));
+            this.clip_path.datum(scaled_drawing_data).attr("d", (d,i) => clipFunction(d,i));
+            this.vertical_lines.data(interpolated_incomes).attr('x1',d=>x_scale(d)).attr('x2',d=>x_scale(d));
+            if (this.is_selected && bottom_svg_hover) {
+                this.highlightClosest()
+            } else if (is_hovering_years){
+                this.showTooltip(this.tooltip_percentile,false)
+            };
+        }
+    }
+
+    showTooltip(percentile_index,include_income_amount){
+        const percentile_string = ((percentile_index+1)*2 ).toFixed(0);
+        density_tooltip
+            .html(`<p>${percentile_index != this.num_lines - 1 ? (`${percentile_string}${(percentile_string.slice(-1) == '2' ? 'nd' : 'th')} percentile` ) : 'Average'}</p>`+ (include_income_amount ? `<p>$${this.interpolated_incomes[percentile_index].toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>` : ''))
+            .style('left',`${this.interpolated_incomes[percentile_index]<=(global_x_max/2) ? x_scale(this.interpolated_incomes[percentile_index])+margins.left + tooltips_margin : x_scale(this.interpolated_incomes[percentile_index])+margins.left - (+density_tooltip.style('width').slice(0,-2)) - tooltips_margin}px`)
+            .style("opacity","1");
+    }
+
+    addHoveredPercentile(percentile_index){
+        lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-hovered-${this.plotting_num}`,true);
+        if (this.clicked_indices.includes(percentile_index)) {
+            years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num}`,true);
+            if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num}`,true);
+        };
+    }
+
+    removeHoveredPercentile(percentile_index){
+        lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-hovered-${this.plotting_num}`,false);
+        if (this.clicked_indices.includes(percentile_index)){
+            years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num}`,false);
+            if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num}`,false);
+        }
+    }
+
+    addClickedPercentile(percentile_index){
+        lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-clicked-${this.plotting_num} highlight-class-${this.plotting_num}`,true).classed('line-not-clicked',false);
+        years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-clicked years-line-clicked-${this.plotting_num}`,true);
+        if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-clicked years-line-clicked-${this.plotting_num}`,true);
+    }
+
+    addHoverOnClick(percentile_index){
+        years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num}`,true);
+        this.clicked_indices.push(percentile_index);
+    }
+
+    removeClickedPercentile(percentile_index){
+        const curr_index = this.clicked_indices.indexOf(percentile_index);
+        this.clicked_indices.splice(curr_index,1)
+        lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-clicked-${this.plotting_num} highlight-class-${this.plotting_num}`,false).classed('line-not-clicked',true);
+        years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num} years-line-clicked years-line-clicked-${this.plotting_num}`, false);
+        if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num} years-line-clicked years-line-clicked-${this.plotting_num}`, false);
+    }
+
+    removeAllHoveredPercentiles(){
+        for (let i = this.hover_indices.length-1;i>=0;i--) this.removeHoveredPercentile(this.hover_indices[i]);
+        this.hover_indices = [];
+        this.hover_info=[-1,-1];
+        if (!is_hovering_years) {
+            density_tooltip.style('opacity','0');
+            this.tooltip_percentile = undefined;
+        }
+    }
+    
+    clickFunction(){
+        for (let i=0;i<this.hover_indices.length;i++){
+            let curr_percentile_index = this.hover_indices[i];
+            if (this.clicked_indices.includes(curr_percentile_index)){
+                this.removeClickedPercentile(curr_percentile_index);
+            } else{
+                this.addClickedPercentile(curr_percentile_index);
+                this.addHoverOnClick(curr_percentile_index);
+            }
+        }
+    }
+
+    highlightClosest(){
+        const closest_value = findClosest(this.interpolated_incomes,x_coordinate);
+        const all_values = closest_value == 0 ? getAllZeroValues(this.interpolated_incomes,0) : [this.interpolated_incomes.indexOf(closest_value)];
+        const curr_array = [all_values,all_values.length];
+        if (curr_array[0] != this.hover_info[0] || curr_array[1] != this.hover_info[1]){
+            // Remove hovers
+            if (this.hover_info[1]>0){
+                for (let i = this.hover_info[1]-1;i>=0;i--) this.removeHoveredPercentile(this.hover_indices[i]);
+                this.hover_indices = [];
+            }
+            this.hover_info = curr_array;
+            // Add hovers
+            for (let k=0;k<curr_array[1];k++) this.addHoveredPercentile(all_values[k]);
+            this.hover_indices = all_values;
+        }
+        this.showTooltip(d3.max(all_values),true);
+    }
+
+    redrawClickedYearsLines(){
+        for (let i=0;i<=this.clicked_indices.length;i++) this.addClickedPercentile(this.clicked_indices[i]);
+    }
+}
+
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- SETUP -- -- -- -- -- -
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+
+if (isIE()){
+    d3.selectAll('.hidden').remove();
+    d3.select('#loader-content').remove();
+    d3.select('#background-years').remove();
+    d3.select('#background-rect').remove();
+    d3.select('#density-div').remove();
+    d3.select('#ie-issues').style('display','flex');
+} else{
+    // example ?id0=2222?id1=123?s=500?p0=50?p1=50
+    const real_url = new URL(window.location.href);
+    let search_params;
+    let percentile_vec0 = [];
+    let percentile_vec1 = [];
+    let scroll_amount = 0;
+    let remove_density_enter = false;
+    if (real_url.searchParams.has('id0')){
+        search_params = real_url.searchParams;
+    } else{
+        const dummy_url = new URL(`https://www.electricscatter.com/${sessionStorage.getItem('incomes_saving_str')}`);
+        search_params = dummy_url.searchParams;
+    }
+    if (search_params.has('id0')){
+        stop_toolbar_animation = true;
+        remove_density_enter = true;
+        const id0 = search_params.get("id0");
+        work_type = workers_id_dict[id0[0]];
+        if (work_type != 'full_time'){
+            document.getElementById('selector-full_time').selected = false;
+            document.getElementById(`selector-${work_type}`).selected = true;
+        }
+        if (search_params.has('p0')){
+            const p0 = search_params.get('p0');
+            if (p0.length % 2 === 0) for (let i=0;i<=p0.length-1;i=i+2) percentile_vec0.push(+p0.slice(i,i+2));
+        }
+        if (search_params.has('s')) scroll_amount =  (+search_params.get('s')/1000);
+        updateGroupOnSetup(id0.slice(1),0)
+        if (search_params.has('id1')){
+            const id1 = search_params.get("id1");
+            updateGroupOnSetup(id1,1)
+            if (search_params.has('p1')){
+                const p1 = search_params.get('p1');
+                if (p1.length % 2 === 0) for (let i=0;i<=p1.length-1;i=i+2) percentile_vec1.push(+p1.slice(i,i+2))
+            }
+        }
+    }
+    initialSetup(animations_filenames[0],animations_filenames[1],scroll_amount,percentile_vec0,percentile_vec1,remove_density_enter);
+}
+
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- FUNCTIONS -- -- -- -- --
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- 
+
 function updateGroupOnSetup(input_str,group_index){
     animations_selections[group_index]['race'] = race_id_dict[input_str[0]];
     animations_selections[group_index]['sex']= sex_id_dict[input_str[1]];
@@ -387,190 +787,6 @@ function makeYearsTooltips(){
         .attr('class',`years-tooltip hidden`)
         .style('top',(d,i)=>`${years_y_scale(i)+base_height}px`);
     adjustYearsTooltips();
-}
-
-
-
-
-// Make an object for each animation
-class IncomeAnimation {
-    constructor(plotting_num,data){
-        this.plotting_num = plotting_num;
-        this.data_obj = data;
-        this.x_max = data['x_max'];
-        this.y_max = data['y_max'];
-        this.num_lines = data.incomes_dict.length;
-        this.curve = undefined;
-        this.clip_path = undefined;
-        this.drawing_dictionaries = undefined;
-        this.incomes_dictionaries = undefined;
-        this.interpolated_incomes = undefined;
-        this.hover_indices = [];
-        this.clicked_indices = [];
-        this.is_selected = current_selection==plotting_num;
-        this.hover_info = [-1,-1];
-        this.vertical_lines = undefined;
-        this.tooltip_percentile = undefined;
-        this.ready_to_draw=false;
-    }
-
-    readyAnimation(){
-        this.makeInterpolatingDictionaries();
-        this.initialPlotsAndLines();
-        this.ready_to_draw=true;
-    }
-
-    makeInterpolatingDictionaries(){
-        const drawing_dict = {};
-        const incomes_dict = {};
-        const num_minus_one = num_years-1;
-        for (let index_i=0;index_i<num_minus_one;index_i++){
-            drawing_dict[index_i] = d3.interpolateArray(this.data_obj['densities'][index_i].slice(0,global_num_thresholds).map(d=>y_scale(d)),this.data_obj['densities'][index_i+1].slice(0,global_num_thresholds).map(d=>y_scale(d)));
-            incomes_dict[index_i] = d3.interpolateArray(this.data_obj['incomes'][index_i],this.data_obj['incomes'][index_i+1]);
-        }
-        drawing_dict[num_minus_one] = d3.interpolateArray(this.data_obj['densities'][num_minus_one].slice(0,global_num_thresholds).map(d=>y_scale(d)),this.data_obj['densities'][num_minus_one].slice(0,global_num_thresholds).map(d=>y_scale(d)));
-        incomes_dict[num_minus_one] =  d3.interpolateArray(this.data_obj['incomes'][num_minus_one],this.data_obj['incomes'][num_minus_one]);
-        this.drawing_dictionaries = drawing_dict;
-        this.incomes_dictionaries = incomes_dict;
-    }
-
-    interpolate(){
-        const residual = global_scroll_num - global_scroll_floor;
-        return [this.drawing_dictionaries[global_scroll_floor](residual),this.incomes_dictionaries[global_scroll_floor](residual)];
-    }
-
-    initialPlotsAndLines(){
-        const [scaled_drawing_data,income_data] = this.interpolate();
-        this.interpolated_incomes = income_data;
-        const this_obj = this;
-
-        this.curve = density_svg_dict[this.plotting_num]
-            .append("path")
-            .attr("class", `curve-${this.plotting_num} highlight-class-${this.plotting_num} not-axes density-group-${this.plotting_num} hidden`)
-            .datum(scaled_drawing_data)
-            .attr("d", (d,i) => curveFunction(d,i));
-
-        this.clip_path = density_svg_dict[this.plotting_num].append('clipPath')
-            .attr('id',`clip-path-${this.plotting_num}`)
-            .attr('class',`not-axes density-group-${this.plotting_num}`)
-            .append("path")
-            .datum(scaled_drawing_data)
-            .attr("d", (d,i) => clipFunction(d,i));
-
-        this.vertical_lines = lines_svg_dict[this.plotting_num].selectAll(`.vertical-line-${this.plotting_num}`)
-            .data(this.interpolated_incomes)
-            .enter()
-            .append('line')
-            .attr('class',(d,i) => `hidden not-axes density-group-${this_obj.plotting_num} vertical-line vertical-line-${this_obj.plotting_num} vertical-line-${this_obj.plotting_num}-${i}` + (i==this.num_lines-1 ? ` average-line` : ''))
-            .attr('y1',scaled_bottom)
-            .attr('y2',scaled_top)
-            .attr('x1',d=>x_scale(d))
-            .attr('x2',d=>x_scale(d))
-            .each((d,i) => {if (this_obj.clicked_indices.includes(i)) this_obj.addClickedPercentile(i)});
-    }
-
-    redraw(){
-        if (this.ready_to_draw){
-            const [scaled_drawing_data,interpolated_incomes] = this.interpolate();
-            this.interpolated_incomes = interpolated_incomes;
-            this.curve.datum(scaled_drawing_data).attr("d", (d,i) => curveFunction(d,i));
-            this.clip_path.datum(scaled_drawing_data).attr("d", (d,i) => clipFunction(d,i));
-            this.vertical_lines.data(interpolated_incomes).attr('x1',d=>x_scale(d)).attr('x2',d=>x_scale(d));
-            if (this.is_selected && bottom_svg_hover) {
-                this.highlightClosest()
-            } else if (is_hovering_years){
-                this.showTooltip(this.tooltip_percentile,false)
-            };
-        }
-    }
-
-    showTooltip(percentile_index,include_income_amount){
-        const percentile_string = ((percentile_index+1)*2 ).toFixed(0);
-        density_tooltip
-            .html(`<p>${percentile_index != this.num_lines - 1 ? (`${percentile_string}${(percentile_string.slice(-1) == '2' ? 'nd' : 'th')} percentile` ) : 'Average'}</p>`+ (include_income_amount ? `<p>$${this.interpolated_incomes[percentile_index].toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>` : ''))
-            .style('left',`${this.interpolated_incomes[percentile_index]<=(global_x_max/2) ? x_scale(this.interpolated_incomes[percentile_index])+margins.left + tooltips_margin : x_scale(this.interpolated_incomes[percentile_index])+margins.left - (+density_tooltip.style('width').slice(0,-2)) - tooltips_margin}px`)
-            .style("opacity","1");
-    }
-
-    addHoveredPercentile(percentile_index){
-        lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-hovered-${this.plotting_num}`,true);
-        if (this.clicked_indices.includes(percentile_index)) {
-            years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num}`,true);
-            if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num}`,true);
-        };
-    }
-
-    removeHoveredPercentile(percentile_index){
-        lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-hovered-${this.plotting_num}`,false);
-        if (this.clicked_indices.includes(percentile_index)){
-            years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num}`,false);
-            if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num}`,false);
-        }
-    }
-
-    addClickedPercentile(percentile_index){
-        lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-clicked-${this.plotting_num} highlight-class-${this.plotting_num}`,true).classed('line-not-clicked',false);
-        years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-clicked years-line-clicked-${this.plotting_num}`,true);
-        if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-clicked years-line-clicked-${this.plotting_num}`,true);
-    }
-
-    addHoverOnClick(percentile_index){
-        years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num}`,true);
-        this.clicked_indices.push(percentile_index);
-    }
-
-    removeClickedPercentile(percentile_index){
-        const curr_index = this.clicked_indices.indexOf(percentile_index);
-        this.clicked_indices.splice(curr_index,1)
-        lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-clicked-${this.plotting_num} highlight-class-${this.plotting_num}`,false).classed('line-not-clicked',true);
-        years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num} years-line-clicked years-line-clicked-${this.plotting_num}`, false);
-        if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num} years-line-clicked years-line-clicked-${this.plotting_num}`, false);
-    }
-
-    removeAllHoveredPercentiles(){
-        for (let i = this.hover_indices.length-1;i>=0;i--) this.removeHoveredPercentile(this.hover_indices[i]);
-        this.hover_indices = [];
-        this.hover_info=[-1,-1];
-        if (!is_hovering_years) {
-            density_tooltip.style('opacity','0');
-            this.tooltip_percentile = undefined;
-        }
-    }
-
-    // Adding
-    clickFunction(){
-        for (let i=0;i<this.hover_indices.length;i++){
-            let curr_percentile_index = this.hover_indices[i];
-            if (this.clicked_indices.includes(curr_percentile_index)){
-                this.removeClickedPercentile(curr_percentile_index);
-            } else{
-                this.addClickedPercentile(curr_percentile_index);
-                this.addHoverOnClick(curr_percentile_index);
-            }
-        }
-    }
-
-    highlightClosest(){
-        const closest_value = findClosest(this.interpolated_incomes,x_coordinate);
-        const all_values = closest_value == 0 ? getAllZeroValues(this.interpolated_incomes,0) : [this.interpolated_incomes.indexOf(closest_value)];
-        const curr_array = [all_values,all_values.length];
-        if (curr_array[0] != this.hover_info[0] || curr_array[1] != this.hover_info[1]){
-            // Remove hovers
-            if (this.hover_info[1]>0){
-                for (let i = this.hover_info[1]-1;i>=0;i--) this.removeHoveredPercentile(this.hover_indices[i]);
-                this.hover_indices = [];
-            }
-            this.hover_info = curr_array;
-            // Add hovers
-            for (let k=0;k<curr_array[1];k++) this.addHoveredPercentile(all_values[k]);
-            this.hover_indices = all_values;
-        }
-        this.showTooltip(d3.max(all_values),true);
-    }
-
-    redrawClickedYearsLines(){
-        for (let i=0;i<=this.clicked_indices.length;i++) this.addClickedPercentile(this.clicked_indices[i]);
-    }
 }
 
 function addYearTooltips(input_index,selection_index){
@@ -1387,194 +1603,4 @@ function adjustWidthsHeightsAndMargins(){
     years_svg.attr("transform", "translate(" + margins.left + ",0)");
     hover_rect.attr('x',0).attr('y',-1*margins.top).attr('width',modifiedWidth).attr('height',modifiedHeight+margins.top);
     d3.select('#density-enter-inner').style("width",`${totalWidth-(margins.left+margins.right)}px`).style("height",`${totalHeight-margins.bottom}px`).style("transform",`translate(${margins.left}px,0)`);
-}
-
-// SETUP -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-let scroll_duration = 32000;
-const has_mouse = !(matchMedia('(hover: none)').matches);
-let auto_scrolling = false;
-let bottom_svg_hover = false;
-let current_selection = 0;
-let years_line_height = 8; // the width of the svg on top of the density_svg for plotting the current year info
-let animations_timeout0,animations_timeout1,copy_timeout, is_changing,toggle_timeout,resize_timeout,is_expanded, animation_timeout, scroll_limit, years_distance, years_lower, wheel_timeout, touchscreen_timeout, num_ages,curveFunction,clipFunction,hover_rect,years_svg_wrapper,num_x_ticks,global_x_max,global_y_max,x_scale,y_scale,global_thresholds,scaled_global_thresholds,global_num_thresholds,global_scroll_num,global_scroll_floor, x_coordinate,scaled_bottom,scaled_top,years_svg,years_x_scale,years_y_scale,line_function;
-let animations_dict = [undefined,undefined]
-let second_group_disabled = true;
-let work_type = 'full_time';
-let animations_selections = [{'sex': 'all_sexes','age': 'all_ages','race':'all_races'}, {'sex': 'males', 'age': 'from_30_to_49', 'race':'all_races'}]
-let animations_filenames = ['./processed_data/full_time/all_sexes/all_ages/all_races/data.json',undefined];
-let shown_distributions = [true,false];
-let is_transitioning = false;
-let tooltips_margin = 5;
-let fullscreen = false;
-let has_entered_mouse = false;
-let is_hovering_years = false;
-let show_group_icon = false;
-let icon_group_currently_shown = false;
-let has_toolbar = false;
-let content_obj = document.documentElement;
-let is_small = undefined;
-let has_legend = d3.select('#legend').style('display')=='flex';
-let showing_loader = false;
-let stop_toolbar_animation = false;
-const fullscreen_index = getFullScreenIndices();
-const density_tooltip = d3.select('#density-tooltip');
-let just_resized = false;
-const document_body = d3.select('body');
-const toolbar_selector =   d3.select('#toolbar');
-const plus_wrapper =   d3.select('#plus-wrapper');
-const icon_wrapper = d3.select('#icon-wrapper');
-const border_hider = d3.select('#border-hider');
-let toggle_forward_back = false;
-let global_counter=0;
-const uncut_tholds = [ 0, 2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000, 32000, 34000, 36000, 38000, 40000, 42000, 44000, 46000, 48000, 50000, 52000, 54000, 56000, 58000, 60000, 62000, 64000, 66000, 68000, 70000, 72000, 74000, 76000, 78000, 80000, 82000, 84000, 86000, 88000, 90000, 92000, 94000, 96000, 98000, 100000, 102000, 104000, 106000, 108000, 110000, 112000, 114000, 116000, 118000, 120000, 122000, 124000, 126000, 128000, 130000, 132000, 134000, 136000, 138000, 140000, 142000, 144000, 146000, 148000, 150000, 152000, 154000, 156000, 158000, 160000, 162000, 164000, 166000, 168000, 170000, 172000, 174000, 176000, 178000, 180000, 182000, 184000, 186000, 188000, 190000, 192000, 194000, 196000, 198000, 200000, 202000, 204000, 206000, 208000, 210000, 212000, 214000, 216000, 218000, 220000, 222000, 224000, 226000, 228000, 230000, 232000, 234000, 236000, 238000, 240000, 242000, 244000, 246000, 248000, 250000, 252000, 254000, 256000, 258000, 260000, 262000, 264000, 266000, 268000, 270000, 272000, 274000, 276000, 278000, 280000, 282000, 284000, 286000, 288000, 290000, 292000, 294000, 296000, 298000, 300000, 302000, 304000, 306000, 308000, 310000, 312000, 314000, 316000, 318000, 320000, 322000, 324000, 326000, 328000, 330000, 332000, 334000, 336000, 338000, 340000, 342000, 344000, 346000, 348000, 350000, 352000, 354000, 356000, 358000, 360000, 362000, 364000, 366000, 368000, 370000, 372000, 374000, 376000, 378000, 380000, 382000, 384000, 386000, 388000, 390000, 392000, 394000, 396000, 398000, 400000, 402000, 404000, 406000, 408000, 410000, 412000, 414000, 416000, 418000, 420000, 422000, 424000, 426000, 428000, 430000, 432000, 434000, 436000, 438000, 440000, 442000, 444000, 446000, 448000, 450000, 452000, 454000, 456000, 458000, 460000, 462000, 464000, 466000, 468000, 470000, 472000, 474000, 476000, 478000, 480000, 482000, 484000, 486000, 488000, 490000, 492000, 494000, 496000, 498000, 500000, 502000, 504000, 506000, 508000, 510000, 512000, 514000, 516000, 518000, 520000, 522000, 524000, 526000, 528000, 530000, 532000, 534000, 536000, 538000, 540000, 542000, 544000, 546000, 548000, 550000, 552000, 554000, 556000, 558000, 560000, 562000, 564000, 566000, 568000, 570000, 572000, 574000, 576000, 578000, 580000, 582000, 584000, 586000, 588000, 590000, 592000, 594000, 596000, 598000, 600000, 602000, 604000];
-const race_scale = d3.scaleOrdinal().domain(['all_races', 'white_non_hispanic','black_non_hispanic','hispanic']).range(['All ','White ','Black ','Hisp. ']);
-const sex_scale = d3.scaleOrdinal().domain(['all_sexes', 'males','females']).range(['workers','men','women']);
-const age_scale = d3.scaleOrdinal().domain(['all_ages', 'under_30','from_30_to_49','over_50']).range(['',' 16-29 ',' 30-49 ',' 50+']);
-const ticks_scale = d3.scaleThreshold().domain([300,700,1350]).range([2,3,5,8]);
-
-const race_id_dict = {
-    '1': 'all_races',
-    "2": 'white_non_hispanic',
-    '3' : 'black_non_hispanic',
-    '4' : 'hispanic'}
-
-const sex_id_dict = {
-        '1': 'all_sexes',
-        "2": 'males',
-        '3' : 'females'}
-
-const age_id_dict = {
-    '1': 'all_ages',
-    "2": 'under_30',
-    '3' : 'from_30_to_49',
-    '4' : 'over_50'}
-
-const workers_id_dict = {     
-    '1': 'full_time',
-    "2": 'mine',
-    '3' : 'fred'}
-
-let [totalWidth,totalHeight] = getWidthAndHeight();
-let margins = getMargins();
-let [modifiedWidth,modifiedHeight] = widthAndHeightMinusMargins(margins,totalWidth,totalHeight);
-
-// SVG SELECTORS -- -- -- -- -- -- -- -- 
-const wrapper_wrapper = d3.select("#density-div")
-    .append("svg")
-    .attr("width",totalWidth)
-    .attr("height",totalHeight+years_line_height);
-
-const wrapper_svg = wrapper_wrapper
-    .append('g')
-    .attr('id','wrapper-svg')
-    .attr("width",totalWidth)
-    .attr("height",totalHeight)
-    .attr("transform","translate(0,"+years_line_height+")");
-
-wrapper_svg
-    .append("rect")
-    .attr('id','rect-svg')
-    .attr("width",totalWidth)
-    .attr("height",totalHeight-margins.top)
-    .attr('fill','white')
-    .attr("transform", `translate(0,${margins.top})`)
-
-wrapper_svg
-    .append("rect")
-    .attr('id','rect-svg2')
-    .attr("width",totalWidth-(margins.left))
-    .attr("height",totalHeight-margins.bottom)
-    .attr('fill','white')
-    .attr("transform","translate("+margins.left+",0)");
-
-wrapper_wrapper.append("defs")
-        .append("marker")
-        .attr("id","arrow")
-        .attr("viewBox","0 -5 10 10")
-        .attr("refX",5)
-        .attr("refY",0)
-        .attr("markerWidth",3)
-        .attr("markerHeight",4)
-        .attr("orient",'auto')
-        .append("path")
-        .attr("d", "M0,-5L10,0L0,5")
-        .attr("class","arrowHead")
-        .style('fill','#545454')
-
-const wrapper_with_adjusted_margins = wrapper_svg
-    .append("g")
-    .attr("transform","translate(" + margins.left + "," + margins.top + ")");
-
-const grid_svg = wrapper_with_adjusted_margins.append('g');
-const density_svg_dict = [ wrapper_with_adjusted_margins.append("g"),wrapper_with_adjusted_margins.append("g") ];
-const lines_svg_dict = [ wrapper_with_adjusted_margins.append("g"), wrapper_with_adjusted_margins.append("g") ];
-const density_outer_group = wrapper_with_adjusted_margins.append("g").attr('class','hidden');
-const hover_group = wrapper_with_adjusted_margins.append("g");
-const density_enter_g = wrapper_wrapper.append('g');
-const density_enter_rect = density_enter_g
-    .append("rect")
-    .attr("id",'density-enter-rect')
-    .attr('y',years_line_height)
-    .attr("width",totalWidth)
-    .attr('height',totalHeight);
-
-const curr_year_line = density_enter_g
-    .append("line")
-    .attr('y1',years_line_height)
-    .attr('y2',years_line_height)
-    .attr('x2',margins.left-4.5)
-    .attr('x1',totalWidth-margins.right)
-    .attr('class','current-year-line hidden');
-
-d3.select('#density-enter-inner')
-    .style("width",`${totalWidth-(margins.left + margins.right)}px`)
-    .style("height",`${totalHeight-margins.bottom}px`)
-    .style("transform",`translate(${margins.left}px,0)`);
-
-if (isIE()){
-    d3.selectAll('.hidden').remove();
-    d3.select('#loader-content').remove();
-    d3.select('#background-years').remove();
-    d3.select('#background-rect').remove();
-    d3.select('#density-div').remove();
-    d3.select('#ie-issues').style('display','flex');
-}else{
-    // example ?id0=2222?id1=123?s=500?p0=50?p1=50
-    const real_url = new URL(window.location.href);
-    let search_params;
-    let percentile_vec0 = [];
-    let percentile_vec1 = [];
-    let scroll_amount = 0;
-    let remove_density_enter = false;
-    if (real_url.searchParams.has('id0')){
-        search_params = real_url.searchParams;
-    } else{
-        const dummy_url = new URL(`https://www.electricscatter.com/${sessionStorage.getItem('incomes_saving_str')}`);
-        search_params = dummy_url.searchParams;
-    }
-    if (search_params.has('id0')){
-        stop_toolbar_animation = true;
-        remove_density_enter = true;
-        const id0 = search_params.get("id0");
-        work_type = workers_id_dict[id0[0]];
-        if (work_type != 'full_time'){
-            document.getElementById('selector-full_time').selected = false;
-            document.getElementById(`selector-${work_type}`).selected = true;
-        }
-        if (search_params.has('p0')){
-            const p0 = search_params.get('p0');
-            if (p0.length % 2 === 0) for (let i=0;i<=p0.length-1;i=i+2) percentile_vec0.push(+p0.slice(i,i+2));
-        }
-        if (search_params.has('s')) scroll_amount =  (+search_params.get('s')/1000);
-        updateGroupOnSetup(id0.slice(1),0)
-        if (search_params.has('id1')){
-            const id1 = search_params.get("id1");
-            updateGroupOnSetup(id1,1)
-            if (search_params.has('p1')){
-                const p1 = search_params.get('p1');
-                if (p1.length % 2 === 0) for (let i=0;i<=p1.length-1;i=i+2) percentile_vec1.push(+p1.slice(i,i+2))
-            }
-        }
-    }
-    initialSetup(animations_filenames[0],animations_filenames[1],scroll_amount,percentile_vec0,percentile_vec1,remove_density_enter);
 }
