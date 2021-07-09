@@ -15,7 +15,7 @@ Data for the density plots was obtained from the [IPUMS CPS](https://cps.ipums.o
 * The following birth years are used to select races:
     * White: White (race) and non-Hispanic (ethnicity)
     * Black: Black (race) and non-Hispanic (ethnicity)
-    * Hispanic: Any race, Hispanic ethnicity. This includes respondents who reported Mexican, Mexican American, Mexicano/Mexicana, Chicano/Chicana, Mexican (Mexicano), Puerto Rican, Cuban, Colombian, Salvadorian, Central/South American, Central American (including Salvadorian, South American, or other Hispanic origin.
+    * Hispanic: Any race, Hispanic ethnicity. This includes respondents who reported Mexican, Mexican American, Mexicano/Mexicana, Chicano/Chicana, Mexican (Mexicano), Puerto Rican, Cuban, Colombian, Salvadorian, Central/South American, Central American (including Salvadorian), South American, or other Hispanic origin.
 
 * The following definitions are used are used for worker selections:
     * Worked full-time, year round: Respondents who reported working 50 or more weeks during the previous calendar year.
