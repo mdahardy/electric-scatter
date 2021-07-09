@@ -1,0 +1,7 @@
+# electric scatter interactive density plots video
+
+This repo contains the source code for the [interactive video on density plots](https://electricscatter.com/projects/density-plots) on electric scatter. Note that because this app uses d3, you'll have to launch a local web server in the [root electric scatter directory](https://github.com/mdahardy/electric-scatter) if you want to run the app locally.
+
+## notes on data
+
+Data for the histograms and density plots of millennial and baby boomer incomes was obtained from the [IPUMS CPS](https://cps.ipums.org/cps/) database. You can view the raw dataset and data extract [here](https://github.com/mdahardy/electric-scatter/tree/main/projects/income-distributions/data_prep/ipums_data). The [data_prep/generate_histogram_data.R](https://github.com/mdahardy/electric-scatter/tree/main/projects/density-plots/data_prep/generate_histogram_data.R) generates histogram data from the raw IPUMS data, and [data_prep/process_data/process_data.js](https://github.com/mdahardy/electric-scatter/tree/main/projects/density-plots/data_prep/process_data/process_data.js) selects the estimated densities generated for the generation distributions app. You can view more documentation on this density data and density plots [here](https://github.com/mdahardy/electric-scatter/tree/main/projects/generation-distributions/).
