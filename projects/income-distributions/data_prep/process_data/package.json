@@ -1,0 +1,17 @@
+{
+  "name": "process_data",
+  "version": "1.0.0",
+  "description": "",
+  "main": "process_data.js",
+  "type":"module",
+  "dependencies": {
+    "d3": "^7.0.0",
+    "fs": "0.0.1-security"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}

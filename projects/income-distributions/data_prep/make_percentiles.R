@@ -4,16 +4,15 @@ library(dplyr)
 
 if (!require("ipumsr")) stop("Reading IPUMS data into R requires the ipumsr package. It can be installed using the following command: install.packages('ipumsr')")
 
-setwd("/Users/mhardy/Documents/personal_projects/income_distributions/R")
 sex_vars = c('all','males','females')
 sex_dict = list('males'=1,'females'=2)
 age_vars = c('all','under_30','from_30_to_49','50_plus')
 race_vars = c('all','white_non_hispanic','black_non_hispanic','hispanic') # Race only available 1970-2018
-hispanic_list=c(100,102,103,104,108,109,200,300,400,500,401,410,411,412) # If HISPAN in this list, worker is classified as hispanic 
+hispanic_list=c(100,102,103,104,108,109,200,300,400,500,600,610,611,612) # If HISPAN in this list, worker is classified as hispanic 
 
 load_and_clean_data = function(){
   # Load data 
-  ddi <- read_ipums_ddi("full_data/cps_00008.xml")
+  ddi <- read_ipums_ddi("ipums_data/cps_00008.xml")
   data <- read_ipums_micro(ddi) # only about 9 million rows!
   
   # Clean data
@@ -49,56 +48,42 @@ make_percentiles_years_list = function(input_data,first_year){
     #print(wtd.mean(curr_data$INCTOT,weights=curr_data$ASECWT))
     counter = counter+1
   }
-  names(all_list) = as.character(first_year:2020)
   return (all_list)
 }
 
+subset_age = function(input_data,age_string){
+  if (age_string=='under_30') return(subset(input_data,AGE<31))
+  if (age_string=='from_30_to_49') return(subset(input_data,AGE>=31 & AGE <= 50))
+  if (age_string=='50_plus') return(subset(input_data,AGE>=51))
+  return(input_data)
+}
+
+subset_race = function(input_data,race_string){
+  if (age_string=='white_non_hispanic') return(subset(input_data,RACE==100 & HISPAN == 0))
+  if (age_string=='black_non_hispanic') return(subset(input_data,RACE==200 & HISPAN == 0))
+  if (age_string=='hispanic') return(subset(input_data,HISPAN %in% hispanic_list))
+  return(input_data)
+}
 
 make_jsons = function(input_d,d_type){
-  directory_str = "/Users/mhardy/Documents/personal_projects/income_distributions/development_repo/unprocessed_data/" # save in repo for easy js access
   for (sex_i in sex_vars){
     for (age_i in age_vars){
       for (race_i in race_vars){
-          max_list=c(1962)
-          print(paste(d_type,sex_i,age_i,race_i))
-          # Subset sex
-          if (sex_i!='all'){
-            curr_dataset = subset(input_d,SEX==sex_dict[sex_i])
-          } else{
-            curr_dataset = input_d
-          }
-          # Subset age
-          if (age_i=='under_30'){
-            curr_dataset = subset(curr_dataset,AGE<31)
-          } else if (age_i=='from_30_to_49'){
-            curr_dataset = subset(curr_dataset,AGE>=31 & AGE <= 50)
-          } else if (age_i=='50_plus'){
-            curr_dataset = subset(curr_dataset,AGE>=51)
-          }
-          if (race_i=='white_non_hispanic'){
-            curr_dataset = subset(curr_dataset,RACE==100)
-            curr_dataset = subset(curr_dataset,HISPAN==0)
-            max_list = c(max_list,1971)
-          } else if (race_i=='black_non_hispanic'){
-            curr_dataset = subset(curr_dataset,RACE==200)
-            curr_dataset = subset(curr_dataset,HISPAN==0)
-            max_list = c(max_list,1971)
-          } else if (race_i=='hispanic'){
-            curr_dataset = subset(curr_dataset,HISPAN %in% hispanic_list)
-            max_list = c(max_list,1971)
-          }
-          
-          # Make the percentile list to be converted to JSON
-          curr_list = make_percentiles_years_list(curr_dataset,1971)
-          
-          # Convert subsetted dataframe to JSON
-          jsonOBJ  = toJSON(curr_list) # Convert to json
-          total_dir_string = paste0(directory_str,d_type,"/",sex_i,"/",age_i,"/",race_i,'/') # Path for the directory where the file lives
-          if (dir.exists(total_dir_string)==F){ # If directories don't exist, create them
-            dir.create(total_dir_string,recursive = T)
-          }
-          file_str = paste0(total_dir_string,'/data.json') # Add data.json (filename) to directory string
-          write(jsonOBJ, file_str) # Write to directory
+        print(paste(d_type,sex_i,age_i,race_i))
+        # Subset sex
+        curr_dataset = if (sex_i!='all') subset(input_d,SEX==sex_dict[sex_i]) else input_d
+        # Subset age
+        curr_dataset = subset_age(curr_dataset,age_i)
+        # Subset race/ethnicity
+        curr_dataset = subset_race(curr_dataset,race_i)
+        # Make the percentile list to be converted to JSON
+        curr_list = make_percentiles_years_list(curr_dataset,1971)
+        # Convert subsetted dataframe to JSON
+        jsonOBJ  = toJSON(curr_list) # Convert to json
+        total_dir_string = paste0('unprocessed_data/',d_type,"/",sex_i,"/",age_i,"/",race_i,'/') # Path for the directory where the file lives
+        if (dir.exists(total_dir_string)==F) dir.create(total_dir_string,recursive = T) # If directories don't exist, create them 
+        file_str = paste0(total_dir_string,'/data.json') # Add data.json (filename) to directory string
+        write(jsonOBJ, file_str) # Write to directory
       }
     }
   }
@@ -109,36 +94,44 @@ make_jsons = function(input_d,d_type){
 # Load data
 # -- -- -- -- -- -- -- -- -- -- -- 
 # -- -- -- -- -- -- -- -- -- -- -- 
+
 data = load_and_clean_data()
 
 # -- -- -- -- -- -- -- -- -- -- -- 
 # Find workers that spent at least 6 months in labor force
 # -- -- -- -- -- -- -- -- -- -- -- 
+
+get_average_weeks_worked = function(input){
+  if (input == 1) return(7)  # 1 - 13 weeks
+  if (input == 2) return(20) # 14-26 weeks
+  return(27) # 27+ weeks, don't need to take midpoint as they'll be included automatically
+}
+
+get_average_weeks_unemployed = function(input){
+  if (input==0) return(0)
+  if (input==1) return (2.5) # 1-4
+  if (input==2) return (7.5)  # 5 - 10 weeks
+  if (input==3) return(12.5) # 11- 14 weeks
+  if (input==4) return(20.5) # 15 - 26 weeks
+  if (input==9) return(0)
+  return(27) # 27+ weeks, don't need to take midpoint as they'll be included automatically
+}
+# Note: WKSUNEM2==9 should be NIU, should only have people that pretty much worked all year, but I have additional observations where people
+# worked a few weeks (e.g., 10 weeks) because of the error. These people should be in universe with WKSUNEMP==0.
+# I don't want to remove NIU people because all of these people worked (have already subsetted based on this)
+# If I make everyone unemployed for 0 weeks, this will fix the problem (for people who worked all year, it will include them,
+# And for people who only worke da few weeks, it will keep them if they worked over 26 weeks
+# these as zero (either worked all year, or worked less than all year and should be 0 (this is an error))
+
 current_subset = subset(data, WKSWORK2 != 9) # Removes missing employment data
 current_subset = subset(current_subset, WKSWORK2 != 0) # Removes people who didn't work at all last year (won't have unemployment data on these people as they're NIU)
 
-current_subset$average_weeks_worked = ifelse(current_subset$WKSWORK2 == 1, 7, # 1 - 13 weeks
-                                             ifelse(current_subset$WKSWORK2 == 2, 20, # 14-26 weeks
-                                                    27)) # 27+ weeks
-
+current_subset$average_weeks_worked = sapply(current_subset$WKSWORK2,get_average_weeks_worked)
 
 current_subset = subset(current_subset,WKSUNEM2 != 8) # Remove missing unemployment current_subset
 
 # Note that there's a discontinuity at 1975/1976
-current_subset$average_weeks_unemployed = ifelse(current_subset$WKSUNEM2 == 0, 0,
-                                                 ifelse(current_subset$WKSUNEM2 == 1, 2.5, # 1-4
-                                                        ifelse(current_subset$WKSUNEM2 == 2, 7.5, # 5 - 10 weeks
-                                                               ifelse(current_subset$WKSUNEM2 == 3, 12.5, # 11- 14 weeks
-                                                                      ifelse(current_subset$WKSUNEM2 == 4, 20.5, # 15 - 26 weeks
-                                                                             ifelse(current_subset$WKSUNEM2 == 9, 0, # NIU, should only have people that pretty much worked all year, but I have additional observations where people
-                                                                                    # worked a few weeks (e.g., 10 weeks) because of the error. These people should be in universe with WKSUNEMP==0.
-                                                                                    # I don't want to remove NIU people because all of these people worked (have already subsetted based on this)
-                                                                                    # If I make everyone unemployed for 0 weeks, this will fix the problem (for people who worked all year, it will include them,
-                                                                                    # And for people who only worke da few weeks, it will keep them if they worked over 26 weeks
-                                                                                    # these as zero (either worked all year, or worked less than all year and should be 0 (this is an error))
-                                                                                    27))))))
-
-
+current_subset$average_weeks_unemployed = sapply(current_subset$WKSUNEM2,get_average_weeks_unemployed)
 
 # Only keep people who were in the labor force at least 26 weeks last year
 current_subset$total_weeks_in_labor_force = current_subset$average_weeks_worked + current_subset$average_weeks_unemployed

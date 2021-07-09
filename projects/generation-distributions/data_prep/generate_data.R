@@ -3,7 +3,6 @@ library(jsonlite)
 library(dplyr)
 
 if (!require("ipumsr")) stop("Reading IPUMS data into R requires the ipumsr package. It can be installed using the following command: install.packages('ipumsr')")
-
 gens = list(
   'greatest' = c(1901,1927),
   'silent' = c(1928, 1945),
@@ -15,6 +14,15 @@ gens = list(
 
 generations_list = c('all','greatest','silent','boomers','gen_x','millennials','gen_z')
 
+get_generation = function(input){
+  if (input >= gens$greatest[1] & input <= gens$greatest[2]) return('greatest')
+  if (input >= gens$silent[1] & input <= gens$silent[2]) return('silent')
+  if (input >= gens$boomers[1] & input <= gens$boomers[2]) return('boomers')
+  if (input >= gens$gen_x[1] & input <= gens$gen_x[2]) return('gen_x')
+  if (input >= gens$millennials[1] & input <= gens$millennials[2]) return('millennials')
+  if (input >= gens$gen_z[1] & input <= gens$gen_z[2]) return('gen_z')
+  return('other')
+}
 
 load_and_clean_data = function(){
   # Load data 
@@ -26,15 +34,8 @@ load_and_clean_data = function(){
   data = subset(data,data$INCTOT!=999999998) # Income Missing
   data$CPI_19 = data$CPI99 * (1/min(data$CPI99)) # Need to check that this is working correctly 
   data$real_income = data$INCTOT * data$CPI_19
-  
   data$birth_year = data$YEAR - (data$AGE)
-  data$generation = ifelse(data$birth_year >= gens$greatest[1] & data$birth_year <= gens$greatest[2], "greatest",
-                    ifelse(data$birth_year >= gens$silent[1] & data$birth_year <= gens$silent[2], "silent",
-                    ifelse(data$birth_year >= gens$boomers[1] & data$birth_year <= gens$boomers[2], "boomers",
-                    ifelse(data$birth_year >= gens$gen_x[1] & data$birth_year <= gens$gen_x[2], "gen_x",
-                    ifelse(data$birth_year >= gens$millennials[1] & data$birth_year <=gens$millennials[2], "millennials",
-                    ifelse(data$birth_year >= gens$gen_z[1] & data$birth_year <= gens$gen_z[2], "gen_z",
-                    "other"))))))
+  data$generation = sapply(data$birth_year, get_generation)
   data = subset(data,generation!='other')
   data = subset(data,AGE>=19 & AGE <=66) # Workers age 18 - 65 (subtract one year because workers reported income in previous year)
   return(data)
@@ -43,17 +44,11 @@ load_and_clean_data = function(){
 make_jsons = function(data,worker_type){
   for (generation_i in generations_list){
     print(paste("-- -- -- -- Processing",worker_type,generation_i,"-- -- -- --"))
-    if (generation_i !='all'){
-      curr_generation_data = subset(data,generation==generation_i)
-    } else{
-      curr_generation_data = data
-    }
+    curr_generation_data = if (generation_i !='all') subset(data,generation==generation_i) else data
     curr_list = make_percentiles_years_list(curr_generation_data,generation_i,worker_type)
     jsonOBJ  = toJSON(curr_list) # Convert to json
     total_dir_string = paste0("unprocessed_data/",worker_type,"/",generation_i) # Path for the directory where the file lives
-    if (dir.exists(total_dir_string)==F){ # If directories don't exist, create them
-      dir.create(total_dir_string,recursive = T)
-    }
+    if (dir.exists(total_dir_string)==F)  dir.create(total_dir_string,recursive = T) # If directories don't exist, create them
     print(paste('-- -- -- -- Writing',worker_type,generation_i,"-- -- -- --"))
     file_str = paste0(total_dir_string,'/data.json') # Add data.json (filename) to directory string
     write(jsonOBJ, file_str) # Write to directory
@@ -90,6 +85,7 @@ make_percentiles_years_list = function(input_data,generation_type,worker_type){
 # Load data
 # -- -- -- -- -- -- -- -- -- -- -- 
 # -- -- -- -- -- -- -- -- -- -- -- 
+
 data = load_and_clean_data()
 
 # -- -- -- -- -- -- -- -- -- -- -- 
@@ -105,30 +101,36 @@ make_jsons(current_subset,'full_time')
 # Find workers that spent at least 6 months in labor force
 # -- -- -- -- -- -- -- -- -- -- -- 
 
+get_average_weeks_worked = function(input){
+  if (input == 1) return(7)  # 1 - 13 weeks
+  if (input == 2) return(20) # 14-26 weeks
+  return(27) # 27+ weeks, don't need to take midpoint as they'll be included automatically
+}
+
+get_average_weeks_unemployed = function(input){
+  if (input==0) return(0)
+  if (input==1) return (2.5) # 1-4
+  if (input==2) return (7.5)  # 5 - 10 weeks
+  if (input==3) return(12.5) # 11- 14 weeks
+  if (input==4) return(20.5) # 15 - 26 weeks
+  if (input==9) return(0)
+  return(27) # 27+ weeks, don't need to take midpoint as they'll be included automatically
+}
+# Note: WKSUNEM2==9 should be NIU, should only have people that pretty much worked all year, but I have additional observations where people
+# worked a few weeks (e.g., 10 weeks) because of the error. These people should be in universe with WKSUNEMP==0.
+# I don't want to remove NIU people because all of these people worked (have already subsetted based on this)
+# If I make everyone unemployed for 0 weeks, this will fix the problem (for people who worked all year, it will include them,
+# And for people who only worke da few weeks, it will keep them if they worked over 26 weeks
+# these as zero (either worked all year, or worked less than all year and should be 0 (this is an error))
+
 current_subset = subset(data, WKSWORK2 != 9) # Removes missing employment data
 current_subset = subset(current_subset, WKSWORK2 != 0) # Removes people who didn't work at all last year (won't have unemployment data on these people as they're NIU)
 
-current_subset$average_weeks_worked = ifelse(current_subset$WKSWORK2 == 1, 7, # 1 - 13 weeks
-                                             ifelse(current_subset$WKSWORK2 == 2, 20, # 14-26 weeks
-                                                    27)) # 27+ weeks
-
-
+current_subset$average_weeks_worked = sapply(current_subset$WKSWORK2,get_average_weeks_worked)
 current_subset = subset(current_subset,WKSUNEM2 != 8) # Remove missing unemployment data
 
 # Note that there's a discontinuity at 1975/1976
-current_subset$average_weeks_unemployed = ifelse(current_subset$WKSUNEM2 == 0, 0,
-                                                 ifelse(current_subset$WKSUNEM2 == 1, 2.5, # 1-4
-                                                        ifelse(current_subset$WKSUNEM2 == 2, 7.5, # 5 - 10 weeks
-                                                               ifelse(current_subset$WKSUNEM2 == 3, 12.5, # 11- 14 weeks
-                                                                      ifelse(current_subset$WKSUNEM2 == 4, 20.5, # 15 - 26 weeks
-                                                                             ifelse(current_subset$WKSUNEM2 == 9, 0, # NIU, should only have people that pretty much worked all year, but I have additional observations where people
-                                                                                    # worked a few weeks (e.g., 10 weeks) because of the error. These people should be in universe with WKSUNEMP==0.
-                                                                                    # I don't want to remove NIU people because all of these people worked (have already subsetted based on this)
-                                                                                    # If I make everyone unemployed for 0 weeks, this will fix the problem (for people who worked all year, it will include them,
-                                                                                    # And for people who only worke da few weeks, it will keep them if they worked over 26 weeks
-                                                                                    # these as zero (either worked all year, or worked less than all year and should be 0 (this is an error))
-                                                                                    27))))))
-
+current_subset$average_weeks_worked = sapply(current_subset$WKSWORK2,get_average_weeks_worked)
 
 # Only keep people who were in the labor force at least 26 weeks last year
 current_subset$total_weeks_in_labor_force = current_subset$average_weeks_worked + current_subset$average_weeks_unemployed
@@ -145,8 +147,3 @@ make_jsons(current_subset,'mine')
 current_subset = subset(data,INCTOT!=0)
 # Export
 make_jsons(current_subset,'fred')
-
-
-
-
-
