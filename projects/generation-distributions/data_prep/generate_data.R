@@ -3,6 +3,8 @@ library(jsonlite)
 library(dplyr)
 
 if (!require("ipumsr")) stop("Reading IPUMS data into R requires the ipumsr package. It can be installed using the following command: install.packages('ipumsr')")
+
+setwd("/Users/mhardy/Documents/electric_scatter/dev/projects/generation-distributions/data_prep")
 gens = list(
   'greatest' = c(1901,1927),
   'silent' = c(1928, 1945),
@@ -26,8 +28,8 @@ get_generation = function(input){
 
 load_and_clean_data = function(){
   # Load data 
-  ddi <- read_ipums_ddi("../../income-distributions/data_prep/ipums_data/cps_00008.xml")
-  data <- read_ipums_micro(ddi) # only about 9 million rows!
+  ddi - read_ipums_ddi("ipums_data/cps_00008.xml")
+  data = read_ipums_micro(ddi) # only about 9 million rows!
   # Clean data
   data = subset(data,data$INCTOT>=0) # Remove negative income people
   data = subset(data,data$INCTOT!=999999999) # Income NIU
@@ -64,7 +66,7 @@ make_percentiles_years_list = function(input_data,generation_type,worker_type){
   for (age_i in 19:66){
     curr_data = subset(input_data,AGE==age_i)
     num_in_sample = nrow(curr_data)
-    if (num_in_sample > 125){
+    if (num_in_sample >= 125){
       curr_percentiles = wtd.quantile(curr_data$real_income,weights=curr_data$ASECWT,probs=percentile_vec)
       names(curr_percentiles) = NULL
       sample_size_vec = c(sample_size_vec,nrow(curr_data))
@@ -116,6 +118,7 @@ get_average_weeks_unemployed = function(input){
   if (input==9) return(0)
   return(27) # 27+ weeks, don't need to take midpoint as they'll be included automatically
 }
+
 # Note: WKSUNEM2==9 should be NIU, should only have people that pretty much worked all year, but I have additional observations where people
 # worked a few weeks (e.g., 10 weeks) because of the error. These people should be in universe with WKSUNEMP==0.
 # I don't want to remove NIU people because all of these people worked (have already subsetted based on this)
@@ -130,7 +133,7 @@ current_subset$average_weeks_worked = sapply(current_subset$WKSWORK2,get_average
 current_subset = subset(current_subset,WKSUNEM2 != 8) # Remove missing unemployment data
 
 # Note that there's a discontinuity at 1975/1976
-current_subset$average_weeks_worked = sapply(current_subset$WKSWORK2,get_average_weeks_worked)
+current_subset$average_weeks_unemployed = sapply(current_subset$WKSUNEM2,get_average_weeks_unemployed)
 
 # Only keep people who were in the labor force at least 26 weeks last year
 current_subset$total_weeks_in_labor_force = current_subset$average_weeks_worked + current_subset$average_weeks_unemployed

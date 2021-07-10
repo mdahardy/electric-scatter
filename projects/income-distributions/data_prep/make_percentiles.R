@@ -12,8 +12,8 @@ hispanic_list=c(100,102,103,104,108,109,200,300,400,500,600,610,611,612) # If HI
 
 load_and_clean_data = function(){
   # Load data 
-  ddi <- read_ipums_ddi("ipums_data/cps_00008.xml")
-  data <- read_ipums_micro(ddi) # only about 9 million rows!
+  ddi = read_ipums_ddi("ipums_data/cps_00008.xml")
+  data = read_ipums_micro(ddi) # only about 9 million rows!
   
   # Clean data
   data = subset(data,data$INCTOT>=0) # Remove negative income people for simplicity

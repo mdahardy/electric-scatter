@@ -386,6 +386,9 @@ if (isIE()){
                 if (p1.length % 2 === 0) for (let i=0;i<=p1.length-1;i=i+2) percentile_vec1.push(+p1.slice(i,i+2))
             }
         }
+    } else if (sessionStorage.getItem('generations_saving_str') !==null){
+        // Remove density enter if they've used the other app (only works on same tab)
+        remove_density_enter = true;
     }
     initialSetup(animations_filenames[0],animations_filenames[1],scroll_amount,percentile_vec0,percentile_vec1,remove_density_enter);
 }
@@ -1017,7 +1020,6 @@ async function initialSetup(fname0,fname1,scroll_amount,percentile_vec0,percenti
     num_years = animations_dict[0].data_obj.incomes.length;
     if (fname1) animations_dict[1] = new IncomeAnimation(1,await d3.json(fname1));
     setHeight();
-    if (is_small && stop_toolbar_animation) toggleToolbar(0);
     toolbarChanges();
     setWindowEventListeners();
     setToolbarListeners();
@@ -1046,7 +1048,10 @@ async function initialSetup(fname0,fname1,scroll_amount,percentile_vec0,percenti
     remove_density_enter ? removeDensityEnter() : d3.select('#legend').style('opacity','0.09');
     setInitialState();
     d3.selectAll('.hidden').classed('hidden',false);
-    if (is_small && !stop_toolbar_animation) toggleToolbar(1000);
+    if (is_small){
+        const toggle_duration = stop_toolbar_animation ? 0 : 1000;
+        toggleToolbar(toggle_duration);
+    }
 
 }
 
@@ -1235,9 +1240,14 @@ function toggleToolbar(transition_d=250){
     }
     is_expanded =false;
     toolbar_selector.transition().duration(transition_d).style('left','-275px');
-    plus_wrapper.transition().duration(transition_d).style('transform','rotate(0deg)');
     icon_wrapper.transition().duration(transition_d).style('left','0px');
     border_hider.transition().duration(transition_d).style('left','-3px');
+    if (transition_d===0){
+        //fixing rotation bug when transition is instant and zero rotation
+        plus_wrapper.transition().style('transform','rotate(0deg)');
+    } else{
+        plus_wrapper.transition().duration(transition_d).style('transform','rotate(0deg)');
+    }
 }
 
 function interruptToolbarToggle(){

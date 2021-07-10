@@ -9,6 +9,7 @@ Data for the density plots was obtained from the [IPUMS CPS](https://cps.ipums.o
 
 * For simplicity, workers with negative incomes are excluded from analysis. Note that this only applies to about 0.2% of respondents. 
 * A worker's age is defined as one less than their reported age in the survey. This is done as the CPS Annual Social and Economic Supplement (ASEC) is conducted in March or April, and asks respondents about their income during the previous calendar year.
+* Ages with less than 125 observations in the raw IPUMS data are excluded.
 
 * The following birth years are used to select generations (all birth years are inclusive):
     * Greatest: 1901 through 1927
