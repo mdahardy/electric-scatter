@@ -1244,7 +1244,7 @@ function toggleToolbar(transition_d=250){
     border_hider.transition().duration(transition_d).style('left','-3px');
     if (transition_d===0){
         //fixing rotation bug when transition is instant and zero rotation
-        plus_wrapper.transition().style('transform','rotate(0deg)');
+        plus_wrapper.style('transform','rotate(0deg)');
     } else{
         plus_wrapper.transition().duration(transition_d).style('transform','rotate(0deg)');
     }
