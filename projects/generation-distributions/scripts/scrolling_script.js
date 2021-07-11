@@ -40,7 +40,7 @@ const plus_wrapper =   d3.select('#plus-wrapper');
 const icon_wrapper = d3.select('#icon-wrapper');
 const border_hider = d3.select('#border-hider');
 let just_resized = false;
-let showing_loader = false;
+let loading_timeout_started = false;
 let toggle_forward_back = false;
 let global_counter=0;
 
@@ -548,17 +548,15 @@ function tickFunction(d){
     return `$${curr_str}k`
 }
 
-// function delay(t, v) {
-//     return new Promise(function(resolve) { 
-//         setTimeout(resolve.bind(null, v), t)
-//     });
-//  }
 
 async function simpleUpdate(f0,input_global_counter,f1=undefined){
-    if (!showing_loader && has_entered_mouse){
-        showing_loader = true;
-        d3.select("#density-enter").style('display','block');
-        d3.select("#density-loader").style('display','block');
+    if (!loading_timeout_started && has_entered_mouse){
+        loading_timeout_started = true;
+        loader_timeout = setTimeout(function(){
+            d3.select("#density-enter").style('display','flex');
+            d3.select("#density-loader").style('display','block');
+            loader_timeout = undefined;
+        },100);
     }
     is_transitioning=true;
     if (animation_timeout){
@@ -584,10 +582,14 @@ async function simpleUpdate(f0,input_global_counter,f1=undefined){
     }
     if (input_global_counter == global_counter){
         if (has_entered_mouse){
-            showing_loader = false;
+            loading_timeout_started = false;
+            if (loader_timeout){
+                clearTimeout(loader_timeout);
+                loader_timeout = undefined;
+            }
             d3.select("#density-enter").style('display','none');
             d3.select("#density-loader").style('display','none');
-        };
+        }
         makeUpperStrings();
         const [old_x_max,old_y_max] = [global_x_max,global_y_max];
         const [old_min_age,old_max_age] = [min_age,max_age];

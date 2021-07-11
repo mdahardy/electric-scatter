@@ -12,7 +12,7 @@ let auto_scrolling = false;
 let bottom_svg_hover = false;
 let current_selection = 0;
 let years_line_height = 8; // the width of the svg on top of the density_svg for plotting the current year info
-let animations_timeout0,animations_timeout1,copy_timeout, is_changing,toggle_timeout,resize_timeout,is_expanded, animation_timeout, scroll_limit, years_distance, years_lower, wheel_timeout, touchscreen_timeout, num_ages,curveFunction,clipFunction,hover_rect,years_svg_wrapper,num_x_ticks,global_x_max,global_y_max,x_scale,y_scale,global_thresholds,scaled_global_thresholds,global_num_thresholds,global_scroll_num,global_scroll_floor, x_coordinate,scaled_bottom,scaled_top,years_svg,years_x_scale,years_y_scale,line_function;
+let loader_timeout, animations_timeout0,animations_timeout1,copy_timeout, is_changing,toggle_timeout,resize_timeout,is_expanded, animation_timeout, scroll_limit, years_distance, years_lower, wheel_timeout, touchscreen_timeout, num_ages,curveFunction,clipFunction,hover_rect,years_svg_wrapper,num_x_ticks,global_x_max,global_y_max,x_scale,y_scale,global_thresholds,scaled_global_thresholds,global_num_thresholds,global_scroll_num,global_scroll_floor, x_coordinate,scaled_bottom,scaled_top,years_svg,years_x_scale,years_y_scale,line_function;
 let animations_dict = [undefined,undefined]
 let second_group_disabled = true;
 let work_type = 'full_time';
@@ -30,7 +30,7 @@ let has_toolbar = false;
 let content_obj = document.documentElement;
 let is_small = undefined;
 let has_legend = d3.select('#legend').style('display')=='flex';
-let showing_loader = false;
+let loading_timeout_started = false;
 let stop_toolbar_animation = false;
 const fullscreen_index = getFullScreenIndices();
 const density_tooltip = d3.select('#density-tooltip');
@@ -566,10 +566,13 @@ function tickFunction(d){
 }
 
 async function simpleUpdate(f0,input_global_counter,f1=undefined){
-    if (!showing_loader && has_entered_mouse){
-        showing_loader = true;
-        d3.select("#density-enter").style('display','flex');
-        d3.select("#density-loader").style('display','block');
+    if (!loading_timeout_started && has_entered_mouse){
+        loading_timeout_started = true;
+        loader_timeout = setTimeout(function(){
+            d3.select("#density-enter").style('display','flex');
+            d3.select("#density-loader").style('display','block');
+            loader_timeout = undefined;
+        },100);
     }
     is_transitioning=true;
     if (animation_timeout){
@@ -595,7 +598,11 @@ async function simpleUpdate(f0,input_global_counter,f1=undefined){
     }
     if (input_global_counter == global_counter){
         if (has_entered_mouse){
-            showing_loader = false;
+            loading_timeout_started = false;
+            if (loader_timeout){
+                clearTimeout(loader_timeout);
+                loader_timeout = undefined;
+            }
             d3.select("#density-enter").style('display','none');
             d3.select("#density-loader").style('display','none');
         }
