@@ -6,6 +6,9 @@
 // -- -- -- -- -- -- -- -- -- -- -- -- -- 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- 
 
+// change to absolute filepath https://electricscatter.com/projects/density-plots/audio/voiceover.mp3 when running locally
+const audio = new Audio("audio/voiceover.mp3");
+
 let very_small_height, loader_timeout,density_y_scale,scaled_curve_data,scaled_global_thresholds,density_data, y_axis_ticks_selector, svg_plotting_group,outer_svg,max_histogram_data,mousemove_timeout,current_transition_function,resize_timeout,small_width,small_height,tooltip_alignment,svg_width,svg_height,margins,adjusted_width,adjusted_height,histogram_data,x_scale,bar_width,plot_wrapper_x,plot_wrapper_y,width_4850,width_150;
 let html_section = -1;
 let css_section = -1;
@@ -35,7 +38,6 @@ const countdown_selector = d3.select('#countdown');
 let already_made_plot = false;
 const plot_x_max = 140000;
 let inner_width = window.innerWidth;
-const audio = new Audio("audio/voiceover.mp3");
 let has_loaded_data = false;
 let already_loaded_page = false;
 let has_loaded_metadata = false;

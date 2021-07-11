@@ -1,6 +1,6 @@
 # electric scatter interactive density plots video
 
-This repo contains the source code for the [interactive video on density plots](https://electricscatter.com/projects/density-plots) on electric scatter. Note that because this app uses d3, you'll have to launch a local web server in the [root electric scatter directory](https://github.com/mdahardy/electric-scatter) if you want to run the app locally.
+This repo contains the source code for the [interactive video on density plots](https://electricscatter.com/projects/density-plots) on electric scatter. Note that because this app uses d3, you'll have to launch a local web server in the [root electric scatter directory](https://github.com/mdahardy/electric-scatter) if you want to run the app locally. You'll also need to change the filepath of the audio file to its electric scatter url in [scripts/densities.js](https://github.com/mdahardy/electric-scatter/blob/main/projects/density-plots/scripts/densities.js#L10).
 
 ## notes on data
 
