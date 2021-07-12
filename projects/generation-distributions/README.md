@@ -7,11 +7,11 @@ This repo contains the source code for the [generation distributions app](https:
 
 Data for the density plots was obtained from the [IPUMS CPS](https://cps.ipums.org/cps/) database. You can view the raw dataset and data extract [here](https://github.com/mdahardy/electric-scatter/tree/main/projects/income-distributions/data_prep/ipums_data). The [data_prep/generate_data.R](https://github.com/mdahardy/electric-scatter/tree/main/projects/generation-distributions/data_prep/generate_data.R) script generates income percentiles from the raw IPUMS data, and [data_prep/process_data/process_data.js](https://github.com/mdahardy/electric-scatter/tree/main/projects/generation-distributions/data_prep/process_data/process_data.js) generates cached density estimates from these percentiles that are used for plotting.
 
-* For simplicity, workers with negative incomes are excluded from analysis. Note that this only applies to about 0.2% of respondents. 
+* For simplicity, workers with negative incomes are excluded. Note that this only applies to about 0.2% of respondents. 
 * A worker's age is defined as one less than their reported age in the survey. This is done as the CPS Annual Social and Economic Supplement (ASEC) is conducted in March or April, and asks respondents about their income during the previous calendar year.
 * Ages with less than 125 observations in the raw IPUMS data are excluded.
 
-* The following birth years are used to select generations (all birth years are inclusive):
+* The following birth years are used to select generations (all years are inclusive):
     * Greatest: 1901 through 1927
     * Silent: 1928 through 1945
     * Baby boomers: 1946 through 1964

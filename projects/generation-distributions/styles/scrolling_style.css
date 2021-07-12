@@ -270,6 +270,10 @@ body {
     opacity:0.1;
 }
 
+.year-line:hover {
+    text-decoration:underline;
+}
+
 .year-text{
     text-anchor:end;
     font-size:18px;
@@ -1444,6 +1448,10 @@ DROPDOWN MENU */
     }
 
     #highlight-radio label:hover {
+        text-decoration:none;
+    }
+
+    .year-line:hover {
         text-decoration:none;
     }
 }
