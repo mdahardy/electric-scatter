@@ -18,7 +18,7 @@ Data for the density plots was obtained from the [IPUMS CPS](https://cps.ipums.o
     * Hispanic: Any race, Hispanic ethnicity. This includes respondents who reported Mexican, Mexican American, Mexicano/Mexicana, Chicano/Chicana, Mexican (Mexicano), Puerto Rican, Cuban, Colombian, Salvadorian, Central/South American, Central American (including Salvadorian), South American, or other Hispanic origin.
 
 * The following definitions are used are used for worker selections:
-    * Worked full-time, year round: Respondents who reported working 50 or more weeks during the previous calendar year.
+    * Worked full-time, year round: Respondents who reported working full time and 50 or more weeks during the previous calendar year.
     * In labor force at least six months: The expected sum of weeks unemployed and weeks worked for the previous calendar year is at least 26. Because the ASEC asks respondents to report weeks in bins, the midpoint of each bin is used to approximate the number of weeks a worker spent in that state. For example, if a respondent reported being unemployed for between 1 and 13 weeks, I estimated that they spent 7 weeks unemployed.
     * Reported income: All respondents who reported postive income.
 

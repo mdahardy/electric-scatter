@@ -2672,6 +2672,7 @@ left: 14px;
 /* Have a query here which I want overriden in a lot of instances */
 @media (any-pointer: coarse) {
 
+
   .video-wrapper {
     display:none;
   }
@@ -2716,6 +2717,10 @@ left: 14px;
     
   .link-wrapper:hover .link-stroke{
     fill:#5c5c5c;;
+  }
+
+  .logo-image:hover{
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.24);
   }
 
   

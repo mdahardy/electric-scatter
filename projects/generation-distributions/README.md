@@ -19,7 +19,7 @@ Data for the density plots was obtained from the [IPUMS CPS](https://cps.ipums.o
     * Millennials: 1981 through 1996
 
 * The following definitions are used are used for worker selections:
-    * Worked full-time, year round: Workers who reported working 50 or more weeks during the previous calendar year.
+    * Worked full-time, year round: Respondents who reported working full time and 50 or more weeks during the previous calendar year.
     * In labor force at least six months: The expected sum of weeks unemployed and weeks worked for the previous calendar year is at least 26. Because the ASEC asks respondents to report weeks in bins, the midpoint of each bin is used to approximate the number of weeks a worker spent in that state. For example, if a worker reported being unemployed for between 1 and 13 weeks, I estimated that they spent 7 weeks unemployed.
     * Reported income: All workers who reported postive income.
 
