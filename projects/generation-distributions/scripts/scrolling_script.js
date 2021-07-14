@@ -709,7 +709,7 @@ function setGlobalMaxes(){
             if (inner_x_max > curr_x_max) curr_x_max = inner_x_max;
             if (inner_y_max > curr_y_max) curr_y_max = inner_y_max;
         }
-        curr_x_max += 30000;
+        curr_x_max += 20000;
         [global_x_max,global_y_max] = [curr_x_max - (curr_x_max % 2000), curr_y_max];
         return;
     }

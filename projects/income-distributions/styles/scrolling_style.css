@@ -258,15 +258,15 @@ body {
   opacity:0.1;
 }
 
-.year-line:hover{
-  text-decoration:underline;
-}
-
 .year-text{
   text-anchor:end;
   font-size:18px;
   fill:#595959;
   cursor:pointer;
+}
+
+.year-text:hover{
+  text-decoration:underline;
 }
 
 .income-line-0{
@@ -1415,7 +1415,7 @@ display: none;
       text-decoration:none;
   }
 
-  .year-line:hover{
+  .year-text:hover{
     text-decoration:none;
   }  
 
