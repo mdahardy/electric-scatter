@@ -87,6 +87,7 @@ html {
 #header-text {
     cursor: pointer;
     margin-bottom: 7px;
+    font-style:italic;
 }
 #loader-content {
     display: flex;
@@ -106,7 +107,6 @@ html {
     background-color: #1ddde8;
     animation: loading 5s linear infinite;
 }
-
 
 #ie-issues {
     text-align: center;

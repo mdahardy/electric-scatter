@@ -40,7 +40,6 @@ body {
 }
 
 #submit-button {
-    font-weight:bold;
     border-radius:0px;
     color:white;
     padding:11px 35px 11px 35px;
@@ -55,7 +54,7 @@ body {
 }
 
 #submit-button:hover {
-    background:rgba(255,255,255,0.15)
+    background:rgba(255,255,255,0.15);
 }
 
 .email-paragraph {
@@ -73,12 +72,11 @@ body {
 
 .projects-info-wrapper{
     color:#ffffff;
-    font-weight:1000;
     font-size:30px;
     margin-left:auto;
     margin-right:auto;
     width:1000px;
-    text-align:left;
+    text-align:center;
     margin-top: 15px;
     margin-bottom:15px;
 }
@@ -91,16 +89,21 @@ body {
     height:125px;
     margin:0 auto;
     margin-bottom:10px;
-    background:#f0f0f0;
+    background:#f3f3f3;
 }
 
 .link-div:hover {
-    background-color:rgb(221, 221, 221);
+    background:#e0e0e0;
 }
 
 .project-video {
     width:100%;
     height:100%;
+    display:block;
+}
+
+.image-div{
+    display:block;
 }
 
 .media-content{
@@ -132,11 +135,13 @@ body {
     margin-right:auto;
     margin-top:45px;
     margin-bottom:45px;
-    background:#f0f0f0;
+    background:#f3f3f3;
 }
 
 #about-link:hover{
-    background:rgb(221, 221, 221);}
+    background:#e0e0e0;
+
+}
 
 #about-div{
     width:100%;
@@ -221,7 +226,6 @@ body {
     }
 
     .projects-info-wrapper{
-        text-align:center;
         width:100%;
     }
 
@@ -252,7 +256,7 @@ body {
     }
 
     #about-link {
-        margin-top:8vw;
+        margin-top:0vw;
         height:100px;
         width:92vw;
         margin-bottom: 4vw;
@@ -285,29 +289,35 @@ body {
 
 
 @media (max-width:400px){
+
     #email-signup{
-        width:94vw;
+        width:96vw;
     }
 
     .link-div {
-        width:94vw;
+        width:96vw;
         height:calc(94vw / 2 + 100px);
-        margin-bottom: 3vw;
+        margin-bottom: 2vw;
     }
 
     .media-content {
         width:100%;
-        height:47vw;
+        height:48vw;
     }
 
     #about-link {
-        margin-top:6vw;
-        width:94vw;
-        margin-bottom: 3vw;
+        margin-top:0vw;
+        width:96vw;
+        margin-bottom: 2vw;
     }
 }
 
 @media (any-pointer:coarse){
+
+
+    #about-link:hover{
+        background-color:#f0f0f0;
+    }
 
     .link-div:hover {
         background-color:#f0f0f0;
