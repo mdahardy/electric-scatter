@@ -12,7 +12,7 @@ Data for the density plots was obtained from the [IPUMS CPS](https://cps.ipums.o
 * "All ages" is defined as workers who were at least 17 years old at the time of the survey.
 * Note that while FRED uses the same dataset to estimate income statistics, the estimated income percentiles following the "FRED method" are slightly different from their estimates (e.g., see FRED [median income estimates](https://fred.stlouisfed.org/series/MEPAINUSA672N)). These differences are primarily due to different rules for selecting eligible workers (e.g., FRED includes workers 14 years old and younger are included before 1980), and because FRED doesn't adjust respondents' ages to match the reported year. 
 
-* The following demographic markers are used to determine race:
+* The following demographic are used to determine race:
     * White: White (race) and non-Hispanic (ethnicity)
     * Black: Black (race) and non-Hispanic (ethnicity)
     * Hispanic: Any race, Hispanic ethnicity. This includes respondents who reported Mexican, Mexican American, Mexicano/Mexicana, Chicano/Chicana, Mexican (Mexicano), Puerto Rican, Cuban, Colombian, Salvadorian, Central/South American, Central American (including Salvadorian), South American, or other Hispanic origin.
