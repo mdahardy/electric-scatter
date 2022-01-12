@@ -22,8 +22,8 @@
     <meta name='twitter:image' content='https://www.electricscatter.com/projects/income-distributions/images/social_card.png'>
 
     <meta property="og:title" content="American income explorer">
-    <meta name='twitter:description' content="An interactive visualization exploring the distribution of American incomes.">
-    <meta name='twitter:image' content='https://www.electricscatter.com/projects/income-distributions/social_card.png'>
+    <meta name='og:description' content="An interactive visualization exploring the distribution of American incomes.">
+    <meta name='og:image' content='https://www.electricscatter.com/projects/income-distributions/social_card.png'>
     <meta property="og:url" content="https://www.electricscatter.com/projects/income-distributions">
 </head>
 
@@ -37,7 +37,7 @@
             <div id='header-text'><a id = 'electric-scatter-link' href = '/'>electric scatter</a></div>
         </div>
         <div id = 'title-div' class='hidden'>
-            <div>American Personal Income Explorer</div>
+            <div>American personal income explorer</div>
         </div>
         <div id ='more-info-wrapper' class ='hidden'>
             <div id = 'more-info-text'>
@@ -55,7 +55,7 @@
             <div id='density-tooltip'></div>
             <div id='legend'>
                 <div id ='legend-0-wrapper' class='inner-legend-wrapper'><div id='group-0-square' class = 'group-square'></div> <div id='group-0-legend-text'>All workers</div></div>
-                <div id ='legend-1-wrapper' class='inner-legend-wrapper'><div id='group-1-square' class = 'group-square'></div> <div id='group-1-legend-text'>Men 30-49</div></div>
+                <div id ='legend-1-wrapper' class='inner-legend-wrapper'><div id='group-1-square' class = 'group-square'></div> <div id='group-1-legend-text'>All men 30-49</div></div>
             </div>
         </div>
         <div id = 'density-enter'>
@@ -75,7 +75,7 @@
             </div>
             <select id= "workers-selector">
                 <option id = 'selector-full_time' value ='full_time'>Worked full-time year-round</option>
-                <option id = 'selector-mine' value = 'mine'>In labor force at least 6 months</option>
+                <option id = 'selector-in_labor_force' value = 'in_labor_force'>In labor force at least 6 months</option>
                 <option id = 'selector-fred' value='fred'>Reported income (FRED method)</option>
             </select>
             <div id = 'group-0-info' class = 'group-info'>Group 1</div>

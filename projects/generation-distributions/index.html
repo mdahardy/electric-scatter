@@ -3,7 +3,7 @@
  
     <head>
         <title>Generational income explorer</title>
-        <meta name = "description" content = "An interactive visualization exploring the income distributions of American generations. Track income percentiles and compare Boomers, Gen X, Millennials, and others.">
+        <meta name = "description" content = "An interactive visualization exploring the income distributions of American generations. Track income percentiles and compare Boomers, Gen X, Millennials, and other generations' incomes.">
         <meta name="viewport" content="width=device-width, initial-scale = 1.0,maximum-scale = 1.0,user-scalable=no"/>
         <link href="../../styles/electric-scatter.css" rel="stylesheet">
         <link href="styles/scrolling_style.css" rel="stylesheet">
@@ -22,8 +22,8 @@
         <meta name='twitter:image' content='https://www.electricscatter.com/projects/generation-distributions/images/social_card.png'>
     
         <meta property="og:title" content="Generational income explorer">
-        <meta name='twitter:description' content="An interactive visualization exploring the income distributions of American generations.">
-        <meta name='twitter:image' content='https://www.electricscatter.com/projects/generation-distributions/images/social_card.png'>
+        <meta name='og:description' content="An interactive visualization exploring the income distributions of American generations.">
+        <meta name='og:image' content='https://www.electricscatter.com/projects/generation-distributions/images/social_card.png'>
         <meta property="og:url" content="https://www.electricscatter.com/projects/generation-distributions">
     </head>
 
@@ -37,7 +37,7 @@
             <div id='header-text'><a id = 'electric-scatter-link' href = '/'>electric scatter</a></div>
         </div>
         <div id = 'title-div' class='hidden'>
-            <div>Generational Income Explorer</div>
+            <div>Generational income explorer</div>
         </div> 
         <div id ='more-info-wrapper' class ='hidden'>
             <div id = 'more-info-text'>
@@ -49,7 +49,7 @@
             </div>
         </div>     
         <div id = 'background-rect' class = 'hidden'></div>
-        <div id = 'background-years'></div>
+        <div id = 'background-ages'></div>
         <div id = 'background-bottom'></div>
         <div id = 'density-div'>
             <div id='density-tooltip'></div>
@@ -64,7 +64,7 @@
                 <div class = 'loader-square' id = 'density-loader'></div>
             </div>
         </div>
-        <div id = 'current-year-div' class = 'hidden'>Age</div>
+        <div id = 'current-age-div' class = 'hidden'>Age</div>
         <div id='toolbar' class = 'hidden'>
             <div id = 'relative-toolbar'>
             <div id = 'icon-placeholder'></div>
@@ -74,8 +74,8 @@
                 <div id = 'range-wrapper'><input type="range" min="-60000" max="-4000" value="-32000" class="slider" id="myRange"></div>
             </div>
             <select id= "workers-selector">
-                <option id = 'selector-full_time' value ='full_time'>Worked full-time year-round</option>
-                <option id = 'selector-mine' value = 'mine'>In labor force at least 6 months</option>
+                <option id = 'selector-full_time' value ='full_time'>Worked full-time age-round</option>
+                <option id = 'selector-in_labor_force' value = 'in_labor_force'>In labor force at least 6 months</option>
                 <option id = 'selector-fred' value='fred'>Reported income (FRED method)</option>
             </select>
             <div id = 'label-wrapper'>

@@ -15,7 +15,7 @@ body{
 
 #about-wrapper {
     box-sizing:border-box;
-    background:#f0f0f0;
+    background:#f3f3f3;
     width:70ch;
     margin:0px auto;
     padding-left:26px;
@@ -34,10 +34,12 @@ body{
 .email-form {
     padding:11px;
     width:300px;
-    border:none;
+    border:2px solid #161616;
+    border-right:none;
+    border-radius:0;
+    background:white;
     font-size:19px;
     margin:0;
-    border-radius:0;
 }
 
 .email-form:focus{
@@ -46,30 +48,42 @@ body{
 
 .color-button {
     border-radius:0px;
-    border:none;
-    background: #585858;
-    color:white;
+    background:none;
+    border:2px solid #161616;
     padding:11px 35px 11px 35px;
     cursor:pointer;
-    -webkit-animation: rainbow 80s linear infinite;
-    -z-animation: rainbow 80s linear infinite;
-    -o-animation: rainbow 80s linear infinite;
-    animation: rainbow 80s linear infinite;
     margin-left:0px;
     font-size:19px;
-    font-weight:bold;
 }
 
 .color-button:hover{
-    background: #242424;
+    background:#e0e0e0;
 }
 
 .section-title {
     display: flex;
     align-items: center;
-    font-weight:bold;
     font-size:25px;
     margin-bottom:-8px;
+    position:relative;
+    text-indent:0;
+}
+
+.section-title:after {
+    content: attr(title);
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+}
+.section-title span {
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 49%;
+    bottom: 49%;
+    min-width: 90%;
+    border-bottom: 2px solid #ccc;
 }
 
 #about-wrapper ul {
@@ -79,7 +93,7 @@ body{
 }
 
 .link-text {
-    color:#1380bf;
+    color:#177ab3;
     text-decoration:none;
 }
 
@@ -89,18 +103,18 @@ body{
 
 
 @media (min-width:1500px){
+
     #about-wrapper{
         font-size:20px;
     }
 
     .section-title{
-        font-size:27px;
+        font-size:25px;
     }
 
     .color-button, .email-form {
         font-size:20px;
     }
-
 
 }
 
@@ -116,6 +130,7 @@ body{
         padding-left:15px;
         padding-right:15px;
         padding-top:15px;
+        margin-bottom:0vw;
         margin-bottom:4vw;
     }
 }
@@ -131,16 +146,18 @@ body{
         width:100%;
         box-sizing:border-box;
         margin:0px;
+        border:2px solid #161616;
+        border-bottom:none;
     }
 
 }
 
 @media (max-width:400px){
     #about-wrapper {
-        width:94vw;
+        width:96vw;
         padding-left:13px;
         padding-right:13px;
-        margin-bottom:3vw;
+        margin-bottom:2vw;
         padding-top:13px;
     }
 

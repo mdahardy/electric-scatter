@@ -12,12 +12,9 @@ let auto_scrolling = false;
 let bottom_svg_hover = false;
 let current_selection = 0;
 let years_line_height = 8; // the width of the svg on top of the density_svg for plotting the current year info
-let loader_timeout, animations_timeout0,animations_timeout1,copy_timeout, is_changing,toggle_timeout,resize_timeout,is_expanded, animation_timeout, scroll_limit, years_distance, years_lower, wheel_timeout, touchscreen_timeout, num_ages,curveFunction,clipFunction,hover_rect,years_svg_wrapper,num_x_ticks,global_x_max,global_y_max,x_scale,y_scale,global_thresholds,scaled_global_thresholds,global_num_thresholds,global_scroll_num,global_scroll_floor, x_coordinate,scaled_bottom,scaled_top,years_svg,years_x_scale,years_y_scale,line_function;
+let wrapper_wrapper,totalWidth,totalHeight,margins,modifiedWidth,modifiedHeight, wrapper_svg, wrapper_with_adjusted_margins, grid_svg,density_svg_dict, lines_svg_dict, density_outer_group, density_enter_rect, curr_year_line, first_year,last_year,loader_timeout, animations_timeout0,animations_timeout1,copy_timeout, is_changing,toggle_timeout,resize_timeout,is_expanded, animation_timeout, scroll_limit, years_distance, years_lower, wheel_timeout, touchscreen_timeout, num_ages,curveFunction,clipFunction,hover_rect,years_svg_wrapper,num_x_ticks,global_x_max,global_y_max,x_scale,y_scale,global_thresholds,scaled_global_thresholds,global_num_thresholds,global_scroll_num,global_scroll_floor, x_coordinate,scaled_bottom,scaled_top,years_svg,years_x_scale,years_y_scale,line_function;
 let animations_dict = [undefined,undefined]
 let second_group_disabled = true;
-let work_type = 'full_time';
-let animations_selections = [{'sex': 'all_sexes','age': 'all_ages','race':'all_races'}, {'sex': 'males', 'age': 'from_30_to_49', 'race':'all_races'}]
-let animations_filenames = ['./processed_data/full_time/all_sexes/all_ages/all_races/data.json',undefined];
 let shown_distributions = [true,false];
 let is_transitioning = false;
 let tooltips_margin = 5;
@@ -41,12 +38,19 @@ const plus_wrapper =   d3.select('#plus-wrapper');
 const icon_wrapper = d3.select('#icon-wrapper');
 const border_hider = d3.select('#border-hider');
 let toggle_forward_back = false;
-let global_counter=0;
-const uncut_tholds = [ 0, 2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000, 32000, 34000, 36000, 38000, 40000, 42000, 44000, 46000, 48000, 50000, 52000, 54000, 56000, 58000, 60000, 62000, 64000, 66000, 68000, 70000, 72000, 74000, 76000, 78000, 80000, 82000, 84000, 86000, 88000, 90000, 92000, 94000, 96000, 98000, 100000, 102000, 104000, 106000, 108000, 110000, 112000, 114000, 116000, 118000, 120000, 122000, 124000, 126000, 128000, 130000, 132000, 134000, 136000, 138000, 140000, 142000, 144000, 146000, 148000, 150000, 152000, 154000, 156000, 158000, 160000, 162000, 164000, 166000, 168000, 170000, 172000, 174000, 176000, 178000, 180000, 182000, 184000, 186000, 188000, 190000, 192000, 194000, 196000, 198000, 200000, 202000, 204000, 206000, 208000, 210000, 212000, 214000, 216000, 218000, 220000, 222000, 224000, 226000, 228000, 230000, 232000, 234000, 236000, 238000, 240000, 242000, 244000, 246000, 248000, 250000, 252000, 254000, 256000, 258000, 260000, 262000, 264000, 266000, 268000, 270000, 272000, 274000, 276000, 278000, 280000, 282000, 284000, 286000, 288000, 290000, 292000, 294000, 296000, 298000, 300000, 302000, 304000, 306000, 308000, 310000, 312000, 314000, 316000, 318000, 320000, 322000, 324000, 326000, 328000, 330000, 332000, 334000, 336000, 338000, 340000, 342000, 344000, 346000, 348000, 350000, 352000, 354000, 356000, 358000, 360000, 362000, 364000, 366000, 368000, 370000, 372000, 374000, 376000, 378000, 380000, 382000, 384000, 386000, 388000, 390000, 392000, 394000, 396000, 398000, 400000, 402000, 404000, 406000, 408000, 410000, 412000, 414000, 416000, 418000, 420000, 422000, 424000, 426000, 428000, 430000, 432000, 434000, 436000, 438000, 440000, 442000, 444000, 446000, 448000, 450000, 452000, 454000, 456000, 458000, 460000, 462000, 464000, 466000, 468000, 470000, 472000, 474000, 476000, 478000, 480000, 482000, 484000, 486000, 488000, 490000, 492000, 494000, 496000, 498000, 500000, 502000, 504000, 506000, 508000, 510000, 512000, 514000, 516000, 518000, 520000, 522000, 524000, 526000, 528000, 530000, 532000, 534000, 536000, 538000, 540000, 542000, 544000, 546000, 548000, 550000, 552000, 554000, 556000, 558000, 560000, 562000, 564000, 566000, 568000, 570000, 572000, 574000, 576000, 578000, 580000, 582000, 584000, 586000, 588000, 590000, 592000, 594000, 596000, 598000, 600000, 602000, 604000];
+const uncut_tholds = [ 0, 2000, 4000, 6000, 8000, 10000, 12000, 14000, 16000, 18000, 20000, 22000, 24000, 26000, 28000, 30000, 32000, 34000, 36000, 38000, 40000, 42000, 44000, 46000, 48000, 50000, 52000, 54000, 56000, 58000, 60000, 62000, 64000, 66000, 68000, 70000, 72000, 74000, 76000, 78000, 80000, 82000, 84000, 86000, 88000, 90000, 92000, 94000, 96000, 98000, 100000, 102000, 104000, 106000, 108000, 110000, 112000, 114000, 116000, 118000, 120000, 122000, 124000, 126000, 128000, 130000, 132000, 134000, 136000, 138000, 140000, 142000, 144000, 146000, 148000, 150000, 152000, 154000, 156000, 158000, 160000, 162000, 164000, 166000, 168000, 170000, 172000, 174000, 176000, 178000, 180000, 182000, 184000, 186000, 188000, 190000, 192000, 194000, 196000, 198000, 200000, 202000, 204000, 206000, 208000, 210000, 212000, 214000, 216000, 218000, 220000, 222000, 224000, 226000, 228000, 230000, 232000, 234000, 236000, 238000, 240000, 242000, 244000, 246000, 248000, 250000, 252000, 254000, 256000, 258000, 260000, 262000, 264000, 266000, 268000, 270000, 272000, 274000, 276000, 278000, 280000, 282000, 284000, 286000, 288000, 290000, 292000, 294000, 296000, 298000, 300000, 302000, 304000, 306000, 308000, 310000, 312000, 314000, 316000, 318000, 320000, 322000, 324000, 326000, 328000, 330000, 332000, 334000, 336000, 338000, 340000, 342000, 344000, 346000, 348000, 350000, 352000, 354000, 356000, 358000, 360000, 362000, 364000, 366000, 368000, 370000, 372000, 374000, 376000, 378000, 380000, 382000, 384000, 386000, 388000, 390000, 392000, 394000, 396000, 398000, 400000, 402000, 404000, 406000, 408000, 410000, 412000, 414000, 416000, 418000, 420000, 422000, 424000, 426000, 428000, 430000, 432000, 434000, 436000, 438000, 440000, 442000, 444000, 446000, 448000, 450000, 452000, 454000, 456000, 458000, 460000, 462000, 464000, 466000, 468000, 470000, 472000, 474000, 476000, 478000, 480000, 482000, 484000, 486000, 488000, 490000, 492000, 494000, 496000, 498000, 500000, 502000, 504000, 506000, 508000, 510000, 512000, 514000, 516000, 518000, 520000, 522000, 524000, 526000, 528000, 530000, 532000, 534000, 536000, 538000, 540000, 542000, 544000, 546000, 548000, 550000, 552000, 554000, 556000, 558000, 560000, 562000, 564000, 566000, 568000, 570000, 572000, 574000, 576000, 578000, 580000, 582000, 584000, 586000, 588000, 590000, 592000, 594000, 596000, 598000, 600000];
 const race_scale = d3.scaleOrdinal().domain(['all_races', 'white_non_hispanic','black_non_hispanic','hispanic']).range(['All ','White ','Black ','Hisp. ']);
 const sex_scale = d3.scaleOrdinal().domain(['all_sexes', 'males','females']).range(['workers','men','women']);
 const age_scale = d3.scaleOrdinal().domain(['all_ages', 'under_30','from_30_to_49','over_50']).range(['',' 16-29 ',' 30-49 ',' 50+']);
 const ticks_scale = d3.scaleThreshold().domain([300,700,1350]).range([2,3,5,8]);
+const num_vertical_lines = 50;
+const checkbox = document.querySelector('input[type="checkbox"]');
+let work_type = 'full_time';
+let animations_selections = [{'sex': 'all_sexes','age': 'all_ages','race':'all_races'}, {'sex': 'males', 'age': 'from_30_to_49', 'race':'all_races'}]
+let most_recently_loaded_files = ['./processed_data/full_time/all_sexes/all_ages/all_races/data.json',undefined];
+let plotted_distributions = ['./processed_data/full_time/all_sexes/all_ages/all_races/data.json',undefined];
+let loaded_distributions = [undefined,undefined];
+
 
 const race_id_dict = {
     '1': 'all_races',
@@ -55,97 +59,23 @@ const race_id_dict = {
     '4' : 'hispanic'}
 
 const sex_id_dict = {
-        '1': 'all_sexes',
-        "2": 'males',
-        '3' : 'females'}
+    '1': 'all_sexes',
+    "2": 'males',
+    '3' : 'females'
+}
 
 const age_id_dict = {
     '1': 'all_ages',
     "2": 'under_30',
     '3' : 'from_30_to_49',
-    '4' : 'over_50'}
+    '4' : 'over_50'
+}
 
 const workers_id_dict = {     
     '1': 'full_time',
-    "2": 'mine',
-    '3' : 'fred'}
-
-let [totalWidth,totalHeight] = getWidthAndHeight();
-let margins = getMargins();
-let [modifiedWidth,modifiedHeight] = widthAndHeightMinusMargins(margins,totalWidth,totalHeight);
-
-// SVG SELECTORS -- -- -- -- -- -- -- -- 
-const wrapper_wrapper = d3.select("#density-div")
-    .append("svg")
-    .attr("width",totalWidth)
-    .attr("height",totalHeight+years_line_height);
-
-const wrapper_svg = wrapper_wrapper
-    .append('g')
-    .attr('id','wrapper-svg')
-    .attr("width",totalWidth)
-    .attr("height",totalHeight)
-    .attr("transform","translate(0,"+years_line_height+")");
-
-wrapper_svg
-    .append("rect")
-    .attr('id','rect-svg')
-    .attr("width",totalWidth)
-    .attr("height",totalHeight-margins.top)
-    .attr('fill','white')
-    .attr("transform", `translate(0,${margins.top})`)
-
-wrapper_svg
-    .append("rect")
-    .attr('id','rect-svg2')
-    .attr("width",totalWidth-(margins.left))
-    .attr("height",totalHeight-margins.bottom)
-    .attr('fill','white')
-    .attr("transform","translate("+margins.left+",0)");
-
-wrapper_wrapper.append("defs")
-        .append("marker")
-        .attr("id","arrow")
-        .attr("viewBox","0 -5 10 10")
-        .attr("refX",5)
-        .attr("refY",0)
-        .attr("markerWidth",3)
-        .attr("markerHeight",4)
-        .attr("orient",'auto')
-        .append("path")
-        .attr("d", "M0,-5L10,0L0,5")
-        .attr("class","arrowHead")
-        .style('fill','#545454')
-
-const wrapper_with_adjusted_margins = wrapper_svg
-    .append("g")
-    .attr("transform","translate(" + margins.left + "," + margins.top + ")");
-
-const grid_svg = wrapper_with_adjusted_margins.append('g');
-const density_svg_dict = [ wrapper_with_adjusted_margins.append("g"),wrapper_with_adjusted_margins.append("g") ];
-const lines_svg_dict = [ wrapper_with_adjusted_margins.append("g"), wrapper_with_adjusted_margins.append("g") ];
-const density_outer_group = wrapper_with_adjusted_margins.append("g").attr('class','hidden');
-const hover_group = wrapper_with_adjusted_margins.append("g");
-const density_enter_g = wrapper_wrapper.append('g');
-const density_enter_rect = density_enter_g
-    .append("rect")
-    .attr("id",'density-enter-rect')
-    .attr('y',years_line_height)
-    .attr("width",totalWidth)
-    .attr('height',totalHeight);
-
-const curr_year_line = density_enter_g
-    .append("line")
-    .attr('y1',years_line_height)
-    .attr('y2',years_line_height)
-    .attr('x2',margins.left-4.5)
-    .attr('x1',totalWidth-margins.right)
-    .attr('class','current-year-line hidden');
-
-d3.select('#density-enter-inner')
-    .style("width",`${totalWidth-(margins.left + margins.right)}px`)
-    .style("height",`${totalHeight-margins.bottom}px`)
-    .style("transform",`translate(${margins.left}px,0)`);
+    "2": 'in_labor_force',
+    '3' : 'fred'
+}
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- 
@@ -155,17 +85,26 @@ d3.select('#density-enter-inner')
 // -- -- -- -- -- -- -- -- -- -- -- -- -- 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- 
 
-class IncomeAnimation {
+function updateIncomeAnimationDict(plotting_num,data,filepath){
+    animations_dict[plotting_num] = generateIncomeAnimation(plotting_num,data,filepath);
+    loaded_distributions[plotting_num] = filepath;
+}
+
+function generateIncomeAnimation(plotting_num,data,filepath){
+    if (filepath == undefined) return undefined;
+    return new IncomeAnimation(plotting_num,data);
+}
+
+ class IncomeAnimation {
     constructor(plotting_num,data){
         this.plotting_num = plotting_num;
         this.data_obj = data;
         this.x_max = data['x_max'];
         this.y_max = data['y_max'];
-        this.num_lines = data.incomes_dict.length;
         this.curve = undefined;
         this.clip_path = undefined;
-        this.drawing_dictionaries = undefined;
-        this.incomes_dictionaries = undefined;
+        this.drawing_interpolating_functions = undefined;
+        this.incomes_interpolating_functions = undefined;
         this.interpolated_incomes = undefined;
         this.hover_indices = [];
         this.clicked_indices = [];
@@ -192,13 +131,13 @@ class IncomeAnimation {
         }
         drawing_dict[num_minus_one] = d3.interpolateArray(this.data_obj['densities'][num_minus_one].slice(0,global_num_thresholds).map(d=>y_scale(d)),this.data_obj['densities'][num_minus_one].slice(0,global_num_thresholds).map(d=>y_scale(d)));
         incomes_dict[num_minus_one] =  d3.interpolateArray(this.data_obj['incomes'][num_minus_one],this.data_obj['incomes'][num_minus_one]);
-        this.drawing_dictionaries = drawing_dict;
-        this.incomes_dictionaries = incomes_dict;
+        this.drawing_interpolating_functions = drawing_dict;
+        this.incomes_interpolating_functions = incomes_dict;
     }
-
+    
     interpolate(){
         const residual = global_scroll_num - global_scroll_floor;
-        return [this.drawing_dictionaries[global_scroll_floor](residual),this.incomes_dictionaries[global_scroll_floor](residual)];
+        return [this.drawing_interpolating_functions[global_scroll_floor](residual),this.incomes_interpolating_functions[global_scroll_floor](residual)];
     }
 
     initialPlotsAndLines(){
@@ -223,7 +162,7 @@ class IncomeAnimation {
             .data(this.interpolated_incomes)
             .enter()
             .append('line')
-            .attr('class',(d,i) => `hidden not-axes density-group-${this_obj.plotting_num} vertical-line vertical-line-${this_obj.plotting_num} vertical-line-${this_obj.plotting_num}-${i}` + (i==this.num_lines-1 ? ` average-line` : ''))
+            .attr('class',(d,i) => `hidden not-axes density-group-${this_obj.plotting_num} vertical-line vertical-line-${this_obj.plotting_num} vertical-line-${this_obj.plotting_num}-${i}` + (i==num_vertical_lines-1 ? ` average-line` : ''))
             .attr('y1',scaled_bottom)
             .attr('y2',scaled_top)
             .attr('x1',d=>x_scale(d))
@@ -240,7 +179,7 @@ class IncomeAnimation {
             this.vertical_lines.data(interpolated_incomes).attr('x1',d=>x_scale(d)).attr('x2',d=>x_scale(d));
             if (this.is_selected && bottom_svg_hover) {
                 this.highlightClosest()
-            } else if (is_hovering_years){
+            } else if (is_hovering_years && this.tooltip_percentile != undefined){
                 this.showTooltip(this.tooltip_percentile,false)
             };
         }
@@ -249,36 +188,39 @@ class IncomeAnimation {
     showTooltip(percentile_index,include_income_amount){
         const percentile_string = ((percentile_index+1)*2 ).toFixed(0);
         density_tooltip
-            .html(`<p>${percentile_index != this.num_lines - 1 ? (`${percentile_string}${(percentile_string.slice(-1) == '2' ? 'nd' : 'th')} percentile` ) : 'Average'}</p>`+ (include_income_amount ? `<p>$${this.interpolated_incomes[percentile_index].toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>` : ''))
+            .html(`<p>${percentile_index != num_vertical_lines - 1 ? (`${percentile_string}${(percentile_string.slice(-1) == '2' ? 'nd' : 'th')} percentile` ) : 'Average'}</p>`+ (include_income_amount ? `<p>$${this.interpolated_incomes[percentile_index].toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</p>` : ''))
             .style('left',`${this.interpolated_incomes[percentile_index]<=(global_x_max/2) ? x_scale(this.interpolated_incomes[percentile_index])+margins.left + tooltips_margin : x_scale(this.interpolated_incomes[percentile_index])+margins.left - (+density_tooltip.style('width').slice(0,-2)) - tooltips_margin}px`)
             .style("opacity","1");
     }
 
     addHoveredPercentile(percentile_index){
         lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-hovered-${this.plotting_num}`,true);
-        if (this.clicked_indices.includes(percentile_index)) {
-            years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num}`,true);
-            if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num}`,true);
-        };
+        if (this.clicked_indices.includes(percentile_index)) this.toggleYearLineHover(percentile_index,true);
+    }
+
+    toggleYearLineHover(percentile_index,adding_hover){
+        years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num}`,adding_hover);
+        if (percentile_index==num_vertical_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num}`,adding_hover);
     }
 
     removeHoveredPercentile(percentile_index){
         lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-hovered-${this.plotting_num}`,false);
         if (this.clicked_indices.includes(percentile_index)){
-            years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num}`,false);
-            if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num}`,false);
+            this.toggleYearLineHover(percentile_index,false);
+            if (percentile_index==num_vertical_lines-1) this.toggleYearLineHover(percentile_index+1,false);
         }
     }
 
     addClickedPercentile(percentile_index){
         lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-clicked-${this.plotting_num} highlight-class-${this.plotting_num}`,true).classed('line-not-clicked',false);
         years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-clicked years-line-clicked-${this.plotting_num}`,true);
-        if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-clicked years-line-clicked-${this.plotting_num}`,true);
+        if (percentile_index==num_vertical_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-clicked years-line-clicked-${this.plotting_num}`,true);
     }
 
+    // Need this separate from addClickedPercentile as addClickedPercentile may be called on startup
     addHoverOnClick(percentile_index){
-        years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num}`,true);
         this.clicked_indices.push(percentile_index);
+        this.toggleYearLineHover(percentile_index,true);
     }
 
     removeClickedPercentile(percentile_index){
@@ -286,7 +228,7 @@ class IncomeAnimation {
         this.clicked_indices.splice(curr_index,1)
         lines_svg_dict[this.plotting_num].select(`.vertical-line-${this.plotting_num}-${percentile_index}`).classed(`line-clicked-${this.plotting_num} highlight-class-${this.plotting_num}`,false).classed('line-not-clicked',true);
         years_svg.select(`#years-line-${this.plotting_num}-${percentile_index}`).classed(`years-line-hovered-${this.plotting_num} years-line-clicked years-line-clicked-${this.plotting_num}`, false);
-        if (percentile_index==this.num_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num} years-line-clicked years-line-clicked-${this.plotting_num}`, false);
+        if (percentile_index==num_vertical_lines-1) years_svg.select(`#years-line-${this.plotting_num}-${percentile_index+1}`).classed(`years-line-hovered-${this.plotting_num} years-line-clicked years-line-clicked-${this.plotting_num}`, false);
     }
 
     removeAllHoveredPercentiles(){
@@ -312,7 +254,7 @@ class IncomeAnimation {
     }
 
     highlightClosest(){
-        const closest_value = findClosest(this.interpolated_incomes,x_coordinate);
+        const closest_value = findClosestValue(this.interpolated_incomes,x_coordinate);
         const all_values = closest_value == 0 ? getAllZeroValues(this.interpolated_incomes,0) : [this.interpolated_incomes.indexOf(closest_value)];
         const curr_array = [all_values,all_values.length];
         if (curr_array[0] != this.hover_info[0] || curr_array[1] != this.hover_info[1]){
@@ -380,7 +322,7 @@ if (isIE()){
         updateGroupOnSetup(id0.slice(1),0)
         if (search_params.has('id1')){
             const id1 = search_params.get("id1");
-            updateGroupOnSetup(id1,1)
+            updateGroupOnSetup(id1,1);
             if (search_params.has('p1')){
                 const p1 = search_params.get('p1');
                 if (p1.length % 2 === 0) for (let i=0;i<=p1.length-1;i=i+2) percentile_vec1.push(+p1.slice(i,i+2))
@@ -390,7 +332,7 @@ if (isIE()){
         // Remove density enter if they've used the other app (only works on same tab)
         remove_density_enter = true;
     }
-    initialSetup(animations_filenames[0],animations_filenames[1],scroll_amount,percentile_vec0,percentile_vec1,remove_density_enter);
+    initialSetup(most_recently_loaded_files[0],most_recently_loaded_files[1],scroll_amount,percentile_vec0,percentile_vec1,remove_density_enter);
 }
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- 
@@ -401,11 +343,95 @@ if (isIE()){
 // -- -- -- -- -- -- -- -- -- -- -- -- -- 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- 
 
+function getAllHeightsAndMargins(){
+    [totalWidth,totalHeight] = getWidthAndHeight();
+    margins = getMargins(); 
+    [modifiedWidth,modifiedHeight] = widthAndHeightMinusMargins(margins,totalWidth,totalHeight);
+}
+
+function addSvgsAndDivs(){
+    // SVG SELECTORS -- -- -- -- -- -- -- -- 
+    wrapper_wrapper = d3.select("#density-div")
+        .append("svg")
+        .attr("width",totalWidth)
+        .attr("height",totalHeight+years_line_height)
+        .attr('id','wrapper-wrapper');
+
+    wrapper_wrapper.append("defs")
+        .append("marker")
+        .attr("id","arrow")
+        .attr("viewBox","0 -5 10 10")
+        .attr("refX",5)
+        .attr("refY",0)
+        .attr("markerWidth",3)
+        .attr("markerHeight",4)
+        .attr("orient",'auto')
+        .append("path")
+        .attr("d", "M0,-5L10,0L0,5")
+        .attr("class","arrowHead")
+        .style('fill','#545454');
+
+    wrapper_svg = wrapper_wrapper
+        .append('g')
+        .attr('id','wrapper-svg')
+        .attr("width",totalWidth)
+        .attr("height",totalHeight)
+        .attr("transform","translate(0,"+years_line_height+")");
+
+    wrapper_svg
+        .append("rect")
+        .attr('id','rect-svg')
+        .attr("width",totalWidth)
+        .attr("height",totalHeight-margins.top)
+        .attr('fill','white')
+        .attr("transform", `translate(0,${margins.top})`);
+
+    wrapper_svg
+        .append("rect")
+        .attr('id','rect-svg2')
+        .attr("width",totalWidth-(margins.left))
+        .attr("height",totalHeight-margins.bottom)
+        .attr('fill','white')
+        .attr("transform","translate("+margins.left+",0)");
+
+    wrapper_with_adjusted_margins = wrapper_svg
+        .append("g")
+        .attr("transform","translate(" + margins.left + "," + margins.top + ")");
+    grid_svg = wrapper_with_adjusted_margins.append('g');
+    density_svg_dict = [ wrapper_with_adjusted_margins.append("g"),wrapper_with_adjusted_margins.append("g") ];
+    lines_svg_dict = [ wrapper_with_adjusted_margins.append("g"), wrapper_with_adjusted_margins.append("g") ];
+    density_outer_group = wrapper_with_adjusted_margins.append("g").attr('class','hidden');
+    wrapper_with_adjusted_margins.append("g").attr('id','hover-group');
+
+    const density_enter_g = wrapper_wrapper.append('g');
+    density_enter_rect = density_enter_g
+        .append("rect")
+        .attr("id",'density-enter-rect')
+        .attr('y',years_line_height)
+        .attr("width",totalWidth)
+        .attr('height',totalHeight);
+
+    curr_year_line = density_enter_g
+        .append("line")
+        .attr('y1',years_line_height)
+        .attr('y2',years_line_height)
+        .attr('x2',margins.left-4.5)
+        .attr('x1',totalWidth-margins.right)
+        .attr('class','current-year-line hidden');
+
+    d3.select('#density-enter-inner')
+        .style("width",`${totalWidth-(margins.left + margins.right)}px`)
+        .style("height",`${totalHeight-margins.bottom}px`)
+        .style("transform",`translate(${margins.left}px,0)`);
+}
+
 function updateGroupOnSetup(input_str,group_index){
     animations_selections[group_index]['race'] = race_id_dict[input_str[0]];
     animations_selections[group_index]['sex']= sex_id_dict[input_str[1]];
     animations_selections[group_index]['age'] = age_id_dict[input_str[2]];
-    animations_filenames[group_index] =  makeNewAccessingString(group_index);
+    const filename = selectionsToAccessingString(group_index);
+    most_recently_loaded_files[group_index] = filename;
+    plotted_distributions[group_index] = filename;
 }
 
 function setHeight(is_resizing = false,toolbar_changing=false){
@@ -426,6 +452,8 @@ function setHeight(is_resizing = false,toolbar_changing=false){
         years_distance = is_small ? 48 : 62;
         years_lower = years_distance * (num_years-1);
         scroll_limit = years_lower;
+        d3.select('#background-years').style('height',`${years_distance * num_years}px`);
+        d3.select('#background-rect').style('height',`${years_distance * (num_years-1)}px`);
     } else{
         if (toolbar_changing && is_small){
             interruptToolbarToggle();
@@ -565,7 +593,31 @@ function tickFunction(d){
     return `$${curr_str}k`
 }
 
-async function simpleUpdate(f0,input_global_counter,f1=undefined){
+async function loadDataAssignToDistribution(updating_index){
+    const new_filepath = makeNewAccessingString(updating_index);
+    // Should only call this function if it isn't the most recently selected
+    // i.e., if there's no state change you shouldn't do anything
+    if (most_recently_loaded_files[updating_index] != new_filepath){
+        most_recently_loaded_files[updating_index] = new_filepath;
+        plotted_distributions[updating_index] = -1;
+        loaded_distributions[updating_index] = -1;
+        makeUpperStrings();
+        if (animations_dict[updating_index]){
+            animations_dict[updating_index].ready_to_draw = false;
+            animations_dict[updating_index].clicked_indices = [];
+        }
+        const new_data = new_filepath == undefined ? undefined : await d3.json(new_filepath);
+        // Should only call this function if the updates haven't changed
+        // If the distribution for the filepath is already loaded, don't recreate it
+        if (new_filepath == makeNewAccessingString(updating_index) && loaded_distributions[updating_index] != new_filepath){
+            updateIncomeAnimationDict(updating_index,new_data,new_filepath);
+            shown_distributions[updating_index] = false;
+        }
+    }
+}
+
+async function updateDistributions(){
+    d3.select('#hover-rect').style('cursor','initial');
     if (!loading_timeout_started && has_entered_mouse){
         loading_timeout_started = true;
         loader_timeout = setTimeout(function(){
@@ -579,43 +631,34 @@ async function simpleUpdate(f0,input_global_counter,f1=undefined){
         clearTimeout(animation_timeout);
         animation_timeout = undefined;
     }
-    let changing_axes = true;
-    if (f0 != animations_filenames[0]){
-        const new_data0 = await d3.json(f0);
-        if (input_global_counter==global_counter){
-            animations_dict[0] = new IncomeAnimation(0,new_data0);
-            shown_distributions[0] = false;
-            animations_filenames[0] = f0;
-        }
-    }
-    if (f1 != animations_filenames[1]){
-        const new_data1 = f1==undefined ? undefined : await d3.json(f1);
-        if (input_global_counter == global_counter){
-            animations_dict[1] =   f1==undefined ? undefined : new IncomeAnimation(1,new_data1);
-            animations_filenames[1] = f1;
-            shown_distributions[1] = false;
-        }
-    }
-    if (input_global_counter == global_counter){
-        if (has_entered_mouse){
-            loading_timeout_started = false;
-            if (loader_timeout){
-                clearTimeout(loader_timeout);
-                loader_timeout = undefined;
+    await loadDataAssignToDistribution(0);
+    await loadDataAssignToDistribution(1);
+    const f0 = makeNewAccessingString(0);
+    const f1 = makeNewAccessingString(1);
+    // Only want to call this function once for a given combo
+    if (f0 == loaded_distributions[0] && f1 == loaded_distributions[1]){
+        if (f0 != plotted_distributions[0] || f1 != plotted_distributions[1]){
+            plotted_distributions = [f0,f1];
+            if (has_entered_mouse){
+                loading_timeout_started = false;
+                if (loader_timeout){
+                    clearTimeout(loader_timeout);
+                    loader_timeout = undefined;
+                }
+                d3.select("#density-enter").style('display','none');
+                d3.select("#density-loader").style('display','none');
             }
-            d3.select("#density-enter").style('display','none');
-            d3.select("#density-loader").style('display','none');
+            const [old_x_max,old_y_max] = [global_x_max,global_y_max];
+            const old_x_scale = x_scale;
+            setGlobalMaxes();
+            let changing_axes = true;
+            old_x_max != global_x_max || old_y_max != global_y_max ? makeScales() : changing_axes = false;
+            if (old_y_max!=global_y_max) makeConstantScales();
+            if (old_x_max!=global_x_max) scaled_global_thresholds = global_thresholds.map(d=>x_scale(d));
+            if (shown_distributions[0]) animations_dict[0].makeInterpolatingDictionaries();
+            if (shown_distributions[1]) animations_dict[1].makeInterpolatingDictionaries();
+            changing_axes ? animateTransition(old_x_scale) : finishTransition();
         }
-        makeUpperStrings();
-        const [old_x_max,old_y_max] = [global_x_max,global_y_max];
-        const old_x_scale = x_scale;
-        setGlobalMaxes();
-        old_x_max != global_x_max || old_y_max != global_y_max ? makeScales() : changing_axes = false;
-        if (old_y_max!=global_y_max) makeConstantScales();
-        if (old_x_max!=global_x_max) scaled_global_thresholds = global_thresholds.map(d=>x_scale(d));
-        if (shown_distributions[0]) animations_dict[0].makeInterpolatingDictionaries();
-        if (shown_distributions[1]) animations_dict[1].makeInterpolatingDictionaries();
-        changing_axes ? animateTransition(old_x_scale) : finishTransition();
     }
 }
 
@@ -678,19 +721,15 @@ function updateDensityGridLines(old_x_scale){
 
 function drawGroup(group_index){
     animations_dict[group_index].readyAnimation();
-    drawLinesAndDots(animations_dict[group_index].data_obj.incomes_dict,group_index);
-}
-
-function redrawGroup(group_index){
-    animations_dict[group_index].makeInterpolatingDictionaries();
-    animations_dict[group_index].redraw();
+    drawLinesAndDots(animations_dict[group_index].data_obj.transposed_incomes,group_index);
 }
 
 function finishTransition(){
     cutAndScaleThresholds();
     updateYearsGridLines(x_scale.ticks(num_x_ticks).slice(1));
-    if (animations_filenames[0]) finishGroup(0);
-    if (animations_filenames[1]) finishGroup(1);
+    finishGroup(0);
+    if (animations_dict[1]!=undefined) finishGroup(1);
+    d3.select('#hover-rect').style('cursor','pointer');
     wrapper_with_adjusted_margins.selectAll('.hidden').classed('hidden',false);
     yearsLinesEventListeners();
     is_transitioning=false;
@@ -706,11 +745,11 @@ function finishGroup(group_index){
 
 function setGlobalMaxes(){
     if (animations_dict[1]) {
-        const curr_x_max = d3.max([animations_dict[0].data_obj.x_max,animations_dict[1].data_obj.x_max])+30000;
+        const curr_x_max = d3.max([animations_dict[0].data_obj.x_max,animations_dict[1].data_obj.x_max])+20000;
         [global_x_max,global_y_max] = [curr_x_max - (curr_x_max % 2000), d3.max([animations_dict[0].data_obj.y_max,animations_dict[1].data_obj.y_max])];
         return;
     }
-    const curr_x_max = animations_dict[0].data_obj.x_max+30000;
+    const curr_x_max = animations_dict[0].data_obj.x_max+20000;
     [global_x_max,global_y_max] =  [curr_x_max - (curr_x_max % 2000),animations_dict[0].data_obj.y_max];
 }
 
@@ -719,21 +758,24 @@ function removeGroup(group_index){
     years_svg.selectAll(`.years-line-${group_index}`).remove();
 }
 
-function drawLinesAndDots(income_dict,plotting_index){    
+function drawLinesAndDots(transposed_incomes,plotting_index){
+    const common_classes = `year-info years-line years-line-${plotting_index}`;
     years_svg
         .selectAll(`.year-plots-${plotting_index}`)
-        .data(income_dict)
-        .enter().append("g")
+        .data(transposed_incomes)
+        .enter()
         .append('path')
-        .attr("d", d => line_function(d.vals))
-        .attr('class',(d,i) => `year-info years-line years-line-${plotting_index}` + (i==animations_dict[0].num_lines-1 ? ` background-line` : ''))
-        .attr('id',d=> `years-line-${plotting_index}-${d.name}`);
+        .attr("d", d => line_function(d))
+        .attr('class',(d,i) => common_classes + (i==num_vertical_lines-1 ? ` background-line` : ''))
+        .attr('id',(d,i)=> `years-line-${plotting_index}-${i}`);
 
+    // Need to add a separate line to handle the click events for the average line
+    // This is because the average line is dashed so pointer events are weird for it.
     years_svg
         .append('path')
-        .attr("d", line_function(income_dict[animations_dict[0].num_lines-1].vals))
+        .attr("d", line_function(transposed_incomes[num_vertical_lines-1]))
         .attr('class', `year-info years-line years-line-${plotting_index} average-line`)
-        .attr('id',d=> `years-line-${plotting_index}-${animations_dict[0].num_lines}`);
+        .attr('id', `years-line-${plotting_index}-${num_vertical_lines}`);
 }
 
 function makeYearsSvg(){
@@ -766,25 +808,24 @@ function makeYearsInfo(){
     const zero_scaled = x_scale(0);
     for (let i=0;i<num_years;i++){
         let curr_years_scaled = years_y_scale(i);
-            years_svg.append('line')
-                .attr('y1',curr_years_scaled)
-                .attr('y2',curr_years_scaled)
-                .attr('x1',zero_scaled)
-                .attr('x2',scaled_global_max)
-                .attr('class','hidden year-line year-info')
+        years_svg.append('line')
+            .attr('y1',curr_years_scaled)
+            .attr('y2',curr_years_scaled)
+            .attr('x1',zero_scaled)
+            .attr('x2',scaled_global_max)
+            .attr('class','hidden year-line year-info')
 
-            years_svg_wrapper.append('text')
-                .attr('y',curr_years_scaled)
-                .attr('x',margins.left-12)
-                .attr('class',`hidden year-text year-info`)
-                .attr('id',`year-text-${i}`)
-                .attr('dominant-baseline',`central`)
-                .text(String(i+1970));
+        years_svg_wrapper.append('text')
+            .attr('y',curr_years_scaled)
+            .attr('x',margins.left-12)
+            .attr('class',`hidden year-text year-info`)
+            .attr('id',`year-text-${i}`)
+            .attr('dominant-baseline',`central`)
+            .text(String(i+first_year));
     }
-
     makeYearsGridLines();
-    drawLinesAndDots(animations_dict[0].data_obj.incomes_dict,0);
-    if (animations_dict[1]!=undefined) drawLinesAndDots(animations_dict[1].data_obj.incomes_dict,1);
+    drawLinesAndDots(animations_dict[0].data_obj.transposed_incomes,0);
+    if (animations_dict[1]!=undefined) drawLinesAndDots(animations_dict[1].data_obj.transposed_incomes,1);
 }
 
 function makeYearsTooltips(){
@@ -797,19 +838,6 @@ function makeYearsTooltips(){
         .attr('class',`years-tooltip hidden`)
         .style('top',(d,i)=>`${years_y_scale(i)+base_height}px`);
     adjustYearsTooltips();
-}
-
-function addYearTooltips(input_index,selection_index){
-    const left_right = animations_dict[selection_index].interpolated_incomes[input_index] <= animations_dict[selection_index].interpolated_incomes[36];
-    d3.select("#background-years").selectAll('.years-tooltip')
-        .data(animations_dict[selection_index].data_obj.incomes_dict[input_index].vals)
-        .html(d=>`$${d.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`)
-        .style('left',function(d){ return left_right ? `${years_x_scale(d)+margins.left + tooltips_margin}px` : `${years_x_scale(d)+margins.left - this.clientWidth - tooltips_margin}px`})
-        .style('opacity','1');
-}
-
-function removeYearTooltips(){
-    d3.select("#background-years").selectAll('.years-tooltip').style('opacity','0')
 }
 
 function widthAndHeightMinusMargins(margin_var,total_width,total_height){
@@ -851,10 +879,10 @@ function scrollTween(offset) {
   }
 
 function stopScrolling(){
-        document.getElementById("pause-button").style.opacity = 0;
-        document.getElementById("play-button").style.opacity = 1;
-        document_body.interrupt();
-        auto_scrolling = false;
+    document.getElementById("pause-button").style.opacity = 0;
+    document.getElementById("play-button").style.opacity = 1;
+    document_body.interrupt();
+    auto_scrolling = false;
 }
 
 function cutAndScaleThresholds(){
@@ -917,18 +945,22 @@ function updateAxes(){
     density_outer_group.select(".y-axis")
         .transition()
         .duration(500)
-        .call(d3.axisLeft(y_scale)
-        .tickSizeOuter(0)
-        .tickValues([]));
+        .call(
+            d3.axisLeft(y_scale)
+            .tickSizeOuter(0)
+            .tickValues([])
+        );
 
     density_outer_group.select(".x-axis")
         .transition()
         .duration(500)
-        .call(d3.axisBottom()
-        .scale(x_scale)
-        .tickSizeOuter(0)
-        .ticks(num_x_ticks)
-        .tickFormat(d => tickFunction(d)));
+        .call(
+            d3.axisBottom()
+            .scale(x_scale)
+            .tickSizeOuter(0)
+            .ticks(num_x_ticks)
+            .tickFormat(d => tickFunction(d))
+        );
 }
 
 
@@ -948,9 +980,9 @@ function updateYearsGridLines(grid_data){
 
 function updateYearsLines(updating_index){
     years_svg.selectAll(`.years-line-${updating_index}`)
-        .data(animations_dict[updating_index].data_obj.incomes_dict)
-        .attr("d", function(d){ return line_function(d.vals)});
-    years_svg.select(`#years-line-${updating_index}-${animations_dict[0].num_lines}`).attr('d',line_function(animations_dict[updating_index].data_obj.incomes_dict[animations_dict[updating_index].num_lines-1].vals))
+        .data(animations_dict[updating_index].data_obj.transposed_incomes)
+        .attr("d", function(d){ return line_function(d)});
+    years_svg.select(`#years-line-${updating_index}-${num_vertical_lines}`).attr('d',line_function(animations_dict[updating_index].data_obj.transposed_incomes[num_vertical_lines-1]))
 }
 
 function drawingFunctions(){
@@ -973,6 +1005,7 @@ function addClickedPercentiles(percentile_vec,input_ind){
 }
 
 function initialStyling(){
+    checkbox.checked = animations_dict[1] != undefined;
     for (let group_index of [0,1]){
         document.querySelectorAll(`.button-${group_index}`).forEach(btn => {btn.checked=false});
         document.querySelectorAll(`.selector-${group_index}`).forEach(btn => {btn.selected=false});
@@ -1007,13 +1040,10 @@ function setInitialState(){
         setHighlightSelector(current_selection);
         if (current_selection===1){
             toggleDistributionSelection();
-        } else{
-            if (show_group_icon) showGroupIcon('crimson',0.8);
+        } else if (show_group_icon){
+            showGroupIcon('crimson',0.8);
         }
-    } else{
-        removeDistribution();
     }
-    document.querySelector('input[type="checkbox"]').checked = animations_dict[1]!=undefined;
     document.querySelectorAll('.highlight-button').forEach(e=>e.disabled=animations_dict[1]==undefined);
     initialStyling();
     setInitialScrollSpeed();
@@ -1021,12 +1051,19 @@ function setInitialState(){
     d3.select('#toggle-wrapper').style('display','flex');
 }
 
+function getYearMetadata(){
+    first_year = animations_dict[0].data_obj.first_year;
+    last_year = animations_dict[0].data_obj.last_year;
+    num_years = (last_year - first_year) + 1;
+}
 
 async function initialSetup(fname0,fname1,scroll_amount,percentile_vec0,percentile_vec1,remove_density_enter){
-    animations_dict[0] = new IncomeAnimation(0,await d3.json(fname0));
-    num_years = animations_dict[0].data_obj.incomes.length;
-    if (fname1) animations_dict[1] = new IncomeAnimation(1,await d3.json(fname1));
+    updateIncomeAnimationDict(0,await d3.json(fname0),fname0);
+    if (fname1) updateIncomeAnimationDict(1,await d3.json(fname1),fname1);
+    getYearMetadata();
     setHeight();
+    getAllHeightsAndMargins();
+    addSvgsAndDivs();
     toolbarChanges();
     setWindowEventListeners();
     setToolbarListeners();
@@ -1047,12 +1084,12 @@ async function initialSetup(fname0,fname1,scroll_amount,percentile_vec0,percenti
     yearsLinesEventListeners();
     makeUpperStrings();
     addClickedPercentiles(percentile_vec0,0)
-    if (fname1)  addClickedPercentiles(percentile_vec1,1)
+    if (fname1) addClickedPercentiles(percentile_vec1,1)
     d3.select(has_toolbar ? '#content' : window).on("scroll.scroller", globalInterpolate);
-    if (scroll_amount) content_obj.scrollTo(0,scroll_amount * scroll_limit)
+    if (scroll_amount) content_obj.scrollTo(0,scroll_amount * scroll_limit);
     if (!has_mouse) d3.select('#density-enter-text').html('Tap and hold density plot to track income percentiles');
     d3.select('#loader-content').style('display','none');
-    remove_density_enter ? removeDensityEnter() : d3.select('#legend').style('opacity','0.09');
+    remove_density_enter ? removeDensityEnter() : toggleLegendOpacity('0.09');
     setInitialState();
     d3.selectAll('.hidden').classed('hidden',false);
     if (is_small){
@@ -1063,7 +1100,7 @@ async function initialSetup(fname0,fname1,scroll_amount,percentile_vec0,percenti
 }
 
 function makeHoverRect(){
-    hover_rect = hover_group
+    hover_rect = d3.select('#hover-group')
         .append('rect')
         .attr('id','hover-rect')
         .attr('x',0)
@@ -1073,17 +1110,22 @@ function makeHoverRect(){
 }
 
 function hoverTimeout(){
-    if (!is_transitioning) animations_dict[current_selection].highlightClosest();        
+    if (!is_transitioning && animations_dict[current_selection] != undefined) animations_dict[current_selection].highlightClosest();        
 }
 
 function stopHovering(){
     bottom_svg_hover= false;
-    if (has_legend && has_entered_mouse) d3.select('#legend').style('opacity','1');
-    animations_dict[current_selection].removeAllHoveredPercentiles();
+    if (has_legend && has_entered_mouse) toggleLegendOpacity('1');
+    if (animations_dict[current_selection] != undefined) animations_dict[current_selection].removeAllHoveredPercentiles();
     if (touchscreen_timeout){
         clearTimeout(touchscreen_timeout);
         touchscreen_timeout = undefined;
     }
+}
+
+function toggleLegendOpacity(opacity_value){
+    if (!has_legend) return;
+    d3.select('#legend').style('opacity',opacity_value);
 }
 
 function hoverActions(){
@@ -1093,15 +1135,15 @@ function hoverActions(){
             x_coordinate = x_scale.invert(d3.mouse(this)[0]);
             touchscreen_timeout = setTimeout(function(){
                 if (!has_entered_mouse) removeDensityEnter();
-                if (auto_scrolling ) stopScrolling();
-                if (has_legend) d3.select('#legend').style('opacity','0');
+                if (auto_scrolling) stopScrolling();
+                if (has_legend) toggleLegendOpacity('0')
                 bottom_svg_hover = true;
                 hoverTimeout();
                 touchscreen_timeout = undefined;
             },600);
-        });
+        },{passive: true});
         hover_rect.on('touchend',() => {
-            animations_dict[current_selection].clickFunction();
+            if (animations_dict[current_selection] != undefined) animations_dict[current_selection].clickFunction();
             stopHovering();
         });
         hover_rect.on('touchcancel', stopHovering);
@@ -1117,11 +1159,13 @@ function hoverActions(){
         hover_rect.on('mousemove',function(){
             if (!has_entered_mouse) removeDensityEnter();
             x_coordinate = x_scale.invert(d3.mouse(this)[0]);
-            if (!bottom_svg_hover && has_legend) d3.select('#legend').style('opacity','0');
+            if (!bottom_svg_hover) toggleLegendOpacity('0');
             bottom_svg_hover = true;
             hoverTimeout();
         });
-        hover_rect.on('mousedown',() => {animations_dict[current_selection].clickFunction()});
+        hover_rect.on('mousedown',() => {
+            if (!is_transitioning && animations_dict[current_selection] != undefined) animations_dict[current_selection].clickFunction()
+        });
         hover_rect.on('mouseleave',stopHovering);
     }
 }
@@ -1147,9 +1191,7 @@ function resize(){
     // Start adding
     setHeight(true,is_changing);
     has_legend = d3.select('#legend').style('display')=='flex';
-    [totalWidth,totalHeight] = getWidthAndHeight();
-    margins = getMargins();
-    [modifiedWidth,modifiedHeight] = widthAndHeightMinusMargins(margins,totalWidth,totalHeight);
+    getAllHeightsAndMargins()
     setDensityEnter();
     makeScales();
     makeConstantScales();
@@ -1169,18 +1211,15 @@ function resize(){
     resumeScrollIfPaused();
 }
 
-function findClosest(arr,target){
+function findClosestValue(arr,target){
     return arr.reduce(function(prev, curr,i) { return (Math.abs(curr - target) <= Math.abs(prev - target) ? curr : prev)});
 }
 
-function getAllZeroValues(arr){
-    let indexes = [];
+function getAllZeroValues(arr){ 
+    let indices = [];
     for (let i=0;i<arr.length;i++){
-        if (arr[i]===0){
-            indexes.push(i)
-        } else{
-            return indexes
-        }
+        if (arr[i] != 0) return indices;
+        indices.push(i);
     }
 }
 
@@ -1191,7 +1230,7 @@ function toggleDistributionSelection(){
     if (animations_dict[1]){
         animations_dict[alternative_selection].is_selected=true;
         if (bottom_svg_hover) animations_dict[alternative_selection].highlightClosest();
-        if (show_group_icon) alternative_selection==0 ? d3.select('#group-selection-svg').style('opacity','0.7').style('fill','crimson') : d3.select('#group-selection-svg').style('opacity','0.8').style('fill','dodgerblue');
+        if (show_group_icon) alternative_selection==0 ? showGroupIcon('crimson',0.7) : showGroupIcon('dodgerblue',0.8);
     }
     current_selection = alternative_selection;
 }
@@ -1204,7 +1243,7 @@ function updateScrollSpeed(new_num_milliseconds){
 
 function makeUpperStrings(){
     document.getElementById('group-0-legend-text').innerHTML = race_scale(animations_selections[0]['race']) + sex_scale(animations_selections[0]['sex']) + age_scale(animations_selections[0]['age']);
-    if (animations_dict[1]) document.getElementById('group-1-legend-text').innerHTML = race_scale(animations_selections[1]['race']) + sex_scale(animations_selections[1]['sex']) + age_scale(animations_selections[1]['age']) ;
+    if (checkbox.checked) document.getElementById('group-1-legend-text').innerHTML = race_scale(animations_selections[1]['race']) + sex_scale(animations_selections[1]['sex']) + age_scale(animations_selections[1]['age']) ;
 }
 
 function addAxisText(){
@@ -1212,7 +1251,7 @@ function addAxisText(){
         .attr('class','hidden axis-label x-axis-label')
         .attr('dominant-baseline',`central`)
         .attr("transform", `translate(${margins.left + (modifiedWidth/2)}, ${totalHeight - (margins.bottom/2) + 11.5})`)
-        .text('Annual income (2019 dollars)');
+        .text(`Annual income (${last_year} dollars)`);
     wrapper_svg.append("text")
         .attr('class','hidden axis-label y-axis-label')
         .attr('transform',`translate(${margins.left-d3.scaleOrdinal().domain([0,1,2]).range([14.5,17,21])(margins.ind)},${margins.top+modifiedHeight/2}) rotate(-90)`)
@@ -1264,52 +1303,69 @@ function interruptToolbarToggle(){
     border_hider.interrupt();
 }
 
-function setWindowEventListeners(){
-    document.getElementById('copy-button').addEventListener('mousedown',function(e){
-        if (e.buttons==1) generateStateLink();
-    });
-    document.getElementById('copy-button').addEventListener('touchstart',generateStateLink);
-    window.addEventListener('wheel',function(){if (auto_scrolling) stopScrolling()});
-    window.addEventListener("mousedown", (e) =>{ if (e.offsetX > document.body.clientWidth) if (auto_scrolling) stopScrolling()});
-    window.addEventListener('touchmove',function(){if (auto_scrolling) stopScrolling()});
-    window.addEventListener('keydown', function(e) {
-        if (e.keyCode == 38 || e.keyCode == 40) {
-            if (e.target!=document.body){
-                e.preventDefault();
-                if (e.keyCode==38){
-                    content_obj.scrollTo(0,Math.max(content_obj.scrollTop-40,0))
-                } else{
-                    content_obj.scrollTo(0,Math.min(content_obj.scrollTop+40,scroll_limit))
-                }
-            };
-            if (auto_scrolling) stopScrolling();
-        } else if (e.keyCode == 32) {
-          e.preventDefault();
-          auto_scrolling===true ? stopScrolling() : scroll();
-        } else if (e.keyCode == 39) {
-            if (!toggle_forward_back){
-                e.preventDefault();
-                if (auto_scrolling) stopScrolling();
-                if (global_scroll_num < num_years-1) content_obj.scrollTo(0,((global_scroll_floor+1)/(num_years-1)) * scroll_limit);   
-            }
-        } else if (e.keyCode == 37) {
-            if (!toggle_forward_back){
-                e.preventDefault();
-                if (auto_scrolling) stopScrolling();
-                if (global_scroll_num > 0 ) global_scroll_num==global_scroll_floor  ? content_obj.scrollTo(0,((global_scroll_floor-1)/(num_years-1)) * scroll_limit) : content_obj.scrollTo(0,((global_scroll_floor)/(num_years-1)) * scroll_limit);
-            }
-        } else if (e.keyCode == 70){
-            if (fullscreen_index != -1) toggleFullScreen();
-        }
-        if (e.metaKey || e.keyCode==18) toggle_forward_back=  true;
+function scrollFloorEqualsScroll(){
+    return Math.abs(Math.round(global_scroll_num) - global_scroll_num) < 0.000001;
+}
 
-      });
-    window.addEventListener('keyup',function(e){
-        if (e.metaKey || e.keyCode==18) toggle_forward_back=  false;
-    })
-    window.addEventListener('click', function(e){ if (!document.getElementById('toolbar').contains(e.target)) if (is_expanded) toggleToolbar()});
-    window.addEventListener('touchstart', function(e){   if (!document.getElementById('toolbar').contains(e.target)) if (is_expanded) toggleToolbar()});
-    
+function scrollToYearIndex(year_index){
+    if (auto_scrolling) stopScrolling();
+    content_obj.scrollTo(0,(year_index/(num_years-1)) * scroll_limit);
+    globalInterpolate();
+}
+
+function setWindowEventListeners(){
+    if (has_mouse){
+        document.getElementById('copy-button').addEventListener('mousedown',function(e){
+            if (e.buttons==1) generateStateLink();
+        });
+        window.addEventListener("mousedown", (e) =>{ if (e.offsetX > document.body.clientWidth) if (auto_scrolling) stopScrolling()});
+        window.addEventListener('keydown', function(e) {
+            if (e.metaKey || e.key=='Meta' || e.key=='Control') toggle_forward_back = true;
+            if (e.code == 'ArrowUp' || e.code == 'ArrowDown') {
+                if (e.target!=document.body){
+                    e.preventDefault();
+                    if (e.code=='ArrowUp'){
+                        content_obj.scrollTo(0,Math.max(content_obj.scrollTop-40,0))
+                    } else{
+                        content_obj.scrollTo(0,Math.min(content_obj.scrollTop+40,scroll_limit))
+                    }
+                };
+                if (auto_scrolling) stopScrolling();
+            } else if (e.code == 'Space') {
+              e.preventDefault();
+              auto_scrolling===true ? stopScrolling() : scroll();
+            } else if (e.code == 'ArrowRight') {
+                if (!toggle_forward_back){
+                    e.preventDefault();
+                    if (auto_scrolling) stopScrolling();
+                    if (global_scroll_num < num_years-1){
+                        const year_index = scrollFloorEqualsScroll() ? Math.round(global_scroll_num) + 1 : global_scroll_floor + 1;
+                        scrollToYearIndex(year_index);
+                    }
+                }
+            } else if (e.code == 'ArrowLeft') {
+                if (!toggle_forward_back){
+                    e.preventDefault();
+                    if (auto_scrolling) stopScrolling();
+                    if (global_scroll_num > 0){
+                        const year_index = scrollFloorEqualsScroll() ? Math.round(global_scroll_num)-1: global_scroll_floor;
+                        scrollToYearIndex(year_index);
+                    }
+                }
+            } else if (e.code == 'KeyF'){
+                if (fullscreen_index != -1) toggleFullScreen();
+            }
+          });
+        window.addEventListener('keyup',function(e){
+            toggle_forward_back = false;
+        })
+        window.addEventListener('mousedown', function(e){ if (!document.getElementById('toolbar').contains(e.target)) if (is_expanded) toggleToolbar()});
+    } else{
+        document.getElementById('copy-button').addEventListener('touchstart',generateStateLink,{passive:true});
+        window.addEventListener('touchmove',function(){if (auto_scrolling) stopScrolling()},{passive:true});
+        window.addEventListener('touchstart', function(e){   if (!document.getElementById('toolbar').contains(e.target)) if (is_expanded) toggleToolbar()},{passive:true});
+    }
+    window.addEventListener('wheel',function(){if (auto_scrolling) stopScrolling()});
     window.onresize = function(){
         if (resize_timeout){
             clearTimeout(resize_timeout);
@@ -1343,11 +1399,18 @@ function setWindowEventListeners(){
     };
 }
 
+function yearTextScrollFunction(this_id){
+    if (auto_scrolling) stopScrolling();
+    content_obj.scrollTo(0,((+this_id.split('-')[2])/(num_years-1))*scroll_limit)
+}
+
 function yearTextListener(btn){
-    btn.addEventListener('mousedown',function(){
-        if (auto_scrolling) stopScrolling();
-        content_obj.scrollTo(0,((+this.id.split('-')[2])/(num_years-1))*scroll_limit )
-    });
+    const year_index = (+btn.id.split('-')[2]);
+    if (has_mouse){
+        btn.addEventListener('mousedown',function(){scrollToYearIndex(year_index)});
+    } else{
+        btn.addEventListener('touchstart',function(){scrollToYearIndex(year_index)},{passive:true});
+    }
 }
 
 function setToolbarListeners(){
@@ -1355,21 +1418,17 @@ function setToolbarListeners(){
         if (is_expanded) toggleToolbar();
         auto_scrolling==true ? stopScrolling() : scroll();
     });
-
     document.getElementById("restart-svg").addEventListener("mousedown", function(e){
         if (is_expanded) toggleToolbar();
         if (auto_scrolling===true) stopScrolling()
         content_obj.scrollTo(0, 0);
         scroll();
     });
-
     document.getElementById("myRange").oninput = function() {
         updateScrollSpeed(this.value*-1);
     }
-
     document.querySelectorAll('.label-class-0').forEach(function(btn) { addRadioListener(btn,0) });
     document.querySelectorAll('.label-class-1').forEach(function(btn) { addRadioListener(btn,1) });
-
     document.getElementById('workers-selector').addEventListener('change',function(){
         auto_scrolling==true ? stopScrolling() : wrapper_with_adjusted_margins.selectAll("*").interrupt();
         const worker_group = this.value;
@@ -1378,20 +1437,15 @@ function setToolbarListeners(){
             removeGroup(0);
             if (animations_dict[1]){
                 removeGroup(1);
-                global_counter = global_counter+1;
-                simpleUpdate(makeNewAccessingString(0),global_counter,makeNewAccessingString(1));
+                updateDistributions();
             } else{
-                global_counter = global_counter+1;
-                simpleUpdate(makeNewAccessingString(0),global_counter,undefined)
+                updateDistributions()
             }
         }
     });
-
     document.querySelectorAll('.highlight-label').forEach(function(btn) {clickSelection(btn)})
     document.querySelectorAll('.group-dropdown').forEach(function(btn) { demographicDropdowns(btn) });
-
-    document.querySelector('input[type="checkbox"]').addEventListener('change', checkBoxChanger)
-
+    checkbox.addEventListener('change', checkBoxChanger)
     document.getElementById('group-selection-svg').addEventListener('click',function(){
         if (icon_group_currently_shown){
             document.getElementById(`group${current_selection}highlight`).checked=false; 
@@ -1399,7 +1453,6 @@ function setToolbarListeners(){
             toggleDistributionSelection();
         };
     });
-
     document.getElementById('plus-wrapper').addEventListener('click',function(){toggleToolbar()});
 }
 
@@ -1412,8 +1465,7 @@ function addDistribution(automatic){
     input_group_1.forEach((btn) => {btn.disabled = false});
     document.querySelectorAll('.group-1-dropdown').forEach(function(btn){btn.disabled=false});
     if (automatic){
-        global_counter = global_counter+1;
-        simpleUpdate(animations_filenames[0],global_counter,makeNewAccessingString(1));
+        updateDistributions();
         toggleDisable(true);
         if (show_group_icon) showGroupIcon('dodgerblue',0.8);
     }
@@ -1435,8 +1487,7 @@ function removeDistribution(){
     if (has_legend) d3.select('#legend-1-wrapper').style('display','none');
     toggleDisable(false);
     removeGroup(1);
-    global_counter = global_counter+1;
-    simpleUpdate(animations_filenames[0],global_counter,undefined);
+    updateDistributions();
     if (show_group_icon){
         icon_group_currently_shown = false;
         d3.select('#group-selection-wrapper').style('display','none');
@@ -1444,7 +1495,6 @@ function removeDistribution(){
 }
 
 function checkBoxChanger(automatic=true){
-    const checkbox = document.querySelector('input[type="checkbox"]');
     if (checkbox.checked) {
         addDistribution(automatic);
         return;
@@ -1502,7 +1552,7 @@ function removeDensityEnter(){
     d3.select('#density-enter').style('display','none');
     d3.select('#density-enter-text').remove();
     density_enter_rect.remove();
-    d3.select('#legend').style('opacity','1');
+    toggleLegendOpacity('1');
 }
 
 // Update group selections
@@ -1517,9 +1567,7 @@ function addRadioListener(btn,group_index){
                 document.getElementById(`select-${selection_type}-${group_index}-${selection_id}`).selected = true;
                 animations_selections[group_index][selection_type] = selection_id;
                 removeGroup(group_index);
-                global_counter = global_counter+1;
-                group_index==0 ? simpleUpdate(makeNewAccessingString(0),global_counter,animations_filenames[1]) : simpleUpdate(animations_filenames[0],global_counter,makeNewAccessingString(1));
-            }
+                updateDistributions();            }
         }
     });
 }
@@ -1528,30 +1576,53 @@ function clickSelection(btn){
     btn.addEventListener('click',function(){if (animations_dict[1]!=undefined && current_selection!=+btn.id.slice(-1)) toggleDistributionSelection()});
 };
 
-function yearsLinesEventListeners(){
-    d3.selectAll(".years-line")
-    .on(!has_mouse ? 'touchstart' : 'mouseenter', function(){
-        const class_list_name = this.classList;
-        is_hovering_years = true;
-        if (class_list_name.contains('years-line-clicked')) {
-            const selection_index = class_list_name.contains('years-line-0') ? 0 : 1;
-            const line_index = this.id.slice(13);
-            addYearTooltips(line_index,selection_index);
-            animations_dict[selection_index].showTooltip(+line_index,false);
-            animations_dict[selection_index].tooltip_percentile = +line_index;
-        }
-    })
-    .on(!has_mouse ? 'touchend' : 'mouseleave', function(){ cancelYearToolTip(this.classList) })
-    .on('touchcancel', function(){cancelYearToolTip(this.classList)
-    });
-    document.querySelectorAll('.year-text').forEach(function(btn) { yearTextListener(btn) });
 
+function yearsLineEventFunction(class_list,id){
+    is_hovering_years = true;
+    if (class_list.contains('years-line-clicked')) {
+        const selection_index = class_list.contains('years-line-0') ? 0 : 1;
+        const line_index = +id.split('-')[3];
+        addYearTooltips(line_index,selection_index);
+    }
+}
+
+function yearsLinesEventListeners(){
+    if (has_mouse){
+        d3.selectAll(".years-line")
+        .on('mouseenter', function() {yearsLineEventFunction(this.classList,this.id)})
+        .on('mouseleave', function(){ cancelYearToolTip(this.classList)});
+    } else{
+        d3.selectAll(".years-line")
+        .on('touchstart', function() {yearsLineEventFunction(this.classList,this.id)},{passive:true})
+        .on('touchend', function(){ cancelYearToolTip(this.classList)})
+        .on('touchcancel', function(){cancelYearToolTip(this.classList)});
+    }
+    document.querySelectorAll('.year-text').forEach(function(btn) { yearTextListener(btn) });
 };
 
-function cancelYearToolTip(class_list_name){
-    is_hovering_years = false;
-    if (class_list_name.contains('years-line-clicked')) {
-        const selection_index = class_list_name.contains('years-line-0') ? 0 : 1;
+
+function addYearTooltips(input_index,selection_index){
+    toggleLegendOpacity('0');
+    is_hovering_years = true;
+    const left_right = animations_dict[selection_index].interpolated_incomes[input_index] <= animations_dict[selection_index].interpolated_incomes[36];
+    d3.select("#background-years").selectAll('.years-tooltip')
+        .data(animations_dict[selection_index].data_obj.transposed_incomes[input_index])
+        .html(d=>`$${d.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`)
+        .style('left',function(d){ return left_right ? `${years_x_scale(d)+margins.left + tooltips_margin}px` : `${years_x_scale(d)+margins.left - this.clientWidth - tooltips_margin}px`})
+        .style('opacity','1');
+    animations_dict[selection_index].showTooltip(input_index,false);
+    animations_dict[selection_index].tooltip_percentile = input_index;
+}
+
+function removeYearTooltips(){
+    d3.select("#background-years").selectAll('.years-tooltip').style('opacity','0')
+}
+
+function cancelYearToolTip(class_list){
+    if (class_list.contains('years-line-clicked')) {
+        is_hovering_years = false;
+        toggleLegendOpacity('1');
+        const selection_index = class_list.contains('years-line-0') ? 0 : 1;
         removeYearTooltips();
         density_tooltip.style('opacity','0');
         animations_dict[selection_index].tooltip_percentile = undefined;
@@ -1559,9 +1630,13 @@ function cancelYearToolTip(class_list_name){
 }
 
 function makeNewAccessingString(group_index){
-    return `./processed_data/${work_type}/${animations_selections[group_index]['sex']}/${animations_selections[group_index]['age']}/${animations_selections[group_index]['race']}/data.json`
+    if (group_index===1 && !checkbox.checked) return undefined;
+    return selectionsToAccessingString(group_index)
 }
 
+function selectionsToAccessingString(group_index){
+    return `./processed_data/${work_type}/${animations_selections[group_index]['sex']}/${animations_selections[group_index]['age']}/${animations_selections[group_index]['race']}/data.json`;
+}
 
 function demographicDropdowns(btn){
     btn.addEventListener('change',function(){
@@ -1575,9 +1650,8 @@ function demographicDropdowns(btn){
                 document.getElementById(`radio-${demographic_type}-${select_index}-${animations_selections[select_index][demographic_type]}`).checked = false;
                 document.getElementById(`radio-${demographic_type}-${select_index}-${demographic_group}`).checked = true;
                 animations_selections[select_index][demographic_type] = demographic_group;
-                removeGroup(select_index)
-                global_counter = global_counter+1;
-                select_index==0 ? simpleUpdate(makeNewAccessingString(0),global_counter,animations_filenames[1]) : simpleUpdate(animations_filenames[0],global_counter,makeNewAccessingString(1));
+                removeGroup(select_index);
+                updateDistributions();
             }
         }
     })

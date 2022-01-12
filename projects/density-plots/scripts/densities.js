@@ -33,7 +33,7 @@ let full_controls_timeout = true;
 let just_resized = false;
 const countdown_selector = d3.select('#countdown');
 let already_made_plot = false;
-const plot_x_max = 140000;
+const x_axis_max_income = 140000;
 let inner_width = window.innerWidth;
 const audio = new Audio("audio/voiceover.mp3");
 let has_loaded_data = false;
@@ -1562,7 +1562,7 @@ function getWidthAndHeight(){
 function getMargins(){
     if (very_small_height) return {top: 0, right: 40, bottom: 50, left: 100};
     if (is_small) return {top: 0, right: 25, bottom: 50, left: 75};
-    return {top: 0, right: 40, bottom: 70, left: 85};
+    return {top: 5, right: 40, bottom: 70, left: 85};
 }
 
 function getAdjustedWidthAndHeight(margin_dict){
@@ -1608,11 +1608,12 @@ function getDensityInfo(){
 }
 
 function getXScale(){
-    return d3.scaleLinear().range([ 0, adjusted_width ]).domain([0,plot_x_max]);
+    return d3.scaleLinear().range([ 0, adjusted_width ]).domain([0,x_axis_max_income]);
 }
 
 function getHistogramYScale(bin_width){
-    const histogram_y_max = plotting_histogram_proportions ? d3.max(histogram_data[bin_width], d => d.p) + histogram_y_max_dict[bin_width]['p'] : d3.max(histogram_data[bin_width], d => d.n)+histogram_y_max_dict[bin_width]['n'];
+    const key_name = plotting_histogram_proportions ? 'p' : 'n';
+    const histogram_y_max = d3.max(histogram_data[bin_width], d => d[key_name]) + histogram_y_max_dict[bin_width][key_name];
     return d3.scaleLinear().domain([0, histogram_y_max]).range([ adjusted_height, 0]);
 }
 
@@ -1733,7 +1734,7 @@ function makeMaxData(all_data){
     for (let type_i of [10000,5000,1000,100]){
         max_data[type_i] = [];
         const curr_type_subset = all_data[type_i];
-        for (let i=0;i<140000;i=i+type_i){
+        for (let i=0;i<x_axis_max_income;i=i+type_i){
             const curr_subset = curr_type_subset.filter(d=> d.min_income === i);
             const curr_n_max = d3.max(curr_subset,d=>d.n);
             const curr_p_max = d3.max(curr_subset,d=>d.p);
@@ -1817,7 +1818,7 @@ function histogramHoverRect(max_data,all_data,current_type){
             let unscaled_x =  has_mouse ? d.clientX : d.changedTouches[0].pageX;
             unscaled_x = unscaled_x - (plot_wrapper_x + margins.left);
             let curr_x = x_scale.invert(unscaled_x)-150;
-            curr_x = Math.max(Math.min(plot_x_max-current_type,curr_x),0);
+            curr_x = Math.max(Math.min(x_axis_max_income-current_type,curr_x),0);
             const bin_min_income = curr_x - (curr_x % current_type);
             const max_string = plotting_histogram_proportions ? 'p' : 'n';
             const scaled_bin_height = histogram_y_scale(max_data.filter(d=>d.min_income==bin_min_income)[0][max_string]);
@@ -1841,7 +1842,7 @@ function updateTooltipPosition(min_income,y_height,current_html){
 
 function changeTooltipCentering(tooltip_selector,income_bin,current_alignment){
     if (small_width || small_height){
-        const new_tooltip_alignment = income_bin >= plot_x_max/2 ? 'right' : 'left';
+        const new_tooltip_alignment = income_bin >= x_axis_max_income/2 ? 'right' : 'left';
         if (new_tooltip_alignment !== current_alignment){
             new_tooltip_alignment==='left' ? tooltip_selector.style('transform',`translate(${width_4850-15}px,calc(-100% - 10px))`) : tooltip_selector.style('transform',`translate(calc(-100% + ${width_4850 + 15}px),calc(-100% - 10px))`);
             tooltip_selector.classed(`${tooltip_alignment}-arrow`,false).classed(`${new_tooltip_alignment}-arrow`,true);                    

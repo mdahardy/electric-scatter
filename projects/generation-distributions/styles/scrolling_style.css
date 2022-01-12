@@ -117,11 +117,10 @@ body {
 
 
 
-#background-years {
+#background-ages {
     width:calc(100% - 310px);
     margin-left:0;
     top:0;
-    height:2976px;
 }
 
 #background-rect {
@@ -132,7 +131,6 @@ body {
     float:left;
     background-color:#f1f1f1;
     top:calc(45% + 53px);
-    height:2914px;
 }
 
 #background-bottom {
@@ -181,7 +179,7 @@ body {
     fill:white;
 }
 
-#current-year-div {
+#current-age-div {
     position:fixed;
     width:54px;
     height:54px;
@@ -264,20 +262,21 @@ body {
 
 
 /* Years styling */
-.year-line {
+.age-line {
     stroke:#000000;
     stroke-width:1.5;
     opacity:0.1;
 }
 
-.year-text{
+.age-text{
     text-anchor:end;
     font-size:18px;
     fill:#595959;
     cursor:pointer;
+    text-decoration:none;
 }
 
-.year-text:hover {
+.age-text:hover {
     text-decoration:underline;
 }
 
@@ -293,40 +292,40 @@ body {
     fill:none;
 }
 
-.years-line-0{
+.ages-line-0{
     stroke:crimson;
     stroke-width:3;
     fill:none;
 }
 
-.years-line-1{
+.ages-line-1{
     stroke:dodgerblue;
     stroke-width:3;
     fill:none;
 }
 
-.years-line{
+.ages-line{
     opacity:0;
     pointer-events:none;
 }
 
-.years-line-clicked {
+.ages-line-clicked {
     pointer-events: visibleStroke;
 }
 
-.years-line-clicked-0{
+.ages-line-clicked-0{
     opacity:0.55;
 }
 
-.years-line-clicked-1{
+.ages-line-clicked-1{
     opacity:0.65;
 }
 
-.years-line-hovered-0 {
+.ages-line-hovered-0 {
     opacity:1;
 }
 
-.years-line-hovered-1 {
+.ages-line-hovered-1 {
     opacity:1;
 }
 
@@ -337,13 +336,13 @@ body {
     opacity:0.1;
 }
 
-.years-grid-line {
+.ages-grid-line {
     stroke-width:1.5;
     stroke:black;
     opacity:0.1;
 }
 
-.current-year-line {
+.current-age-line {
     stroke-width:3;
     stroke:#545454;
     marker-end:url(#arrow);
@@ -785,7 +784,7 @@ DROPDOWN MENU */
     margin:3px;
 }
 
-.years-tooltip {
+.ages-tooltip {
     position:absolute;
     text-align:center;
     border:1px solid #b0b0b0;
@@ -977,14 +976,14 @@ DROPDOWN MENU */
         font-size:34px;
     }
 
-    #current-year-div {
+    #current-age-div {
         width: 66px;
         height: 66px;
         top: calc(45% + 20px);
         font-size:20px;
     }
 
-    .year-text, .x-axis, .axis-label {
+    .age-text, .x-axis, .axis-label {
         font-size:20px;
     }
 
@@ -1123,8 +1122,7 @@ DROPDOWN MENU */
         transform:rotate(45deg);
     }
 
-    #background-years{
-        height:2304px;
+    #background-ages{
         width:100%;
     }
 
@@ -1150,7 +1148,6 @@ DROPDOWN MENU */
     }
 
     #background-rect {
-        height: 2256px;
         background-color:#eeeeee;
         width:calc(100% - 125px);
     }
@@ -1181,11 +1178,11 @@ DROPDOWN MENU */
         font-size:21px;
     }
 
-    #current-year-div, .year-text, .x-axis, .axis-label, #more-info-wrapper {
+    #current-age-div, .age-text, .x-axis, .axis-label, #more-info-wrapper {
         font-size:16px;
     }
 
-    #current-year-div {
+    #current-age-div {
         width:50px;
         height:50px;
         top:calc(28px + 45%);
@@ -1451,7 +1448,7 @@ DROPDOWN MENU */
         text-decoration:none;
     }
 
-    .year-text:hover {
+    .age-text:hover {
         text-decoration:none;
     }
 }

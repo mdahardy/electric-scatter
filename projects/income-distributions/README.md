@@ -1,18 +1,18 @@
 
 # electric scatter income distributions app
 
-This repo contains the source code for the [income distribution app](https://electricscatter.com/projects/density-plots) on electric scatter. Note that because this app uses d3, you'll have to launch a local web server in the [root electric scatter directory](https://github.com/mdahardy/electric-scatter) if you want to run the app locally.
+This repo contains the source code for the [income distribution app](https://electricscatter.com/projects/income-distributions) on electric scatter. Note that because this app uses d3, if you want to run the app locally you have to launch a local web server in the [root electric scatter directory](https://github.com/mdahardy/electric-scatter).
 
 ## notes on data
 
-Data for the density plots was obtained from the [IPUMS CPS](https://cps.ipums.org/cps/) database. You can view the raw dataset and data extract in [data_prep/ipums_data](https://github.com/mdahardy/electric-scatter/tree/main/projects/income-distributions/data_prep/ipums_data). The [data_prep/make_percentiles.R](https://github.com/mdahardy/electric-scatter/tree/main/projects/income-distributions/data_prep/make_percentiles.R) script generates income percentiles from the raw IPUMS data, and [data_prep/process_data/process_data.js](https://github.com/mdahardy/electric-scatter/tree/main/projects/generation-distributions/data_prep/process_data/process_data.js) generates cached density estimates from these percentiles that are used for plotting.
+Data for the density plots was obtained from the [IPUMS CPS](https://cps.ipums.org/cps/) database. The [data_prep/process_data.R](https://github.com/mdahardy/electric-scatter/tree/main/projects/income-distributions/data_prep/make_percentiles.R) script generates incomes percentiles and cached density estimates from the [raw IPUMS data](https://github.com/mdahardy/electric-scatter/tree/main/projects/income-distributions/data_prep/ipums_data) for plotting in the front end. This data is stored in the [processed_data](https://github.com/mdahardy/electric-scatter/tree/main/projects/income-distributions/processed_data) directory with a unique json file for every possible demographic combo.
 
 * For simplicity, workers with negative incomes are excluded. Note that this only applies to about 0.2% of respondents. 
 * A worker's age is defined as one less than their reported age in the survey. This is done as the CPS Annual Social and Economic Supplement (ASEC) is conducted in March or April, and asks respondents about their income during the previous calendar year.
 * "All ages" is defined as workers who were at least 17 years old at the time of the survey.
 * Note that while FRED uses the same dataset to estimate income statistics, the estimated income percentiles following the "FRED method" are slightly different from their estimates (e.g., see FRED [median income estimates](https://fred.stlouisfed.org/series/MEPAINUSA672N)). These differences are primarily due to different rules for selecting eligible workers (e.g., FRED includes workers 14 years old and younger are included before 1980), and because FRED doesn't adjust respondents' ages to match the reported year. 
 
-* The following birth years are used to select races:
+* The following demographic markers are used to determine race:
     * White: White (race) and non-Hispanic (ethnicity)
     * Black: Black (race) and non-Hispanic (ethnicity)
     * Hispanic: Any race, Hispanic ethnicity. This includes respondents who reported Mexican, Mexican American, Mexicano/Mexicana, Chicano/Chicana, Mexican (Mexicano), Puerto Rican, Cuban, Colombian, Salvadorian, Central/South American, Central American (including Salvadorian), South American, or other Hispanic origin.
@@ -24,4 +24,4 @@ Data for the density plots was obtained from the [IPUMS CPS](https://cps.ipums.o
 
 ## notes on density plots
 
-Density plots are constructed using Epanechnikov kernels with a bandwidth $10,000. To reduce bias in the curve from the bounded domain (visualized incomes are not allowed to be negative), kernels are weighted so that the area of the kernel over its non-negative support equals 1. For example, a kernel centered at $0 has a weight of 2, as half of its area is over non-negative incomes, and kernels that have only positive support have weights of 1. For simplicity, the densities are estimated using a dataset of income percentiles in 0.05% increments. The density plots are then constructed by evaluating the estimated density of these percentiles at $2,000 intervals, using [d3.curveBasis](https://github.com/d3/d3-shape#curves) to smooth these points to generate the final density curve.
+Density plots are constructed using Epanechnikov kernels with a bandwidth $10,000. To ensure that the area of each density plot over its positive support is constant and reduce bias in the curve from the bounded domain (visualized incomes are not allowed to be negative), the income data are mirrored. That is, data with incomes less than the bandwidth are copied and then appended to the dataset with their incomes multiplied by negative one. The density plots are then constructed by weighting these incomes by the IPUMS [ASECWT variable](https://cps.ipums.org/cps-action/variables/ASECWT#description_section) and estimating the income densities at $2,000 intervals. [d3.curveBasis](https://github.com/d3/d3-shape#curves) is then used to interpolate between these points and generate the final smoothed plot.
