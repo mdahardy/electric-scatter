@@ -230,7 +230,7 @@ hispanic_list = c(100,102,103,104,108,109,200,300,400,500,600,610,611,612)
 
 
 # Load data
-data_filepath = "../../../../public_github/projects/income-distributions/data_prep/ipums_data/cps_00009.xml"
+data_filepath = "ipums_data/cps_00009.xml"
 raw_data = data_filepath %>% 
   read_ipums_ddi() %>%
   read_ipums_micro() %>% 

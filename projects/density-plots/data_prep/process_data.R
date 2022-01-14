@@ -38,7 +38,7 @@ x_axis_max = 140000
 
 # Loads data and restricts to 25 year-olds who worked full-time, year-round
 density_app_load_clean_data = function(){
-  raw_data_filepath = "../../../../public_github/projects/income-distributions/data_prep/ipums_data/cps_00009.xml"
+  raw_data_filepath = "../../income-distributions/data_prep/ipums_data/cps_00009.xml"
   return(
     raw_data_filepath %>%
       read_ipums_ddi() %>%

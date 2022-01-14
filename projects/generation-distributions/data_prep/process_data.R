@@ -213,7 +213,7 @@ gen_cutoffs = list(
   'gen_x' = c(1965,1980),
   'millennials' = c(1981,1996))
 
-data_filepath = "../../../../public_github/projects/income-distributions/data_prep/ipums_data/cps_00009.xml"
+data_filepath = "../../income-distributions/data_prep/ipums_data/cps_00009.xml"
 raw_data = data_filepath %>%
   read_ipums_ddi() %>%
   read_ipums_micro() %>%
